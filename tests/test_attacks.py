@@ -1,24 +1,24 @@
 """Property tests for attack scenarios (Tasks 5.5-5.8)."""
-import base64
 import os
 import tempfile
 
-import pytest
-from hypothesis import given, settings, HealthCheck
+from hypothesis import HealthCheck, given, settings
 
 from src.attacks.base import SessionScript
-from src.attacks.delayed_trigger import DelayedTriggerAttack, _MALICIOUS_KEYWORDS
-from src.attacks.no_attack import NoAttackBaseline
+from src.attacks.delayed_trigger import DelayedTriggerAttack
 from src.attacks.obfuscation_bypass import (
     EncodingMethod,
     ObfuscationBypassAttack,
-    decode_braille,
     decode_base64_payload,
+    decode_braille,
 )
 from src.tools.memory_tool import MemoryTool
-from src.tools.rag_tool import RAGTool
-from tests.strategies import ascii_payloads, encoding_methods, intervening_counts, non_empty_text
-
+from tests.strategies import (
+    ascii_payloads,
+    encoding_methods,
+    intervening_counts,
+    non_empty_text,
+)
 
 # ---------------------------------------------------------------------------
 # Property 7: Delayed Trigger Session Count

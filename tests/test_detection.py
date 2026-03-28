@@ -4,22 +4,19 @@
 """
 from __future__ import annotations
 
-import warnings
 from datetime import datetime, timezone
 
-import pytest
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
 from src.detection.btcr_evaluator import (
-    BTCRCriterion,
     BTCREvaluator,
     CalendarLookupCriterion,
     EmailDraftCriterion,
 )
-from src.detection.exfiltration_detector import DetectionResult, ExfiltrationDetector
+from src.detection.exfiltration_detector import ExfiltrationDetector
 from src.tools.email_tool import EmailRecord
-from tests.strategies import email_records, non_empty_text
+from tests.strategies import non_empty_text
 
 # ---------------------------------------------------------------------------
 # Helpers / strategies

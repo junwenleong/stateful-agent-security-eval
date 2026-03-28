@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
@@ -138,8 +139,15 @@ def plot_factorial_grid(stats: dict, output_path: str) -> None:
                 lowers.append(d["point_estimate"] - d["lower"])
                 uppers.append(d["upper"] - d["point_estimate"])
 
-            bars = ax.bar(x, points, width, yerr=[lowers, uppers], capsize=3,
-                          color=[colors[i % len(colors)] for i in range(len(defenses))], alpha=0.8)
+            bars = ax.bar(
+                x,
+                points,
+                width,
+                yerr=[lowers, uppers],
+                capsize=3,
+                color=[colors[i % len(colors)] for i in range(len(defenses))],
+                alpha=0.8,
+            )
             ax.set_ylim(0, 1)
             ax.set_xticks(x)
             ax.set_xticklabels(defenses, rotation=30, ha="right", fontsize=7)
@@ -175,7 +183,7 @@ def plot_meta_analysis(meta_results: list, output_path: str) -> None:
 
     for i, r in enumerate(meta_results):
         # Support both dataclass and dict
-        paper = r.paper if hasattr(r, "paper") else r["paper"]
+        paper_name = r.paper if hasattr(r, "paper") else r["paper"]
         asr = r.reported_asr if hasattr(r, "reported_asr") else r["reported_asr"]
         lo = r.wilson_ci_lower if hasattr(r, "wilson_ci_lower") else r["wilson_ci_lower"]
         hi = r.wilson_ci_upper if hasattr(r, "wilson_ci_upper") else r["wilson_ci_upper"]

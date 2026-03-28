@@ -8,25 +8,22 @@ import uuid
 from dataclasses import asdict
 from unittest.mock import MagicMock, patch
 
-import pytest
-from hypothesis import given, settings, HealthCheck
+from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
 
-from tests.strategies import non_empty_text
-from src.runner.state_isolator import StateIsolator
 from src.runner.config_loader import (
     ComparisonSpec,
     ExperimentConfig,
-    load_config,
     validate_config,
 )
-from src.runner.runner import ExperimentRunner, RunResult, RateLimiter
+from src.runner.runner import ExperimentRunner, RunResult
+from src.runner.state_isolator import StateIsolator
+from src.tools.calendar_tool import CalendarTool
 from src.tools.email_tool import EmailTool
 from src.tools.memory_tool import MemoryTool
 from src.tools.rag_tool import RAGTool
-from src.tools.calendar_tool import CalendarTool
 from src.tools.search_tool import SearchTool
-
+from tests.strategies import non_empty_text
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -52,7 +49,7 @@ def _minimal_config(n_attacks=2, n_defenses=2, n_models=2, runs_per=3) -> Experi
     attacks = [{"type": "no_attack", "name": f"a{i}"} for i in range(n_attacks)]
     defenses = [{"type": "none", "name": f"d{i}"} for i in range(n_defenses)]
     models = [
-        {"provider": "openai", "model_name": f"gpt-4o-mini-2024-07-18", "name": f"m{i}"}
+        {"provider": "openai", "model_name": "gpt-4o-mini-2024-07-18", "name": f"m{i}"}
         for i in range(n_models)
     ]
     comparisons = [ComparisonSpec(condition_a="a0_d0_m0", condition_b="a0_d0_m1")]

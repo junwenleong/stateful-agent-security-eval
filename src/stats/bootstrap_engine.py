@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import logging
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Optional
 
 import numpy as np
@@ -70,7 +70,7 @@ class BootstrapEngine:
         if np.all(outcomes == 0) or np.all(outcomes == 1):
             logger.info("Degenerate vector (all-%d); falling back to Wilson Score CI", int(point))
             lower, upper = _wilson_score_ci(max(n, 1), point, self.alpha)
-            w = f"Degenerate vector; Wilson Score CI used" + (f"; {warning}" if warning else "")
+            w = "Degenerate vector; Wilson Score CI used" + (f"; {warning}" if warning else "")
             return CIResult(
                 point_estimate=point,
                 lower=lower,
@@ -111,7 +111,7 @@ class BootstrapEngine:
         except Exception as exc:
             logger.warning("BCa failed (%s); falling back to Wilson Score CI", exc)
             lower, upper = _wilson_score_ci(n, point, self.alpha)
-            w = f"BCa failed; Wilson Score CI used" + (f"; {warning}" if warning else "")
+            w = "BCa failed; Wilson Score CI used" + (f"; {warning}" if warning else "")
             warning = w
 
         return CIResult(
@@ -160,7 +160,7 @@ class BootstrapEngine:
             upper = float(np.percentile(diffs, 100 * (1 - self.alpha / 2)))
             lower = max(-1.0, lower)
             upper = min(1.0, upper)
-            warning = (warning or "") + f"; BCa failed, percentile used"
+            warning = (warning or "") + "; BCa failed, percentile used"
 
         return CIResult(
             point_estimate=point,
@@ -219,7 +219,6 @@ class BootstrapEngine:
 
     def analyze_experiment(self, results: list[dict], comparisons: list[dict]) -> dict:
         """Full pipeline: per-condition CIs, diff CIs, power, Holm-Bonferroni."""
-        import json
 
         # Per-condition CIs
         condition_stats: dict[str, dict] = {}

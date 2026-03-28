@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import json
 import math
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Literal
 
 from scipy import stats as scipy_stats
@@ -53,7 +53,6 @@ class MetaAnalyzer:
     def min_sample_size(self, p1: float, p2: float) -> int:
         """Minimum N per group for two-proportion z-test at configured power/alpha."""
         from statsmodels.stats.power import NormalIndPower
-        import numpy as np
 
         # Cohen's h effect size
         h = abs(2 * math.asin(math.sqrt(p1)) - 2 * math.asin(math.sqrt(p2)))

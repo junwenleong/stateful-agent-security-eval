@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import json
 import sqlite3
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any
 
 from langchain_core.language_models.chat_models import BaseChatModel
@@ -71,10 +71,10 @@ class _LangChainModelWrapper(BaseChatModel):
                 chat_messages.append(ChatMessage(role="user", content=str(m.content)))
 
         # Build tool schemas from bound tools if available
-        tool_schemas: list[dict] | None = None
         bound_tools = kwargs.get("tools") or getattr(self, "_bound_tools", None)
         if bound_tools:
-            tool_schemas = [t.args_schema.model_json_schema() if hasattr(t, "args_schema") and t.args_schema else {} for t in bound_tools]
+            # Tool schemas extracted but not used in current implementation
+            pass  # noqa: F841
 
         response = self.model_interface.chat(chat_messages)
 

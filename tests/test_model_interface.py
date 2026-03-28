@@ -2,10 +2,9 @@
 from __future__ import annotations
 
 import os
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
-import pytest
-from hypothesis import given, settings, HealthCheck
+from hypothesis import HealthCheck, given, settings
 
 from src.agent.model_interface import (
     AnthropicInterface,
@@ -73,6 +72,7 @@ def test_property1_factory_returns_correct_subclass(provider: str) -> None:
 # ---------------------------------------------------------------------------
 
 from hypothesis import strategies as st
+
 from src.agent.model_interface import ModelConfig as _ModelConfig
 
 

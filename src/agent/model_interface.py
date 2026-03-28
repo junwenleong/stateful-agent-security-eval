@@ -2,7 +2,7 @@ import logging
 import os
 import re
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Literal
 
 import requests
@@ -10,23 +10,26 @@ import requests
 logger = logging.getLogger(__name__)
 
 # Patterns that indicate a pinned version (not a floating alias)
-# Matches YYYY-MM-DD (e.g. gpt-4o-mini-2024-07-18) or YYYYMMDD (e.g. claude-3-5-haiku-20241022)
+# Matches YYYY-MM-DD (e.g. gpt-4o-mini-2024-07-18) or YYYYMMDD
+# (e.g. claude-3-5-haiku-20241022)
 _DATE_PATTERN = re.compile(r"\d{4}-?\d{2}-?\d{2}")
-_OLLAMA_VERSION_PATTERN = re.compile(r":\w")               # :8b, :latest-q4, etc.
+# :8b, :latest-q4, etc.
+_OLLAMA_VERSION_PATTERN = re.compile(r":\w")
 
 
 def _validate_model_name(provider: str, name: str) -> None:
     if provider == "ollama":
         if not _OLLAMA_VERSION_PATTERN.search(name):
             raise ValueError(
-                f"Ollama model_name '{name}' must include a version tag (e.g. 'llama3.1:8b'). "
-                "Floating aliases are not allowed."
+                f"Ollama model_name '{name}' must include a version tag "
+                "(e.g. 'llama3.1:8b'). Floating aliases are not allowed."
             )
     else:
         if not _DATE_PATTERN.search(name):
             raise ValueError(
                 f"model_name '{name}' must contain a dated version identifier "
-                "(e.g. 'gpt-4o-mini-2024-07-18'). Floating aliases are not allowed."
+                "(e.g. 'gpt-4o-mini-2024-07-18'). "
+                "Floating aliases are not allowed."
             )
 
 
@@ -112,14 +115,20 @@ class OpenAIInterface(ModelInterface):
                 }
                 for tc in raw_tool_calls
             ]
-        # Log if temperature was not honoured (API doesn't expose actual temp, so we log 0.0)
+        # Log if temperature was not honoured (API doesn't expose actual temp,
+        # so we log 0.0)
         temperature_used = 0.0
         if self.config.temperature != 0.0:
             logger.warning(
-                "OpenAI: requested temperature %.2f overridden to 0.0 for reproducibility.",
+                "OpenAI: requested temperature %.2f overridden to 0.0 "
+                "for reproducibility.",
                 self.config.temperature,
             )
-        return ChatResponse(content=content, tool_calls=tool_calls, temperature_used=temperature_used)
+        return ChatResponse(
+            content=content,
+            tool_calls=tool_calls,
+            temperature_used=temperature_used,
+        )
 
 
 class AnthropicInterface(ModelInterface):
@@ -148,7 +157,8 @@ class AnthropicInterface(ModelInterface):
 
         if self.config.temperature != 0.0:
             logger.warning(
-                "Anthropic: requested temperature %.2f overridden to 0.0 for reproducibility.",
+                "Anthropic: requested temperature %.2f overridden to 0.0 "
+                "for reproducibility.",
                 self.config.temperature,
             )
 
@@ -190,7 +200,8 @@ class OllamaInterface(ModelInterface):
     ) -> ChatResponse:
         if self.config.temperature != 0.0:
             logger.warning(
-                "Ollama: requested temperature %.2f overridden to 0.0 for reproducibility.",
+                "Ollama: requested temperature %.2f overridden to 0.0 "
+                "for reproducibility.",
                 self.config.temperature,
             )
 

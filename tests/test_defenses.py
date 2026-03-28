@@ -6,14 +6,12 @@ from __future__ import annotations
 
 import re
 
-import numpy as np
-import pytest
 from hypothesis import given, settings
 from hypothesis import strategies as st
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-from src.defenses.base import ComposedDefense, Defense, DefenseLog
+from src.defenses.base import ComposedDefense
 from src.defenses.minimizer import Minimizer
 from src.defenses.prompt_hardening import PromptHardening
 from src.defenses.sanitizer import Sanitizer

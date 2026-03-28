@@ -6,20 +6,19 @@ import math
 
 import numpy as np
 import pytest
-from hypothesis import given, settings, assume, HealthCheck
+from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
 
+from src.stats.bootstrap_engine import BootstrapEngine, CIResult, ComparisonResult
+from src.stats.meta_analyzer import MetaAnalyzer, MetaResult
 from tests.strategies import (
     binary_vectors,
-    proportions,
-    sample_sizes,
     effect_sizes,
     meta_entries,
     p_value_lists,
+    proportions,
+    sample_sizes,
 )
-from src.stats.bootstrap_engine import BootstrapEngine, ComparisonResult, CIResult
-from src.stats.meta_analyzer import MetaAnalyzer, MetaEntry, MetaResult
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -265,7 +264,6 @@ def test_property_29_meta_result_json_roundtrip(entries):
     """**Validates: Requirements 14.1, 14.2, 14.3**
     JSON serialize/deserialize produces equivalent MetaResult objects.
     """
-    import dataclasses
 
     analyzer = MetaAnalyzer(alpha=0.05, power=0.80)
     results = analyzer.analyze(entries)

@@ -5,7 +5,6 @@ Validates: Requirements 15.2
 """
 from pathlib import Path
 
-import pytest
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
@@ -28,7 +27,7 @@ def test_property_31_requirements_pinning():
 
     unpinned = [line for line in lines if "==" not in line]
     assert unpinned == [], (
-        f"The following lines are not exactly pinned with ==:\n"
+        "The following lines are not exactly pinned with ==:\n"
         + "\n".join(f"  {line}" for line in unpinned)
     )
 

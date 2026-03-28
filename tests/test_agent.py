@@ -5,11 +5,10 @@ After run_session(), querying SqliteSaver by thread_id returns non-empty convers
 
 **Validates: Requirements 1.5**
 """
-import tempfile
 import os
+import tempfile
 from typing import Any
 
-import pytest
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
@@ -67,6 +66,7 @@ def test_run_session_persists_state():
 
         # Query the checkpointer directly
         import sqlite3 as _sqlite3
+
         from langgraph.checkpoint.sqlite import SqliteSaver
         conn = _sqlite3.connect(db_path, check_same_thread=False)
         checkpointer = SqliteSaver(conn)
@@ -155,8 +155,9 @@ def test_property_session_state_persistence_round_trip(thread_id: str, user_mess
         agent = Agent(config)
         agent.run_session(thread_id, user_message)
 
-        from langgraph.checkpoint.sqlite import SqliteSaver
         import sqlite3 as _sqlite3
+
+        from langgraph.checkpoint.sqlite import SqliteSaver
         conn = _sqlite3.connect(db_path, check_same_thread=False)
         checkpointer = SqliteSaver(conn)
         checkpoint_tuple = checkpointer.get_tuple(

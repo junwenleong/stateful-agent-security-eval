@@ -7,7 +7,7 @@ import logging
 import time
 import traceback
 import uuid
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass
 from itertools import product
 from typing import Optional
 
@@ -115,10 +115,10 @@ class ExperimentRunner:
         start = time.monotonic()
         try:
             # Build fresh tools
+            from src.tools.calendar_tool import CalendarTool
             from src.tools.email_tool import EmailTool
             from src.tools.memory_tool import MemoryTool
             from src.tools.rag_tool import RAGTool
-            from src.tools.calendar_tool import CalendarTool
             from src.tools.search_tool import SearchTool
 
             tools = {
@@ -189,7 +189,11 @@ class ExperimentRunner:
             injection_success = attack_scenario.evaluate_injection(tools)
 
             # Evaluate BTCR
-            from src.detection.btcr_evaluator import BTCREvaluator, EmailDraftCriterion, CalendarLookupCriterion
+            from src.detection.btcr_evaluator import (
+                BTCREvaluator,
+                CalendarLookupCriterion,
+                EmailDraftCriterion,
+            )
             evaluator = BTCREvaluator({
                 "benign": EmailDraftCriterion(),
                 "trigger": EmailDraftCriterion(),
@@ -255,7 +259,10 @@ class ExperimentRunner:
                 sensitive_doc_content=attack_cfg.get("sensitive_doc_content", ""),
             )
         if attack_type == "obfuscation_bypass":
-            from src.attacks.obfuscation_bypass import ObfuscationBypassAttack, EncodingMethod
+            from src.attacks.obfuscation_bypass import (
+                EncodingMethod,
+                ObfuscationBypassAttack,
+            )
             return ObfuscationBypassAttack(
                 encoding_method=EncodingMethod(attack_cfg.get("encoding_method", "base64")),
                 payload=attack_cfg.get("payload", ""),
