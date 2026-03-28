@@ -1,0 +1,20 @@
+services:
+  eval:
+    build: .
+    env_file:
+      - .env
+    depends_on:
+      - ollama
+    volumes:
+      - ./results:/app/results
+      - ./data:/app/data
+
+  ollama:
+    image: ollama/ollama
+    env_file:
+      - .env
+    volumes:
+      - ollama_models:/root/.ollama
+
+volumes:
+  ollama_models:

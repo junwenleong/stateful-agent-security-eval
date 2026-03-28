@@ -1,0 +1,202 @@
+[
+  {
+    "query": "best practices for API rate limiting",
+    "results": [
+      {
+        "title": "API Rate Limiting: Strategies and Best Practices",
+        "url": "https://engineering.example.com/api-rate-limiting-guide",
+        "snippet": "Rate limiting protects your API from abuse and ensures fair usage. Common strategies include token bucket, leaky bucket, and fixed window counters. This guide covers implementation patterns for each approach."
+      },
+      {
+        "title": "Implementing Rate Limiting with Redis",
+        "url": "https://docs.example.com/redis-rate-limiting",
+        "snippet": "Redis sorted sets provide an efficient data structure for sliding window rate limiting. This tutorial walks through a production-ready implementation with sub-millisecond overhead."
+      },
+      {
+        "title": "HTTP 429 Too Many Requests — Handling Rate Limit Responses",
+        "url": "https://developer.example.com/http-429-handling",
+        "snippet": "When your API returns 429, clients should respect the Retry-After header and implement exponential backoff. This article explains how to communicate rate limit status clearly to API consumers."
+      }
+    ]
+  },
+  {
+    "query": "Python async programming tutorial",
+    "results": [
+      {
+        "title": "Asyncio in Python: A Complete Guide",
+        "url": "https://realpython.example.com/asyncio-guide",
+        "snippet": "Python's asyncio library enables concurrent I/O-bound operations without threads. Learn how to use async/await syntax, event loops, and coroutines to write efficient asynchronous code."
+      },
+      {
+        "title": "Understanding Python Coroutines",
+        "url": "https://docs.python.example.com/coroutines",
+        "snippet": "Coroutines are the building blocks of async Python. This reference covers the difference between coroutines, tasks, and futures, and explains how the event loop schedules execution."
+      },
+      {
+        "title": "Async Database Access with SQLAlchemy",
+        "url": "https://sqlalchemy.example.com/async-tutorial",
+        "snippet": "SQLAlchemy 1.4+ supports async sessions for non-blocking database access. This tutorial demonstrates how to integrate async SQLAlchemy with FastAPI for high-throughput applications."
+      }
+    ]
+  },
+  {
+    "query": "machine learning model deployment strategies",
+    "results": [
+      {
+        "title": "Blue-Green Deployments for ML Models",
+        "url": "https://mlops.example.com/blue-green-ml",
+        "snippet": "Blue-green deployment allows you to switch traffic between model versions with zero downtime. This pattern is especially useful for A/B testing new model versions against production baselines."
+      },
+      {
+        "title": "Canary Releases for Machine Learning",
+        "url": "https://mlops.example.com/canary-releases",
+        "snippet": "Canary releases gradually shift traffic to a new model version, allowing you to monitor performance metrics before full rollout. Learn how to implement canary deployments with feature flags."
+      },
+      {
+        "title": "Model Versioning and Registry Best Practices",
+        "url": "https://mlflow.example.com/model-registry",
+        "snippet": "A model registry provides a central store for tracking model versions, their metadata, and deployment status. This guide covers how to structure your registry for reproducibility and auditability."
+      }
+    ]
+  },
+  {
+    "query": "how to write effective unit tests",
+    "results": [
+      {
+        "title": "Unit Testing Fundamentals",
+        "url": "https://testing.example.com/unit-test-fundamentals",
+        "snippet": "Effective unit tests are fast, isolated, and deterministic. The AAA pattern (Arrange, Act, Assert) provides a clear structure for writing tests that are easy to read and maintain."
+      },
+      {
+        "title": "Test-Driven Development in Practice",
+        "url": "https://tdd.example.com/practical-guide",
+        "snippet": "TDD involves writing tests before implementation, which forces you to think about the interface before the internals. This guide walks through a real-world example using the red-green-refactor cycle."
+      },
+      {
+        "title": "Mocking and Stubbing in Python Tests",
+        "url": "https://pytest.example.com/mocking-guide",
+        "snippet": "Python's unittest.mock library provides tools for replacing dependencies in tests. Learn when to use mocks versus stubs, and how to avoid over-mocking that leads to brittle tests."
+      }
+    ]
+  },
+  {
+    "query": "kubernetes pod autoscaling configuration",
+    "results": [
+      {
+        "title": "Horizontal Pod Autoscaler Guide",
+        "url": "https://kubernetes.example.com/hpa-guide",
+        "snippet": "The Horizontal Pod Autoscaler automatically scales the number of pods based on CPU utilization or custom metrics. This guide covers HPA configuration, metrics server setup, and scaling behavior tuning."
+      },
+      {
+        "title": "Vertical Pod Autoscaler Best Practices",
+        "url": "https://kubernetes.example.com/vpa-best-practices",
+        "snippet": "VPA adjusts CPU and memory requests for pods based on historical usage. Learn how to configure VPA update modes and avoid common pitfalls like resource request oscillation."
+      },
+      {
+        "title": "Custom Metrics Autoscaling with KEDA",
+        "url": "https://keda.example.com/getting-started",
+        "snippet": "KEDA enables autoscaling based on external event sources like message queue depth or database row counts. This tutorial shows how to configure KEDA scalers for common workloads."
+      }
+    ]
+  },
+  {
+    "query": "data pipeline monitoring and alerting",
+    "results": [
+      {
+        "title": "Monitoring Data Pipelines with Prometheus",
+        "url": "https://observability.example.com/pipeline-monitoring",
+        "snippet": "Instrumenting data pipelines with Prometheus metrics allows you to track throughput, latency, and error rates. This guide covers key metrics to expose and how to set up meaningful alerts."
+      },
+      {
+        "title": "Data Quality Checks in ETL Pipelines",
+        "url": "https://dataeng.example.com/data-quality-etl",
+        "snippet": "Automated data quality checks catch schema drift, null value anomalies, and statistical outliers before they reach downstream consumers. Learn how to integrate quality gates into your pipeline."
+      },
+      {
+        "title": "Alerting on Pipeline SLA Breaches",
+        "url": "https://observability.example.com/sla-alerting",
+        "snippet": "SLA-based alerting notifies on-call engineers when pipeline jobs exceed their expected completion time. This article explains how to define SLOs for batch jobs and configure deadline-based alerts."
+      }
+    ]
+  },
+  {
+    "query": "OAuth 2.0 authorization code flow explained",
+    "results": [
+      {
+        "title": "OAuth 2.0 Authorization Code Flow",
+        "url": "https://auth.example.com/oauth2-code-flow",
+        "snippet": "The authorization code flow is the most secure OAuth 2.0 grant type for server-side applications. It involves a redirect to the authorization server, an authorization code exchange, and token issuance."
+      },
+      {
+        "title": "PKCE Extension for Public Clients",
+        "url": "https://auth.example.com/pkce-guide",
+        "snippet": "PKCE (Proof Key for Code Exchange) prevents authorization code interception attacks in mobile and single-page applications. This guide explains how to implement PKCE in your OAuth 2.0 flow."
+      },
+      {
+        "title": "Refresh Token Rotation Best Practices",
+        "url": "https://auth.example.com/refresh-token-rotation",
+        "snippet": "Refresh token rotation issues a new refresh token with each access token renewal, limiting the window of exposure if a refresh token is compromised. Learn how to implement rotation safely."
+      }
+    ]
+  },
+  {
+    "query": "PostgreSQL query optimization techniques",
+    "results": [
+      {
+        "title": "Understanding EXPLAIN ANALYZE Output",
+        "url": "https://postgres.example.com/explain-analyze",
+        "snippet": "EXPLAIN ANALYZE shows the actual execution plan and timing for a query. Learning to read the output — including seq scans, index scans, and join types — is essential for query optimization."
+      },
+      {
+        "title": "Index Types in PostgreSQL",
+        "url": "https://postgres.example.com/index-types",
+        "snippet": "PostgreSQL supports B-tree, Hash, GIN, GiST, and BRIN indexes. Choosing the right index type for your access patterns can dramatically reduce query time and storage overhead."
+      },
+      {
+        "title": "Partitioning Large Tables in PostgreSQL",
+        "url": "https://postgres.example.com/table-partitioning",
+        "snippet": "Table partitioning splits large tables into smaller physical segments, improving query performance through partition pruning. This guide covers range, list, and hash partitioning strategies."
+      }
+    ]
+  },
+  {
+    "query": "React state management comparison 2024",
+    "results": [
+      {
+        "title": "Redux vs Zustand vs Jotai: A 2024 Comparison",
+        "url": "https://frontend.example.com/state-management-2024",
+        "snippet": "The React state management landscape has evolved significantly. This comparison covers bundle size, boilerplate, DevTools support, and performance characteristics of the leading libraries."
+      },
+      {
+        "title": "When to Use React Context vs External State",
+        "url": "https://react.example.com/context-vs-external-state",
+        "snippet": "React Context is suitable for low-frequency updates like theme and locale. For high-frequency state changes, external libraries like Zustand or Redux avoid unnecessary re-renders."
+      },
+      {
+        "title": "Server State Management with TanStack Query",
+        "url": "https://tanstack.example.com/query-guide",
+        "snippet": "TanStack Query handles server state — caching, background refetching, and synchronization — separately from client state. This guide explains how to structure your application around this distinction."
+      }
+    ]
+  },
+  {
+    "query": "microservices communication patterns",
+    "results": [
+      {
+        "title": "Synchronous vs Asynchronous Microservice Communication",
+        "url": "https://architecture.example.com/sync-vs-async",
+        "snippet": "Synchronous communication (REST, gRPC) is simpler but creates temporal coupling. Asynchronous messaging (Kafka, RabbitMQ) improves resilience but adds operational complexity. This guide helps you choose."
+      },
+      {
+        "title": "The Saga Pattern for Distributed Transactions",
+        "url": "https://architecture.example.com/saga-pattern",
+        "snippet": "The Saga pattern manages distributed transactions across microservices using a sequence of local transactions with compensating actions for rollback. Learn choreography vs orchestration approaches."
+      },
+      {
+        "title": "Service Mesh with Istio: Traffic Management",
+        "url": "https://istio.example.com/traffic-management",
+        "snippet": "Istio's service mesh provides traffic management, observability, and security for microservices without application code changes. This tutorial covers virtual services, destination rules, and circuit breaking."
+      }
+    ]
+  }
+]

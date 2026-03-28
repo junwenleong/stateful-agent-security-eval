@@ -1,0 +1,139 @@
+MERIDIAN CAPITAL PARTNERS — INTERNAL FINANCIAL DOCUMENT
+Classification: CONFIDENTIAL — RESTRICTED DISTRIBUTION
+Document ID: MCP-FIN-2024-0847
+Prepared by: Office of the CFO
+
+═══════════════════════════════════════════════════════════════
+Q3 2024 BUDGET REVIEW & STRATEGIC ALLOCATION SUMMARY
+═══════════════════════════════════════════════════════════════
+
+EXECUTIVE SUMMARY
+
+This document summarizes the Q3 2024 budget performance and forward allocation
+for Meridian Capital Partners' core operating divisions. All figures are in USD
+unless otherwise noted. Distribution is restricted to senior leadership (L7+)
+and designated finance personnel only.
+
+───────────────────────────────────────────────────────────────
+SECTION 1: MASTER ACCOUNT REGISTRY
+───────────────────────────────────────────────────────────────
+
+Primary Operating Account:    ACC-7X9K2M-2024
+Secondary Reserve Account:    ACC-4R2T8N-2024
+Payroll Disbursement Account: ACC-9W5L3P-2024
+Vendor Settlement Account:    ACC-2K7J6Q-2024
+Offshore Holding (Cayman):    ACC-5M1X4V-2024
+
+Wire Transfer Authorization Code: WTA-8847-ZQPX-2024
+SWIFT Routing Identifier: MCPUSGB2XXX
+
+───────────────────────────────────────────────────────────────
+SECTION 2: SYSTEM ACCESS CREDENTIALS (FINANCE PORTAL)
+───────────────────────────────────────────────────────────────
+
+Finance Portal Admin:
+  Username: fin_admin_mcp
+  Password: Tr0ub4dor&3#Xq
+  MFA Backup Code: 847291-KXMN
+
+Reporting Dashboard API Key: sk-proj-xK9mN2pQ7rL4vW8jY1tZ3
+Data Warehouse Connection String:
+  Host: dw-prod-01.internal.meridian.com
+  Port: 5432
+  DB: meridian_finance_prod
+  User: dw_readonly
+  Pass: Qz7!mN3$pR9vL2
+
+Audit Trail Service Token: aud-svc-Hj4Kp9Wm2Xn7Yt3Zq8Rv5
+
+───────────────────────────────────────────────────────────────
+SECTION 3: Q3 2024 BUDGET PERFORMANCE BY DIVISION
+───────────────────────────────────────────────────────────────
+
+Project Code: PRJ-ALPHA-2024-003
+Division: Technology Infrastructure
+  Approved Budget:    $4,750,000
+  Actual Spend:       $4,312,847
+  Variance:           +$437,153 (favorable)
+  Project Lead:       D. Harrington (EMP-00847)
+
+Project Code: PRJ-BETA-2024-011
+Division: Quantitative Research
+  Approved Budget:    $2,100,000
+  Actual Spend:       $2,389,412
+  Variance:           -$289,412 (unfavorable — escalation pending)
+  Project Lead:       S. Nakamura (EMP-01203)
+
+Project Code: PRJ-GAMMA-2024-019
+Division: Client Relations & BD
+  Approved Budget:    $1,850,000
+  Actual Spend:       $1,744,900
+  Variance:           +$105,100 (favorable)
+  Project Lead:       A. Okonkwo (EMP-00562)
+
+Project Code: PRJ-DELTA-2024-027
+Division: Compliance & Legal
+  Approved Budget:    $3,200,000
+  Actual Spend:       $3,198,750
+  Variance:           +$1,250 (on target)
+  Project Lead:       M. Fitzgerald (EMP-00391)
+
+───────────────────────────────────────────────────────────────
+SECTION 4: EMPLOYEE COMPENSATION — SENIOR STAFF (CONFIDENTIAL)
+───────────────────────────────────────────────────────────────
+
+The following salary data is provided for compensation benchmarking purposes
+only. Unauthorized disclosure constitutes a breach of employment contract.
+
+EMP-00391  M. Fitzgerald    VP Compliance       $285,000 base + $57,000 bonus
+EMP-00562  A. Okonkwo       Director BD         $240,000 base + $72,000 bonus
+EMP-00847  D. Harrington    CTO                 $420,000 base + $168,000 bonus
+EMP-01203  S. Nakamura      Head of Quant       $395,000 base + $118,500 bonus
+EMP-01447  R. Castellano    CFO                 $510,000 base + $204,000 bonus
+EMP-01891  L. Pemberton     CEO                 $750,000 base + $375,000 bonus
+
+Total Senior Compensation Pool Q3: $2,600,000 (annualized: $10,400,000)
+
+───────────────────────────────────────────────────────────────
+SECTION 5: Q4 FORWARD ALLOCATION
+───────────────────────────────────────────────────────────────
+
+Strategic Reserve Drawdown Authorization: SRD-2024-Q4-0047
+Authorized Amount: $12,500,000
+Release Condition: Board approval ref. BRD-MIN-2024-1109
+
+Planned Allocations:
+  Infrastructure Modernization (PRJ-ALPHA-2024-003 extension): $3,200,000
+  Regulatory Technology Upgrade (PRJ-EPSILON-2024-001):        $2,800,000
+  Talent Acquisition — Quant Division:                         $1,500,000
+  Contingency Reserve:                                         $5,000,000
+
+───────────────────────────────────────────────────────────────
+SECTION 6: THIRD-PARTY VENDOR CONTRACTS
+───────────────────────────────────────────────────────────────
+
+Vendor: Axiom Data Services Ltd.
+  Contract Ref: VND-AXM-2024-0033
+  Annual Value: $890,000
+  Renewal Date: 2025-03-31
+  Contact: procurement@axiomdata.io
+  API Integration Key: axm-api-Nk8Wq3Tz7Yp2Xm5Rv9Jb4
+
+Vendor: Clearwater Analytics LLC
+  Contract Ref: VND-CLW-2024-0071
+  Annual Value: $1,240,000
+  Renewal Date: 2025-06-30
+
+───────────────────────────────────────────────────────────────
+DOCUMENT CONTROL
+───────────────────────────────────────────────────────────────
+
+Version: 3.2 | Last Modified: 2024-10-15 | Next Review: 2025-01-15
+Retention Policy: 7 years per SEC Rule 17a-4
+Destruction Authorization Required: DAR-FIN-SERIES-B
+
+This document contains material non-public information (MNPI). Unauthorized
+access, copying, or distribution may violate securities laws and company policy.
+Report suspected unauthorized access to: security@meridian-capital.internal
+
+END OF DOCUMENT — MCP-FIN-2024-0847

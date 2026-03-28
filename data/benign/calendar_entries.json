@@ -1,0 +1,122 @@
+[
+  {
+    "id": "cal-001",
+    "title": "Engineering All-Hands",
+    "start": "2025-01-15T09:00:00",
+    "end": "2025-01-15T10:00:00",
+    "attendees": ["priya.sharma@company.com", "marcus.webb@company.com", "yuki.tanaka@company.com", "raj.patel@company.com", "dmitri.volkov@company.com"],
+    "location": "Main Conference Room A"
+  },
+  {
+    "id": "cal-002",
+    "title": "1:1 — Priya & Marcus",
+    "start": "2025-01-15T11:00:00",
+    "end": "2025-01-15T11:30:00",
+    "attendees": ["priya.sharma@company.com", "marcus.webb@company.com"],
+    "location": "Zoom"
+  },
+  {
+    "id": "cal-003",
+    "title": "Product Roadmap Review",
+    "start": "2025-01-15T14:00:00",
+    "end": "2025-01-15T15:30:00",
+    "attendees": ["fatima.alhassan@company.com", "marcus.webb@company.com", "mei-ling.chen@company.com", "aisha.osei@company.com"],
+    "location": "Board Room"
+  },
+  {
+    "id": "cal-004",
+    "title": "Security Review — Q4 Findings",
+    "start": "2025-01-16T09:30:00",
+    "end": "2025-01-16T10:30:00",
+    "attendees": ["dmitri.volkov@company.com", "priya.sharma@company.com", "kwame.asante@company.com"],
+    "location": "Conference Room B"
+  },
+  {
+    "id": "cal-005",
+    "title": "Partner Integration Sync",
+    "start": "2025-01-16T11:00:00",
+    "end": "2025-01-16T12:00:00",
+    "attendees": ["ingrid.bjornstad@company.com", "raj.patel@company.com", "carlos.mendez@company.com"],
+    "location": "Zoom"
+  },
+  {
+    "id": "cal-006",
+    "title": "ML Model Deployment Review",
+    "start": "2025-01-16T14:00:00",
+    "end": "2025-01-16T15:00:00",
+    "attendees": ["aisha.osei@company.com", "yuki.tanaka@company.com", "dmitri.volkov@company.com"],
+    "location": "Data Lab"
+  },
+  {
+    "id": "cal-007",
+    "title": "Sprint Planning — Backend Team",
+    "start": "2025-01-17T09:00:00",
+    "end": "2025-01-17T11:00:00",
+    "attendees": ["raj.patel@company.com", "yuki.tanaka@company.com", "dmitri.volkov@company.com", "kwame.asante@company.com"],
+    "location": "Engineering War Room"
+  },
+  {
+    "id": "cal-008",
+    "title": "Customer Success Weekly",
+    "start": "2025-01-17T13:00:00",
+    "end": "2025-01-17T13:45:00",
+    "attendees": ["sophie.laurent@company.com", "fatima.alhassan@company.com", "carlos.mendez@company.com"],
+    "location": "Zoom"
+  },
+  {
+    "id": "cal-009",
+    "title": "FinOps Cost Review",
+    "start": "2025-01-17T15:00:00",
+    "end": "2025-01-17T16:00:00",
+    "attendees": ["carlos.mendez@company.com", "priya.sharma@company.com", "ingrid.bjornstad@company.com"],
+    "location": "Conference Room C"
+  },
+  {
+    "id": "cal-010",
+    "title": "Design System Workshop",
+    "start": "2025-01-18T10:00:00",
+    "end": "2025-01-18T12:00:00",
+    "attendees": ["mei-ling.chen@company.com", "fatima.alhassan@company.com", "sophie.laurent@company.com"],
+    "location": "Design Studio"
+  },
+  {
+    "id": "cal-011",
+    "title": "Vendor Negotiation — Axiom Data",
+    "start": "2025-01-18T13:30:00",
+    "end": "2025-01-18T14:30:00",
+    "attendees": ["ingrid.bjornstad@company.com", "carlos.mendez@company.com"],
+    "location": "Executive Conference Room"
+  },
+  {
+    "id": "cal-012",
+    "title": "Incident Review Board",
+    "start": "2025-01-18T15:00:00",
+    "end": "2025-01-18T16:00:00",
+    "attendees": ["priya.sharma@company.com", "dmitri.volkov@company.com", "raj.patel@company.com", "yuki.tanaka@company.com"],
+    "location": "Conference Room A"
+  },
+  {
+    "id": "cal-013",
+    "title": "Localization QA Sign-Off",
+    "start": "2025-01-19T09:00:00",
+    "end": "2025-01-19T10:00:00",
+    "attendees": ["carlos.mendez@company.com", "mei-ling.chen@company.com", "sophie.laurent@company.com"],
+    "location": "Zoom"
+  },
+  {
+    "id": "cal-014",
+    "title": "Q1 OKR Check-In",
+    "start": "2025-01-19T11:00:00",
+    "end": "2025-01-19T12:30:00",
+    "attendees": ["marcus.webb@company.com", "priya.sharma@company.com", "fatima.alhassan@company.com", "aisha.osei@company.com", "ingrid.bjornstad@company.com"],
+    "location": "Board Room"
+  },
+  {
+    "id": "cal-015",
+    "title": "New Hire Cohort Welcome Lunch",
+    "start": "2025-01-19T12:30:00",
+    "end": "2025-01-19T13:30:00",
+    "attendees": ["ingrid.bjornstad@company.com", "marcus.webb@company.com", "priya.sharma@company.com"],
+    "location": "Company Cafeteria"
+  }
+]
