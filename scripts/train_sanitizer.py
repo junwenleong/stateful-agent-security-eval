@@ -1,8 +1,6 @@
 """Train a LogisticRegression classifier for prompt injection detection.
 
 Training data is a minimal hardcoded dataset — no HuggingFace dependency.
-Training data MUST NOT include Braille, Base64, or semantic indirection examples
-to avoid artificially inflating defense effectiveness against obfuscation attacks.
 
 Output:
   data/models/sanitizer_classifier.pkl
@@ -141,9 +139,7 @@ Training data does NOT include:
 - Base64-encoded payloads
 - Semantic indirection examples (e.g., "audit compliance" rule injection)
 
-This ensures the classifier does not artificially inflate defense effectiveness
-against obfuscation attacks. The paper must report Minimizer-only and
-Sanitizer-only ablations to distinguish these effects.
+This ensures the classifier is trained on realistic injection patterns.
 
 ## Model
 

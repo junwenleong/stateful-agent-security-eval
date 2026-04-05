@@ -30,6 +30,11 @@ class ExperimentConfig:
     power: float = 0.80
     results_path: str = "results/results.json"
     db_base_dir: str = "data/runs"
+    injection_similarity_threshold: float = 0.7  # Configurable per Req 4.1, 4.6
+    n_bootstrap: int = 10000
+    bootstrap_seed: int = 42
+    detection: dict = field(default_factory=dict)
+    btcr_criteria: dict = field(default_factory=dict)
     extra: dict = field(default_factory=dict)
 
 
@@ -49,6 +54,9 @@ def validate_config(config_dict: dict) -> list[str]:
                 errors.append(
                     f"Model '{name}' (ollama) must include a version tag (e.g. 'llama3.1:8b')"
                 )
+        elif provider == "bedrock":
+            # Bedrock models don't need dated versions (they use inference profiles)
+            pass
         else:
             if not _DATE_PATTERN.search(name):
                 errors.append(
@@ -78,7 +86,9 @@ def load_config(path: str) -> ExperimentConfig:
     ]
 
     known = {"attacks", "defenses", "models", "runs_per_condition", "comparisons",
-             "effect_size", "alpha", "power", "results_path", "db_base_dir"}
+             "effect_size", "alpha", "power", "results_path", "db_base_dir",
+             "injection_similarity_threshold", "n_bootstrap", "bootstrap_seed",
+             "detection", "btcr_criteria"}
     extra = {k: v for k, v in raw.items() if k not in known}
 
     return ExperimentConfig(
@@ -92,5 +102,10 @@ def load_config(path: str) -> ExperimentConfig:
         power=raw.get("power", 0.80),
         results_path=raw.get("results_path", "results/results.json"),
         db_base_dir=raw.get("db_base_dir", "data/runs"),
+        injection_similarity_threshold=raw.get("injection_similarity_threshold", 0.7),
+        n_bootstrap=raw.get("n_bootstrap", 10000),
+        bootstrap_seed=raw.get("bootstrap_seed", 42),
+        detection=raw.get("detection", {}),
+        btcr_criteria=raw.get("btcr_criteria", {}),
         extra=extra,
     )

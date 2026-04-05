@@ -49,7 +49,7 @@ def _minimal_config(n_attacks=2, n_defenses=2, n_models=2, runs_per=3) -> Experi
     attacks = [{"type": "no_attack", "name": f"a{i}"} for i in range(n_attacks)]
     defenses = [{"type": "none", "name": f"d{i}"} for i in range(n_defenses)]
     models = [
-        {"provider": "openai", "model_name": "gpt-4o-mini-2024-07-18", "name": f"m{i}"}
+        {"provider": "ollama", "model_name": "qwen3:8b", "name": f"m{i}"}
         for i in range(n_models)
     ]
     comparisons = [ComparisonSpec(condition_a="a0_d0_m0", condition_b="a0_d0_m1")]
@@ -97,7 +97,7 @@ def test_property_20_inter_run_state_isolation(n_runs):
         new_db = isolator.create_fresh_state()
         new_memory = MemoryTool(db_path=new_db)
         facts = new_memory.list_all_facts("user1")
-        assert facts == [], "New MemoryTool instance should have no facts"
+        assert "No stored rules found" in facts, "New MemoryTool instance should have no facts"
         new_memory.reset()
         isolator.cleanup(new_db)
         isolator.cleanup(db_path)
@@ -316,7 +316,7 @@ def test_property_32_resume_from_partial_results(k_completed, remaining):
     config = _minimal_config(n_attacks=1, n_defenses=1, n_models=1, runs_per=total_runs)
     runner = ExperimentRunner(config)
 
-    condition = {"attack": {"type": "no_attack", "name": "a0"}, "defense": {"type": "none", "name": "d0"}, "model": {"provider": "openai", "model_name": "gpt-4o-mini-2024-07-18", "name": "m0"}}
+    condition = {"attack": {"type": "no_attack", "name": "a0"}, "defense": {"type": "none", "name": "d0"}, "model": {"provider": "ollama", "model_name": "qwen3:8b", "name": "m0"}}
 
     # Pre-populate K completed results
     partial_results = [

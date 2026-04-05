@@ -69,11 +69,26 @@ class MetaAnalyzer:
         return max(1, int(math.ceil(n)))
 
     def analyze(self, entries: list[MetaEntry]) -> list[MetaResult]:
+        """Analyze published benchmark claims with appropriate baselines.
+        
+        For papers claiming near-zero ASR (< 10%), compare against 0% (null: defense works).
+        For papers claiming moderate ASR (≥ 10%), compare against 50% (null: random chance).
+        This ensures the power analysis tests the actual claim being made.
+        """
         results = []
         for entry in entries:
             lower, upper = self.wilson_score_ci(entry.sample_size, entry.reported_asr)
-            # Baseline: compare reported ASR vs 0.5 (chance)
-            baseline = 0.5
+            
+            # Choose baseline based on reported ASR
+            # If claiming near-zero (< 10%), test against 0% (null: defense is effective)
+            # If claiming moderate (≥ 10%), test against 50% (null: better than random)
+            if entry.reported_asr < 0.10:
+                baseline = 0.0
+                baseline_label = "0% (null: defense is effective)"
+            else:
+                baseline = 0.5
+                baseline_label = "50% (null: better than random)"
+            
             min_n = self.min_sample_size(entry.reported_asr, baseline)
 
             if entry.sample_size >= min_n:

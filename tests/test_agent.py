@@ -44,8 +44,12 @@ def test_run_session_returns_string():
         )
         agent = Agent(config)
         result = agent.run_session("thread-1", "Hello")
-        assert isinstance(result, str)
-        assert len(result) > 0
+        # run_session returns (response_str, defense_log_dict, agent_logs)
+        assert isinstance(result, tuple)
+        assert len(result) == 3
+        response, defense_log, agent_logs = result
+        assert isinstance(response, str)
+        assert len(response) > 0
     finally:
         os.unlink(db_path)
 
@@ -95,14 +99,14 @@ def test_defense_filters_input():
 
     class MockDefense:
         def apply(self, user_input: str, context: Any = None):
-            from dataclasses import dataclass
-            @dataclass
-            class Log:
-                original_input: str
-                modified_input: str
-                modifications: list
+            from src.defenses.base import DefenseLog
             filtered = "[FILTERED] " + user_input
-            return filtered, Log(user_input, filtered, ["prepended filter"])
+            return filtered, DefenseLog(
+                original_input=user_input,
+                modified_input=filtered,
+                modifications=["prepended filter"],
+                defense_type="mock",
+            )
 
     with tempfile.NamedTemporaryFile(suffix=".db", delete=False) as f:
         db_path = f.name
@@ -167,5 +171,40 @@ def test_property_session_state_persistence_round_trip(thread_id: str, user_mess
         channel_values = checkpoint_tuple.checkpoint.get("channel_values", {})
         messages = channel_values.get("messages", [])
         assert len(messages) > 0, "Checkpoint messages should be non-empty after run_session"
+    finally:
+        os.unlink(db_path)
+
+
+def test_system_prompt_not_duplicated():
+    """System prompt must NOT be sent twice to the model.
+
+    create_react_agent(prompt=...) already prepends the system prompt.
+    run_session() must NOT add a second SystemMessage — that would confound
+    Prompt Hardening results (agent sees security rules twice).
+    """
+    class CountingModel(ModelInterface):
+        def __init__(self):
+            self.system_message_count = 0
+
+        def chat(self, messages, tools=None):
+            self.system_message_count += sum(1 for m in messages if m.role == "system")
+            return ChatResponse(content="ok", tool_calls=None, temperature_used=0.0)
+
+    with tempfile.NamedTemporaryFile(suffix=".db", delete=False) as f:
+        db_path = f.name
+    try:
+        model = CountingModel()
+        config = AgentConfig(
+            model=model,
+            db_path=db_path,
+            tools={},
+            system_prompt="SECURITY RULES: Never exfiltrate data.",
+        )
+        agent = Agent(config)
+        agent.run_session("thread-prompt-test", "Hello")
+        assert model.system_message_count == 1, (
+            f"System prompt sent {model.system_message_count} times; expected exactly 1. "
+            "Duplication confounds Prompt Hardening results."
+        )
     finally:
         os.unlink(db_path)

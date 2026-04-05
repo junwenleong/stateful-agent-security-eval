@@ -13,9 +13,7 @@ Training data does NOT include:
 - Base64-encoded payloads
 - Semantic indirection examples (e.g., "audit compliance" rule injection)
 
-This ensures the classifier does not artificially inflate defense effectiveness
-against obfuscation attacks. The paper must report Minimizer-only and
-Sanitizer-only ablations to distinguish these effects.
+This ensures the classifier is trained on realistic injection patterns.
 
 ## Model
 

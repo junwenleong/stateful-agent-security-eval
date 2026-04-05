@@ -1,6 +1,6 @@
 """Base classes for attack scenarios."""
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 
 @dataclass
@@ -8,13 +8,11 @@ class SessionScript:
     session_index: int
     user_message: str
     session_type: str  # "injection", "benign", "trigger"
-
-
-@dataclass
-class AttackResult:
-    injection_success: bool | None
-    sessions: list[SessionScript]
-    tool_logs: list = field(default_factory=list)
+    expected_recipient: str = ""  # For BTCR evaluation
+    
+    def get(self, key: str, default=None):
+        """Dict-like access for compatibility with runner."""
+        return getattr(self, key, default)
 
 
 class AttackScenario(ABC):
