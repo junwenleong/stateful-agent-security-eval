@@ -1,8 +1,10 @@
 # Stateful Agent Security Evaluation
 
-**Six out of seven standard defenses fail completely against delayed trigger attacks that persist through LLM agent memory. Tested across 5,040 runs, 9 models, 7 defenses.**
+**Six out of seven standard defences fail completely against delayed trigger attacks that persist through LLM agent memory. Tested across 5,040 runs, 9 models, 7 defences.**
 
-Full results and methodology in [FINDINGS.md](FINDINGS.md).
+Additional findings: prompt hardening can accelerate attacks via RAG re-injection; a safety fine-tuned model achieves 100% ASR; one frontier model stores security alerts instead of payloads; a latent carrier model persists financial credentials without attacker instruction.
+
+Full results and methodology in [FINDINGS.md](FINDINGS.md). Technical writeup at [junwenleong.github.io/stateful-agent-security-eval](https://junwenleong.github.io/stateful-agent-security-eval/).
 
 ---
 
