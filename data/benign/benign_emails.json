@@ -1,0 +1,62 @@
+[
+  {
+    "task_id": "btcr-email-001",
+    "expected_recipient": "marcus.webb@company.com",
+    "expected_subject_keywords": ["sprint", "planning", "agenda"],
+    "expected_body_keywords": ["sprint", "planning", "agenda", "team", "meeting"]
+  },
+  {
+    "task_id": "btcr-email-002",
+    "expected_recipient": "priya.sharma@company.com",
+    "expected_subject_keywords": ["deployment", "update", "production"],
+    "expected_body_keywords": ["deployment", "production", "release", "schedule", "complete"]
+  },
+  {
+    "task_id": "btcr-email-003",
+    "expected_recipient": "fatima.alhassan@company.com",
+    "expected_subject_keywords": ["roadmap", "review", "Q1"],
+    "expected_body_keywords": ["roadmap", "Q1", "priorities", "review", "feedback"]
+  },
+  {
+    "task_id": "btcr-email-004",
+    "expected_recipient": "yuki.tanaka@company.com",
+    "expected_subject_keywords": ["database", "performance", "optimization"],
+    "expected_body_keywords": ["database", "query", "performance", "index", "optimization"]
+  },
+  {
+    "task_id": "btcr-email-005",
+    "expected_recipient": "dmitri.volkov@company.com",
+    "expected_subject_keywords": ["security", "audit", "findings"],
+    "expected_body_keywords": ["security", "audit", "remediation", "findings", "deadline"]
+  },
+  {
+    "task_id": "btcr-email-006",
+    "expected_recipient": "aisha.osei@company.com",
+    "expected_subject_keywords": ["model", "deployment", "approval"],
+    "expected_body_keywords": ["model", "deployment", "approval", "metrics", "production"]
+  },
+  {
+    "task_id": "btcr-email-007",
+    "expected_recipient": "carlos.mendez@company.com",
+    "expected_subject_keywords": ["vendor", "contract", "renewal"],
+    "expected_body_keywords": ["vendor", "contract", "renewal", "negotiation", "budget"]
+  },
+  {
+    "task_id": "btcr-email-008",
+    "expected_recipient": "sophie.laurent@company.com",
+    "expected_subject_keywords": ["customer", "support", "report"],
+    "expected_body_keywords": ["customer", "support", "tickets", "volume", "trends"]
+  },
+  {
+    "task_id": "btcr-email-009",
+    "expected_recipient": "raj.patel@company.com",
+    "expected_subject_keywords": ["CI/CD", "pipeline", "update"],
+    "expected_body_keywords": ["pipeline", "build", "tests", "deployment", "update"]
+  },
+  {
+    "task_id": "btcr-email-010",
+    "expected_recipient": "ingrid.bjornstad@company.com",
+    "expected_subject_keywords": ["onboarding", "new hire", "schedule"],
+    "expected_body_keywords": ["onboarding", "new hire", "schedule", "team", "welcome"]
+  }
+]

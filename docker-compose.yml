@@ -1,0 +1,47 @@
+services:
+  eval:
+    build: .
+    env_file:
+      - .env
+    depends_on:
+      ollama-init:
+        condition: service_completed_successfully
+    volumes:
+      - ./results:/app/results
+      - ./data:/app/data
+
+  # Init container: pulls required models before the eval service starts.
+  # A fresh `docker compose up` with an empty model store would otherwise fail
+  # silently when the runner tries to connect to a model that doesn't exist.
+  # Models are listed explicitly so the pull step is auditable and reproducible.
+  # Digest pinned 2026-04-13. To update:
+  #   docker pull ollama/ollama:latest
+  #   docker inspect ollama/ollama:latest --format '{{index .RepoDigests 0}}'
+  ollama-init:
+    image: ollama/ollama@sha256:d5034f60974be528e0a5523ba5e89156e4a9ffd12d0b2b18475fb148237f3d4c
+    env_file:
+      - .env
+    volumes:
+      - ollama_models:/root/.ollama
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        ollama serve &
+        sleep 5
+        ollama pull qwen2.5:14b
+        ollama pull gemma4:31b
+        ollama pull qwen2.5:72b
+        ollama pull qwen3.5:122b
+        ollama pull gpt-oss-safeguard:120b
+        ollama pull qwen2.5:1.5b
+        echo "All models pulled."
+
+  ollama:
+    image: ollama/ollama@sha256:d5034f60974be528e0a5523ba5e89156e4a9ffd12d0b2b18475fb148237f3d4c
+    env_file:
+      - .env
+    volumes:
+      - ollama_models:/root/.ollama
+
+volumes:
+  ollama_models:

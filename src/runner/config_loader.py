@@ -1,0 +1,138 @@
+"""Config loader with YAML schema validation (Req 9.6)."""
+from __future__ import annotations
+
+import re
+from dataclasses import dataclass, field
+
+import yaml
+
+_DATE_PATTERN = re.compile(r"\d{4}-?\d{2}-?\d{2}")
+_OLLAMA_VERSION_PATTERN = re.compile(r":\w")
+
+REQUIRED_FIELDS = ["attacks", "defenses", "models", "runs_per_condition", "comparisons"]
+
+
+@dataclass
+class ComparisonSpec:
+    condition_a: str
+    condition_b: str
+
+
+@dataclass
+class ExperimentConfig:
+    attacks: list[dict]
+    defenses: list[dict]
+    models: list[dict]
+    runs_per_condition: int
+    comparisons: list[ComparisonSpec]
+    effect_size: float = 0.10
+    alpha: float = 0.05
+    power: float = 0.80
+    results_path: str = "results/results.json"
+    db_base_dir: str = "data/runs"
+    injection_similarity_threshold: float = 0.7  # Configurable per Req 4.1, 4.6
+    n_bootstrap: int = 10000
+    bootstrap_seed: int = 42
+    detection: dict = field(default_factory=dict)
+    btcr_criteria: dict = field(default_factory=dict)
+    extra: dict = field(default_factory=dict)
+
+
+def validate_config(config_dict: dict) -> list[str]:
+    errors: list[str] = []
+
+    for f in REQUIRED_FIELDS:
+        if f not in config_dict:
+            errors.append(f"Missing required field: '{f}'")
+
+    # Validate model_name fields
+    for model in config_dict.get("models", []):
+        name = model.get("model_name", "")
+        provider = model.get("provider", "")
+        if provider == "ollama":
+            if not _OLLAMA_VERSION_PATTERN.search(name):
+                errors.append(
+                    f"Model '{name}' (ollama) must include a version tag (e.g. 'llama3.1:8b')"
+                )
+        elif provider == "bedrock":
+            # Bedrock models don't need dated versions (they use inference profiles)
+            pass
+        else:
+            if not _DATE_PATTERN.search(name):
+                errors.append(
+                    f"Model '{name}' must contain a dated version identifier "
+                    "(e.g. 'gpt-4o-mini-2024-07-18'). Floating aliases are not allowed."
+                )
+
+    # Validate comparisons non-empty
+    comparisons = config_dict.get("comparisons", [])
+    if isinstance(comparisons, list) and len(comparisons) == 0:
+        errors.append("'comparisons' list must be non-empty")
+
+    return errors
+
+
+def load_config(path: str) -> ExperimentConfig:
+    import os
+    import re
+
+    with open(path) as f:
+        raw = yaml.safe_load(f)
+
+    # Expand environment variables in string values throughout the config.
+    # os.path.expandvars does NOT support bash-style ${VAR:-default} syntax —
+    # it returns the literal string unchanged when VAR is unset. We implement
+    # the :- default ourselves so OLLAMA_BASE_URL can be omitted by new users
+    # and the config falls back to http://localhost:11434 correctly.
+    _BASH_DEFAULT_RE = re.compile(r"\$\{(\w+):-([^}]*)\}")
+
+    def _expand(obj):
+        if not isinstance(obj, str):
+            if isinstance(obj, dict):
+                return {k: _expand(v) for k, v in obj.items()}
+            if isinstance(obj, list):
+                return [_expand(v) for v in obj]
+            return obj
+        # First pass: handle ${VAR:-default} — substitute env var or fall back to default
+        result = _BASH_DEFAULT_RE.sub(
+            lambda m: os.environ.get(m.group(1), m.group(2)), obj
+        )
+        # Second pass: handle plain ${VAR} and $VAR (no default)
+        result = os.path.expandvars(result)
+        return result
+
+    raw = _expand(raw)
+
+    errors = validate_config(raw)
+    if errors:
+        raise ValueError("Config validation failed:\n" + "\n".join(f"  - {e}" for e in errors))
+
+    comparisons = [
+        ComparisonSpec(condition_a=c["condition_a"], condition_b=c["condition_b"])
+        for c in raw.get("comparisons", [])
+    ]
+
+    known = {"attacks", "defenses", "models", "runs_per_condition", "comparisons",
+             "effect_size", "alpha", "power", "results_path", "db_base_dir",
+             "injection_similarity_threshold", "n_bootstrap", "bootstrap_seed",
+             "detection", "btcr_criteria"}
+    extra = {k: v for k, v in raw.items() if k not in known}
+
+    return ExperimentConfig(
+        attacks=raw["attacks"],
+        defenses=raw["defenses"],
+        models=raw["models"],
+        runs_per_condition=raw["runs_per_condition"],
+        comparisons=comparisons,
+        effect_size=raw.get("effect_size", 0.10),
+        alpha=raw.get("alpha", 0.05),
+        power=raw.get("power", 0.80),
+        results_path=raw.get("results_path", "results/results.json"),
+        db_base_dir=raw.get("db_base_dir", "data/runs"),
+        injection_similarity_threshold=raw.get("injection_similarity_threshold", 0.7),
+        n_bootstrap=raw.get("n_bootstrap", 10000),
+        bootstrap_seed=raw.get("bootstrap_seed", 42),
+        detection=raw.get("detection", {}),
+        btcr_criteria=raw.get("btcr_criteria", {}),
+        extra=extra,
+    )
