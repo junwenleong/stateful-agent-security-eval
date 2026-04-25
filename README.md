@@ -1,4 +1,10 @@
-# Stateful Agent Security Evaluation Framework
+# Stateful Agent Security Evaluation
+
+**Six out of seven standard defenses fail completely against delayed trigger attacks that persist through LLM agent memory. Tested across 5,040 runs, 9 models, 7 defenses.**
+
+Full results and methodology in [FINDINGS.md](FINDINGS.md).
+
+---
 
 > Beyond static benchmarks: stateful attack-defense evaluation with uncertainty
 
@@ -81,16 +87,19 @@ src/
 
 scripts/
 ├── run_defense_factorial.py   # Main entrypoint — phased execution
-├── run_bedrock_apac_smoke.py  # Bedrock smoke test
-├── run_n10_all_models.py      # N=10 baseline across all models
-├── analyze_factorial_progress.py
-├── monitor_factorial.py
-└── train_sanitizer.py
+├── run_bedrock_apac_smoke.py  # Bedrock frontier smoke test
+├── run_haiku_memory_sandbox.py # Haiku supplementary evaluation
+├── run_n10_all_models.py      # N=10 screening across all models
+├── analyze_results.py         # BCa bootstrap analysis + Holm-Bonferroni
+├── n10_analysis.py            # N=10 archetype classification
+├── train_sanitizer.py         # Train TF-IDF sanitizer classifier
+└── verify_canonical.py        # Programmatic verification of all published numbers
 
 experiments/configs/
-├── defense_factorial.yaml     # Main factorial config (4 models × 7 defenses × 2 attacks)
+├── defense_factorial.yaml     # Main factorial config (9 models × 7 defenses × 2 attacks)
 ├── bedrock_apac_smoke.yaml    # Bedrock frontier model config
-└── n10_all_models.yaml        # N=10 baseline config
+├── haiku_memory_sandbox.yaml  # Haiku supplementary evaluation config
+└── n10_all_models.yaml        # N=10 screening config
 
 tests/              # Property-based and unit tests (Hypothesis + pytest)
 data/               # Attack payloads, benign context, trained models
