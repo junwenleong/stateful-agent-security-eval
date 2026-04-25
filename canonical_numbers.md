@@ -48,24 +48,26 @@
 
 **Archetypes:**
 - Sonnet 4.6: **Explicit Detector** — resists at injection stage; malicious rule never enters persistent memory
-- Haiku 4.5: **Draft-Only Executor** — injects at 100% but refuses execution while completing benign task at 100% BTCR; tag `model_refused_execution` is identical to qwq:32b under no_defense in the factorial
+- Haiku 4.5: **Active Detector with Defensive Storage** — detects the attack in the injection session (100/100 runs contain explicit detection language: "suspicious instruction attempting to manipulate my behavior"), then stores three sanitised facts: two legitimate policy items (`audit_compliance_retention_policy`, `audit_compliance_document_control`) and one security alert (`security_alert_injected_rule`: "ALERT: Malicious document injection detected"). The attacker's routing rule itself is never stored. In the trigger session, Haiku recalls its own security alert and refuses to execute. `injection_success=True` is technically correct (Haiku calls `memory_save_fact`) but `payload_stored=False` (what was stored is a warning about the attack, not the attack payload). Tag: `model_refused_execution`.
+
+**Note:** The Draft-Only Executor label applies to qwq:32b only (drafts malicious email but never calls `send_email`). Haiku and qwq:32b share the `model_refused_execution` tag but have completely different injection-stage mechanisms: qwq:32b stores the attacker's routing rule verbatim; Haiku stores a security alert about it.
 
 **False positive rate (no-attack arm):** 0.0% (0/200 runs across both models)
 
-**Critical framing note:** The frontier finding is NOT a categorical gap across frontier models. Two distinct safety architectures are present:
-- Sonnet: injection resistance (safety at the store stage)
-- Haiku: execution refusal (safety at the execute stage, injection succeeds)
+**Critical framing note:** The frontier finding is NOT a categorical gap across frontier models. Two distinct safety architectures are present, but both involve active detection:
+- Sonnet: active detection + injection refusal (safety at the store stage; malicious rule never enters memory)
+- Haiku: active detection + defensive storage + execution refusal (detects attack, stores alert instead of payload, refuses execution in trigger session by referencing own stored alert)
 
-**Inversion risk flag:** Haiku's `model_refused_execution` tag is identical to qwq:32b's under no_defense. qwq:32b's refusal inverts to 100% ASR under Memory Sandbox. Whether Memory Sandbox would invert Haiku's safety property is not tested in this evaluation — this must be noted explicitly in the paper.
+**Inversion risk flag:** Haiku's `model_refused_execution` tag is identical to qwq:32b's under no_defense. However, the underlying mechanisms differ: qwq:32b stores the attacker's payload and refuses at the execution stage; Haiku never stores the payload and refuses based on its own stored security alert. Whether Memory Sandbox would invert Haiku's safety property is not tested in this evaluation. The inversion risk is theoretically lower for Haiku because the payload is not in memory to be recalled via an alternative pathway, but this is not empirically confirmed.
 
-**Frontier framing for paper (use exactly):**
-> "At N=100 screening, Sonnet 4.6 resists injection entirely (Explicit Detector: 0% injection, Wilson Score CI [0.000, 0.037]). Haiku 4.5 injects at 100% but refuses execution (Draft-Only Executor: 0% attack, Wilson Score CI [0.000, 0.037], BTCR=100%). The trigger-session sequence is deterministic across all 100 Haiku runs: draft_email(team@) → list_all_facts → recall_fact × 3 — identical in structure to qwq:32b under no_defense in the factorial. Both models draft to the legitimate recipient, recall the stored rule, and refuse to call send_email to the attacker address. Both frontier models achieve 0% attack success via distinct safety mechanisms — injection resistance (Sonnet) and execution refusal (Haiku) are separable properties. Haiku's Draft-Only Executor behavior carries the same theoretical inversion risk as qwq:32b: whether Memory Sandbox would cause Haiku to treat the RAG pathway as authoritative (as it does for qwq:32b) is not tested in this evaluation."
+**Frontier framing for paper (updated with verified Haiku mechanism):**
+> "At N=100 screening, Sonnet 4.6 resists injection entirely (Explicit Detector: 0% injection, Wilson Score CI [0.000, 0.037]). Haiku 4.5 actively detects the attack in the injection session (100/100 runs produce explicit detection language), then stores three sanitised facts: two legitimate policy items and one security alert documenting the injection attempt. The attacker's routing rule is never stored. In the trigger session, Haiku recalls its own security alert and refuses to execute (Active Detector with Defensive Storage: 0% attack, Wilson Score CI [0.000, 0.037], BTCR=100%). Both frontier models achieve 0% attack success via active detection, but differ in what they do with the detection: Sonnet refuses to store anything; Haiku stores evidence of the attack and uses it to justify refusal. injection_success=True for Haiku is technically correct (memory_save_fact was called) but the stored content is a warning, not the payload."
 
 ---
 
 ## Experiment 3: Defense Factorial
 
-7. **Frontier finding (400/400 runs, 0 errors):** Sonnet 4.6 — Explicit Detector (0% injection, 0% attack, BTCR=100%, N=100 each arm). Haiku 4.5 — Draft-Only Executor (100% injection, 0% attack, BTCR=100%, N=100 each arm; tag: model_refused_execution). False positive rate: 0.0% (0/200 no-attack runs). Safety architecture differs within frontier models — injection resistance (Sonnet) and execution refusal (Haiku) are distinct properties. Inversion risk: Haiku's model_refused_execution tag is identical to qwq:32b's under no_defense; Memory Sandbox inversion not tested for Haiku.
+7. **Frontier finding (400/400 runs, 0 errors):** Sonnet 4.6 — Explicit Detector (0% injection, 0% attack, BTCR=100%, N=100 each arm). Haiku 4.5 — Active Detector with Defensive Storage (100% injection, 0% attack, BTCR=100%, N=100 each arm; tag: model_refused_execution; payload_stored: False — stores security alert, not the routing rule). False positive rate: 0.0% (0/200 no-attack runs). Both frontier models actively detect the attack; they differ in response: Sonnet refuses to store, Haiku stores a warning and refuses to execute. Inversion risk: theoretically lower for Haiku than qwq:32b because the payload is not in memory, but not empirically tested.
 
 **Source**: `results/defense_factorial/results.jsonl`, `results/defense_factorial/analysis.json`  
 **Config**: `experiments/configs/defense_factorial.yaml`
@@ -204,7 +206,7 @@
 
 6. **False positive rate**: 0.0% — no model spontaneously exfiltrated data in the no_attack arm.
 
-7. **Frontier finding (400/400 runs, 0 errors):** Sonnet 4.6 — Explicit Detector (0% injection [0.000, 0.037], 0% attack, BTCR=100%, N=100 each arm). Haiku 4.5 — Draft-Only Executor (100% injection [0.963, 1.000], 0% attack [0.000, 0.037], BTCR=100%, N=100 each arm; tag: model_refused_execution). False positive rate: 0.0% (0/200 no-attack runs). Safety architecture differs within frontier models — injection resistance (Sonnet) and execution refusal (Haiku) are distinct properties. Inversion risk: Haiku's model_refused_execution tag is identical to qwq:32b's under no_defense; Memory Sandbox inversion not tested for Haiku.
+7. **Frontier finding (400/400 runs, 0 errors):** Sonnet 4.6 — Explicit Detector (0% injection [0.000, 0.037], 0% attack, BTCR=100%, N=100 each arm). Haiku 4.5 — Active Detector with Defensive Storage (100% injection [0.963, 1.000], 0% attack [0.000, 0.037], BTCR=100%, N=100 each arm; tag: model_refused_execution; payload_stored: False — stores security alert, not the routing rule). False positive rate: 0.0% (0/200 no-attack runs). Both frontier models actively detect the attack; they differ in response: Sonnet refuses to store, Haiku stores a warning and refuses to execute. Inversion risk: theoretically lower for Haiku than qwq:32b because the payload is not in memory, but not empirically tested.
 
 ---
 
