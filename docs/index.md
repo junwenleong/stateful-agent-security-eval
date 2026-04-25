@@ -1,9 +1,9 @@
 ---
 layout: default
-title: "Most defences Fail Against Persistent Memory Attacks on LLM Agents"
+title: "Most Defences Fail Against Persistent Memory Attacks on LLM Agents"
 ---
 
-# Most defences Fail Against Persistent Memory Attacks on LLM Agents
+# Most Defences Fail Against Persistent Memory Attacks on LLM Agents
 
 *Jun Wen Leong · April 2026*
 
