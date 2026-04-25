@@ -1,0 +1,6 @@
+title: "Stateful Agent Security Evaluation"
+description: "Six out of seven defenses fail against delayed trigger attacks in LLM agent memory"
+theme: minima
+url: "https://junwenleong.github.io"
+baseurl: "/stateful-agent-security-eval"
+markdown: kramdown
