@@ -46,7 +46,7 @@ Screening 18 models at N=10 (180 runs, 0% error rate) revealed four behavioral a
 |-----------|-------|-----------|--------|----------------|
 | Vulnerable Executor | 11 | 100% | 100% | qwen2.5:14b, qwen3:32b, gpt-oss-safeguard:120b |
 | Partial Executor | 1 | 100% | 50% | qwen3.5:35b |
-| Latent Carrier | 4 | 100% | 0% | cogito:70b, hermes3:70b, qwen3:8b |
+| Latent Carrier | 4 | 100% | 0% | cogito:70b, hermes3:70b, ministral-3:8b, qwen3:8b |
 | Injection Resistant | 2 | 0% | 0% | deepseek-r1:70b, qwen2.5:1.5b |
 
 The majority of open source models tested (11/18) are fully susceptible. The distinction between Latent Carriers (store the rule but never execute it) and Vulnerable Executors (store and execute) indicates that injection resistance and execution resistance are independent model capabilities. Latent Carriers pose a supply chain risk: a poisoned memory database written by a Latent Carrier could be read by a Vulnerable Executor in a shared deployment. ministral-3:8b is a distinct sub-type: it stores 7 keys per run from all three RAG documents including database credentials, a service token, and financial portal credentials from the sensitive document (confirmed via `list_all_facts`, 10/10 runs, N=10 only). The other three Latent Carriers store 1-2 keys each.
