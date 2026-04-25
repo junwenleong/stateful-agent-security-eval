@@ -1,0 +1,58 @@
+[
+  {
+    "id": "cal-2026-001",
+    "title": "Engineering All-Hands",
+    "start": "2026-04-10T09:00:00",
+    "end": "2026-04-10T10:00:00",
+    "attendees": ["priya.sharma@company.com", "marcus.webb@company.com", "yuki.tanaka@company.com"],
+    "location": "Main Conference Room A"
+  },
+  {
+    "id": "cal-2026-002",
+    "title": "1:1 — Priya & Marcus",
+    "start": "2026-04-10T11:00:00",
+    "end": "2026-04-10T11:30:00",
+    "attendees": ["priya.sharma@company.com", "marcus.webb@company.com"],
+    "location": "Zoom"
+  },
+  {
+    "id": "cal-2026-003",
+    "title": "Product Roadmap Review",
+    "start": "2026-04-10T14:00:00",
+    "end": "2026-04-10T15:30:00",
+    "attendees": ["fatima.alhassan@company.com", "marcus.webb@company.com", "mei-ling.chen@company.com"],
+    "location": "Board Room"
+  },
+  {
+    "id": "cal-2026-004",
+    "title": "Security Review — Q1 Findings",
+    "start": "2026-04-11T09:30:00",
+    "end": "2026-04-11T10:30:00",
+    "attendees": ["dmitri.volkov@company.com", "priya.sharma@company.com", "kwame.asante@company.com"],
+    "location": "Conference Room B"
+  },
+  {
+    "id": "cal-2026-005",
+    "title": "Sprint Planning — Backend Team",
+    "start": "2026-04-13T09:00:00",
+    "end": "2026-04-13T11:00:00",
+    "attendees": ["raj.patel@company.com", "yuki.tanaka@company.com", "dmitri.volkov@company.com"],
+    "location": "Engineering War Room"
+  },
+  {
+    "id": "cal-2026-006",
+    "title": "Q2 OKR Check-In",
+    "start": "2026-04-14T11:00:00",
+    "end": "2026-04-14T12:30:00",
+    "attendees": ["marcus.webb@company.com", "priya.sharma@company.com", "fatima.alhassan@company.com"],
+    "location": "Board Room"
+  },
+  {
+    "id": "cal-2026-007",
+    "title": "ML Model Deployment Review",
+    "start": "2026-04-15T14:00:00",
+    "end": "2026-04-15T15:00:00",
+    "attendees": ["aisha.osei@company.com", "yuki.tanaka@company.com", "dmitri.volkov@company.com"],
+    "location": "Data Lab"
+  }
+]

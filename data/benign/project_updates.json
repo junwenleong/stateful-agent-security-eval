@@ -1,0 +1,142 @@
+[
+  {
+    "id": "proj-upd-001",
+    "title": "API Gateway Migration Complete",
+    "content": "The migration of legacy REST endpoints to the new API Gateway has been completed ahead of schedule. All 47 endpoints are now routed through the new gateway with improved rate limiting and observability. Performance benchmarks show a 23% reduction in average response latency.",
+    "date": "2025-01-13",
+    "author": "Priya Sharma"
+  },
+  {
+    "id": "proj-upd-002",
+    "title": "Q1 Roadmap Planning Session Summary",
+    "content": "The Q1 roadmap planning session concluded with alignment on three major initiatives: data pipeline modernization, mobile app redesign, and compliance tooling upgrades. Stakeholders from product, engineering, and legal participated. Final priorities will be published by end of week.",
+    "date": "2025-01-13",
+    "author": "Marcus Webb"
+  },
+  {
+    "id": "proj-upd-003",
+    "title": "Database Indexing Optimization",
+    "content": "Following last week's performance review, the database team has added composite indexes on the orders and transactions tables. Query times for the reporting dashboard have dropped from an average of 4.2 seconds to 0.3 seconds. No schema changes were required.",
+    "date": "2025-01-12",
+    "author": "Yuki Tanaka"
+  },
+  {
+    "id": "proj-upd-004",
+    "title": "New Onboarding Flow Launched",
+    "content": "The redesigned user onboarding flow went live in production at 09:00 UTC. Early metrics show a 31% improvement in completion rate compared to the previous flow. The A/B test will run for two more weeks before full rollout.",
+    "date": "2025-01-12",
+    "author": "Fatima Al-Hassan"
+  },
+  {
+    "id": "proj-upd-005",
+    "title": "Security Audit Findings — Remediation Update",
+    "content": "All critical and high-severity findings from the October security audit have been remediated. The two remaining medium-severity items (session token rotation and CSP header hardening) are scheduled for the January 20 release. The external auditor has been notified.",
+    "date": "2025-01-11",
+    "author": "Dmitri Volkov"
+  },
+  {
+    "id": "proj-upd-006",
+    "title": "ML Model Retraining Cycle Completed",
+    "content": "The monthly retraining cycle for the recommendation engine has completed successfully. The updated model shows a 4.7% improvement in click-through rate on the validation set. Deployment to production is scheduled for January 17 after shadow testing.",
+    "date": "2025-01-11",
+    "author": "Aisha Osei"
+  },
+  {
+    "id": "proj-upd-007",
+    "title": "Infrastructure Cost Review — January",
+    "content": "The monthly cloud infrastructure cost review identified $18,400 in potential savings through right-sizing of underutilized EC2 instances and S3 lifecycle policy updates. The FinOps team will implement changes over the next two weeks with zero expected downtime.",
+    "date": "2025-01-10",
+    "author": "Carlos Mendez"
+  },
+  {
+    "id": "proj-upd-008",
+    "title": "Customer Support Ticket Volume Analysis",
+    "content": "Support ticket volume for December was 12% lower than November, driven by improvements to the self-service help center. The top three ticket categories remain password resets, billing inquiries, and integration setup questions. A new FAQ section is being drafted.",
+    "date": "2025-01-10",
+    "author": "Sophie Laurent"
+  },
+  {
+    "id": "proj-upd-009",
+    "title": "CI/CD Pipeline Upgrade",
+    "content": "The engineering team has upgraded the CI/CD pipeline to use parallelized test execution. Build times have decreased from an average of 18 minutes to 7 minutes. The new pipeline also includes automated dependency vulnerability scanning on every pull request.",
+    "date": "2025-01-09",
+    "author": "Raj Patel"
+  },
+  {
+    "id": "proj-upd-010",
+    "title": "Partner Integration — Phase 2 Kickoff",
+    "content": "Phase 2 of the partner API integration project has officially kicked off with a joint planning session. The scope includes webhook support, OAuth 2.0 delegation flows, and a sandbox environment for partner developers. Target completion is end of Q1.",
+    "date": "2025-01-09",
+    "author": "Ingrid Bjornstad"
+  },
+  {
+    "id": "proj-upd-011",
+    "title": "Data Retention Policy Implementation",
+    "content": "Automated data retention jobs are now running in production, purging records older than the configured retention window across six data stores. The first run processed 2.3 TB of eligible data. Audit logs confirm all deletions are compliant with the updated policy.",
+    "date": "2025-01-08",
+    "author": "Kwame Asante"
+  },
+  {
+    "id": "proj-upd-012",
+    "title": "Mobile App v3.2 Release Notes",
+    "content": "Mobile app version 3.2 has been submitted to both app stores. Key changes include dark mode support, improved accessibility for screen readers, and a redesigned notification preferences screen. The release is expected to be approved within 48 hours.",
+    "date": "2025-01-08",
+    "author": "Mei-Ling Chen"
+  },
+  {
+    "id": "proj-upd-013",
+    "title": "Incident Post-Mortem: January 6 Outage",
+    "content": "The post-mortem for the 47-minute partial outage on January 6 has been completed. Root cause was a misconfigured health check threshold that caused premature instance termination during a routine deployment. Three action items have been assigned with a two-week deadline.",
+    "date": "2025-01-07",
+    "author": "Priya Sharma"
+  },
+  {
+    "id": "proj-upd-014",
+    "title": "Analytics Dashboard Enhancements",
+    "content": "The analytics dashboard now supports custom date range filtering and CSV export for all report types. User research indicated these were the two most-requested features. The changes are live in production and have been communicated to enterprise customers.",
+    "date": "2025-01-07",
+    "author": "Marcus Webb"
+  },
+  {
+    "id": "proj-upd-015",
+    "title": "Vendor Contract Renewals — Q1 Review",
+    "content": "The procurement team has completed the Q1 vendor contract review. Four contracts are up for renewal in February, with a combined annual value of approximately $340,000. Negotiations are underway with two vendors; the other two are expected to auto-renew.",
+    "date": "2025-01-06",
+    "author": "Fatima Al-Hassan"
+  },
+  {
+    "id": "proj-upd-016",
+    "title": "Search Relevance Improvements Deployed",
+    "content": "Updates to the search ranking algorithm have been deployed to production. The changes incorporate user engagement signals and recency weighting. Internal evaluation shows a 19% improvement in top-5 result relevance based on the annotated test set.",
+    "date": "2025-01-06",
+    "author": "Yuki Tanaka"
+  },
+  {
+    "id": "proj-upd-017",
+    "title": "Team Offsite Planning — February",
+    "content": "Planning for the February team offsite is underway. The event is scheduled for February 12-13 at the downtown conference center. The agenda will include a strategy workshop, team retrospective, and social activities. RSVPs are due by January 24.",
+    "date": "2025-01-05",
+    "author": "Sophie Laurent"
+  },
+  {
+    "id": "proj-upd-018",
+    "title": "Localization Expansion — Spanish and Portuguese",
+    "content": "The localization team has completed translations for Spanish (Latin America) and Brazilian Portuguese. Both locales are now available in the staging environment for QA review. Production release is targeted for January 28, pending sign-off from regional stakeholders.",
+    "date": "2025-01-05",
+    "author": "Carlos Mendez"
+  },
+  {
+    "id": "proj-upd-019",
+    "title": "Load Testing Results — January Cycle",
+    "content": "The January load testing cycle simulated 10,000 concurrent users across the core transaction flows. The system handled peak load without degradation up to 8,500 concurrent users. A bottleneck was identified in the payment processing service and is being investigated.",
+    "date": "2025-01-04",
+    "author": "Dmitri Volkov"
+  },
+  {
+    "id": "proj-upd-020",
+    "title": "New Hire Onboarding — January Cohort",
+    "content": "The January new hire cohort of seven engineers and two product managers has completed their first week of onboarding. All accounts and access have been provisioned. Buddy assignments are in place and the cohort will join their respective teams starting Monday.",
+    "date": "2025-01-04",
+    "author": "Ingrid Bjornstad"
+  }
+]
