@@ -125,7 +125,9 @@
 | qwen3:32b | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | **0.0%** |
 | qwq:32b | **0.0%** | **0.0%** | **0.0%** | **0.0%** | **0.0%** | **0.0%** | 100.0% |
 
-**Note on qwq:32b**: Draft-Only Executor archetype. ASR=0% under all defenses except memory_sandbox (100%). This is the RAG re-injection bypass documented in Iteration 45 — memory_sandbox's isolation mechanism is bypassed by qwq:32b's draft-only execution pattern. The 7 comparisons for qwq:32b are annotated N/A (6 primary DTA + 1 cross-model no_defense); Holm-Bonferroni applies to 108 active comparisons (not 115).
+**Note on qwq:32b**: Draft-Only Executor archetype. ASR=0% under all defenses except memory_sandbox (100%). The Draft-Only behaviour is likely a context-length artifact: N=10 screening ran with OLLAMA_CONTEXT_LENGTH=32768 (tool sequence: draft→send→recall, 10/10), factorial used 16384 (draft→recall, send never called). Same weights 009cb3f08d74, same code. The memory_sandbox bypass (RAG re-injection) is documented in Iteration 45. The 7 comparisons for qwq:32b are annotated N/A (6 primary DTA + 1 cross-model no_defense); Holm-Bonferroni applies to 108 active comparisons.
+
+**Infrastructure note (qwq:32b context-length sensitivity)**: N=10 screening used OLLAMA_CONTEXT_LENGTH=32768; factorial used 16384. qwq:32b is the only model sensitive to this difference. Draft-Only Executor behaviour in factorial is likely context-length-dependent. All other 7 shared models show identical ASR at both settings.
 
 **Note on qwen3.5:122b + prompt_hardening**: Only Vulnerable Executor where prompt_hardening achieves 0% ASR. All other Vulnerable Executors show 100% ASR under prompt_hardening. (qwq:32b also shows 0% ASR under prompt_hardening, but this is because qwq:32b is a Draft-Only Executor with 0% ASR under all defenses except memory_sandbox — prompt_hardening has no causal effect.)
 
