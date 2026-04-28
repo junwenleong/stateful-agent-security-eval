@@ -28,6 +28,9 @@ __pycache__/
 # Kiro specs
 .kiro/
 
+# Roo rules (workspace-local AI context)
+.roo/
+
 # Environment variables
 .env
 
@@ -43,3 +46,4 @@ dist/
 build/
 *.egg-info/
 temp.jsonl
+.aider*
