@@ -40,9 +40,9 @@ This paper does not claim to discover persistent memory attacks. MINJA (NeurIPS 
 
 ### 1.5 Related Work
 
-**Persistent Memory Attacks.** MINJA [cite] and Zombie Agents [cite] established that persistent memory attacks achieve high attack success rates against open-source models: 98.2% injection and 76.8% attack success in MINJA's query-only injection setting; Zombie Agents formalises the two-phase infection/trigger structure. MemoryGraft [cite] and InjecMEM [cite] provide additional evidence of memory poisoning variants. These works prove the attack class exists and characterise its mechanics. What they do not provide is systematic evaluation of defense effectiveness: MINJA and Zombie Agents evaluate prompt-based defenses (sandwich defense, spotlighting, instructional reminders) without confidence intervals, power analysis, or mechanistic attribution. No prior work evaluates input-level filtering, retrieval-level classifiers, or tool-layer restriction against persistent memory attacks. This paper fills that gap.
+**Persistent Memory Attacks.** MINJA [arXiv:2503.03704] and Zombie Agents [arXiv:2602.15654] established that persistent memory attacks achieve high attack success rates against open-source models: 98.2% injection and 76.8% attack success in MINJA's query-only injection setting; Zombie Agents formalises the two-phase infection/trigger structure. MemoryGraft [arXiv:2512.16962] provides additional evidence of memory poisoning variants. These works prove the attack class exists and characterise its mechanics. What they do not provide is systematic evaluation of defense effectiveness: MINJA and Zombie Agents evaluate prompt-based defenses (sandwich defense, spotlighting, instructional reminders) without confidence intervals, power analysis, or mechanistic attribution. No prior work evaluates input-level filtering, retrieval-level classifiers, or tool-layer restriction against persistent memory attacks. This paper fills that gap.
 
-**Agentic Security Benchmarks.** InjecAgent [cite], AgentDojo [cite], and AgentSecEval [cite] evaluate defenses against input-level attacks on stateless or single-session agents and report high defense effectiveness in that setting. The threat model differs from persistent memory attacks in two ways: the payload arrives in the user's message rather than via RAG retrieval, and there is no persistent state to exploit across sessions. A defense that achieves 0% ASR on input-level benchmarks may be completely ineffective against retrieval-layer injection. StepShield [cite] introduces temporal metrics for code agent trajectories; ToolCert [cite] applies Bernoulli processes to tool-selection robustness. Neither evaluates multi-session memory attacks. The existing benchmark landscape has been effectively saturated at the input layer; this paper evaluates a different threat model.
+**Agentic Security Benchmarks.** InjecAgent [arXiv:2403.02691], AgentDojo [arXiv:2406.13352], and ASB [arXiv:2410.02644] evaluate defenses against input-level attacks on stateless or single-session agents and report high defense effectiveness in that setting. The threat model differs from persistent memory attacks in two ways: the payload arrives in the user's message rather than via RAG retrieval, and there is no persistent state to exploit across sessions. A defense that achieves 0% ASR on input-level benchmarks may be completely ineffective against retrieval-layer injection. StepShield [arXiv:2601.22136] introduces temporal metrics for code agent trajectories; ToolCert [arXiv:2510.03992] applies Bernoulli processes to tool-selection robustness. Neither evaluates multi-session memory attacks. The existing benchmark landscape has been effectively saturated at the input layer; this paper evaluates a different threat model.
 
 **Defense Approaches.** Input-level filtering, including prompt injection detection, content classification, and relevance filtering, is the dominant defense approach in existing work [cite]. Retrieval-level filtering has been proposed [cite] but not systematically evaluated against semantically masked payloads. Instruction-level hardening appears in system prompt guidance from model providers [cite] but without empirical evaluation against stored-rule compliance framing. Tool-layer restriction, removing capabilities the attack requires rather than detecting the attack, has received almost no evaluation attention. This paper is the first to evaluate all four architectural layers systematically against the same attack, with the same models, under the same statistical methodology.
 
@@ -250,20 +250,18 @@ These limitations do not, however, qualify the primary architectural finding. Th
 
 ## References
 
-[Zombie Agents] Yao et al. "Zombie Agents: Persistent Memory Attacks on LLM Agents." arXiv:2602.15654, 2026.
+Dong, S., Xu, S., He, P., Li, Y., Tang, J., Liu, T., Liu, H., and Xiang, Z. "Memory Injection Attacks on LLM Agents via Query-Only Interaction." arXiv:2503.03704, 2025. [MINJA]
 
-[StepShield] arXiv:2601.22136.
+Yao et al. "Zombie Agents: Persistent Memory Attacks on LLM Agents." arXiv:2602.15654, 2026.
 
-[ToolCert] arXiv:2510.03992.
+Zhan, Q., Liang, Z., Ying, Z., and Kang, D. "InjecAgent: Benchmarking Indirect Prompt Injections in Tool-Integrated Large Language Model Agents." arXiv:2403.02691, 2024.
 
-[MINJA] [citation needed] — NeurIPS 2025. Persistent memory injection attacks against LLM agents.
+Debenedetti, E., Zhang, J., Balunovic, M., Beurer-Kellner, L., Fischer, M., and Tramer, F. "AgentDojo: A Dynamic Environment to Evaluate Prompt Injection Attacks and Defenses for LLM Agents." arXiv:2406.13352, 2024.
 
-[InjecAgent] [citation needed] — Agent injection benchmark.
+Zhang, H., Huang, J., Mei, K., Yao, Y., Wang, Z., Zhan, C., Wang, H., and Zhang, Y. "Agent Security Bench (ASB): Formalizing and Benchmarking Attacks and Defenses in LLM-based Agents." arXiv:2410.02644, ICLR 2025.
 
-[AgentDojo] [citation needed] — Agent security benchmark.
+Srivastava, S. S. and He, H. "MemoryGraft: Persistent Compromise of LLM Agents via Poisoned Experience Retrieval." arXiv:2512.16962, 2025.
 
-[AgentSecEval] [citation needed] — Agent security evaluation benchmark.
+arXiv:2601.22136. [StepShield]
 
-[MemoryGraft] [citation needed] — Memory poisoning variant.
-
-[InjecMEM] [citation needed] — Memory injection variant.
+arXiv:2510.03992. [ToolCert]
