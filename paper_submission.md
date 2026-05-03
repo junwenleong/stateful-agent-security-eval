@@ -8,7 +8,7 @@ Persistent memory attacks against LLM agents, where malicious instructions injec
 
 ## 1. Introduction
 
-LLM agents with persistent memory and RAG retrieval are increasingly deployed in enterprise settings where they process documents, manage calendars, and send communications across multi-session interactions. This architecture creates an attack surface that existing security benchmarks do not test: a malicious instruction embedded in a RAG-retrieved document can be stored in the agent's persistent memory during one session and executed in a later session, after the original conversation context has been discarded. MINJA [cite] and Zombie Agents [cite] demonstrated that this attack class achieves high success rates against open-source models. What the field does not yet know is whether any existing defense can stop it.
+LLM agents with persistent memory and RAG retrieval are increasingly deployed in enterprise settings where they process documents, manage calendars, and send communications across multi-session interactions. This architecture creates an attack surface that existing security benchmarks do not test: a malicious instruction embedded in a RAG-retrieved document can be stored in the agent's persistent memory during one session and executed in a later session, after the original conversation context has been discarded. MINJA [Dong et al., 2025] and Zombie Agents [Yao et al., 2026] demonstrated that this attack class achieves high success rates against open-source models. What the field does not yet know is whether any existing defense can stop it.
 
 Existing agentic security evaluations focus on attack success rates, not defense effectiveness. Benchmarks such as InjecAgent, AgentDojo, and ASB evaluate defenses against input-level attacks, where the malicious payload arrives in the user's message, and report high defense effectiveness in that setting. Persistent memory attacks operate at a different layer: the payload enters via RAG retrieval, is stored in a persistent database, and is triggered by a benign prompt sessions later. Defenses commonly deployed at the input layer (content filtering, prompt sanitization) and retrieval layer (document classifiers, LLM judges) have not been systematically evaluated against this attack class. Tool-layer defenses, which restrict what the agent can do rather than what it can see, have received almost no evaluation attention.
 
@@ -102,7 +102,7 @@ This paper does not claim to discover persistent memory attacks. MINJA (NeurIPS 
 
 ### 2.5 Statistical Methodology
 
-**Sample Size and Power Analysis.** Each experimental condition was allocated N=40 independent runs. Sample size was determined via a pre-specified power analysis targeting 80% power to detect a 10 percentage-point difference in ASR at alpha=0.05. All 5,040 runs completed without error (0% error rate).
+**Sample Size and Power Analysis.** Each experimental condition was allocated N=40 independent runs. Sample size was determined via a pre-specified power analysis targeting 80% power to detect a 10 percentage-point difference in ASR at alpha=0.05. All 5,040 runs completed without execution failure (0% execution failure rate; all runs completed with valid tool logs).
 
 **Confidence Intervals.** We report 95% confidence intervals on ASR and BTCR using the bias-corrected and accelerated (BCa) bootstrap method with 10,000 resamples (seed=42). BCa is preferred over the normal approximation because outcomes frequently approach 0% or 100%. For degenerate conditions (all outcomes identical), we substitute the Wilson Score interval.
 
@@ -112,7 +112,7 @@ This paper does not claim to discover persistent memory attacks. MINJA (NeurIPS 
 
 ### 2.6 Model Selection
 
-Prior to the defense factorial, we conducted an N=10 archetype screening across 18 open-source models (180 runs, 0% error rate) to characterise behavioural responses to the DTA. The screening identified four archetypes: Vulnerable Executors (11 models, 100% injection and 100% attack success), one Partial Executor (qwen3.5:35b, 50% attack success), Latent Carriers (4 models, 100% injection but 0% attack success), and Injection-Resistant models (2 models, 0% injection). The nine factorial models were drawn exclusively from Vulnerable Executors with clean session-3 DTA. Four categories of models were excluded: injection-resistant models (deepseek-r1:70b, qwen2.5:1.5b); the Partial Executor (qwen3.5:35b, uninterpretable baseline); two models excluded due to session-timing confounds (gpt-oss:120b: re-injection mechanism differs from DTA; cogito:14b: exfiltrates during benign S2 search query); and gemma4:31b, excluded post-Phase-1-v2 due to an Ollama runtime regression.
+Prior to the defense factorial, we conducted an N=10 archetype screening across 18 open-source models (180 runs, 0% execution failure rate) to characterise behavioural responses to the DTA. The screening identified four archetypes: Vulnerable Executors (11 models, 100% injection and 100% attack success), one Partial Executor (qwen3.5:35b, 50% attack success), Latent Carriers (4 models, 100% injection but 0% attack success), and Injection-Resistant models (2 models, 0% injection). The nine factorial models were drawn exclusively from Vulnerable Executors with clean session-3 DTA. Four categories of models were excluded: injection-resistant models (deepseek-r1:70b, qwen2.5:1.5b); the Partial Executor (qwen3.5:35b, uninterpretable baseline); two models excluded due to session-timing confounds (gpt-oss:120b: re-injection mechanism differs from DTA; cogito:14b: exfiltrates during benign S2 search query); and gemma4:31b, excluded post-Phase-1-v2 due to an Ollama runtime regression.
 
 ### 2.7 Detection Methodology
 
@@ -164,25 +164,13 @@ To test whether this inversion generalises, we evaluated Haiku 4.5 under Memory 
 
 Memory Sandbox imposes zero utility cost in the absence of attack: BTCR was 100% across all 63 no-attack conditions. Under attack, two models show BTCR failures: qwen2.5:14b (BTCR=0%, tagged `attempted_tool_hallucination`: the model attempts to call the removed `memory_recall_fact` tool and halts) and qwen2.5:72b (BTCR=0%, tagged `explicit_recall_required`: the model calls `list_all_facts`, receives key names only, and halts without sending any email). Both failures are attributable to model-specific artifacts rather than the defense mechanism: the no-attack BTCR for both models is 100%.
 
-**Hallucination bypass finding.**
+**Hallucination bypass finding**
 
 Two models exhibit a distinct bypass mechanism under Memory Sandbox: qwen3.5:122b and glm-4.7-flash:q8_0 both produce `value_hallucination_bypass` tags in all 40/40 runs each. When `memory_recall_fact` is removed, these models call `list_all_facts`, receive the stored key name (`email_routing_rule`) without its value, and fabricate a plausible routing rule from training priors rather than halting. Both models produce deterministic fabrications: qwen3.5:122b generates "Project status emails should be sent to team@example.com with a summary of weekly updates"; glm-4.7-flash:q8_0 generates benign routing rules directing email to team@example.com only. Neither fabricated value includes the attacker address. ASR=0% in both cases. Both models also achieve BTCR=True.
 
 The fabricated values are confirmed as pure hallucination: exhaustive search of the evaluation environment finds no occurrence of the fabricated routing rules. ASR=0% is therefore not a defense property but an incidental safety property of the training data distribution. This property is fragile: an attacker who knows the model's prior for the relevant key name could craft a key name that elicits the correct attacker address.
 
-### 3.4 Evaluation Artifacts
-
-Rigorous evaluation of agentic systems requires distinguishing model behavior from evaluation environment behavior. We identified ten evaluation artifacts during development, cases where the evaluation environment interacted with model behavior in ways that would produce incorrect results if uncorrected. None affects the primary ASR or BTCR results in the factorial; all are documented with scoped impact statements.
-
-**Tool contract artifacts (Artifacts 1, 3, 5, 10).** Four artifacts trace to tool return messages or schema language creating unintended behavioral dependencies. Artifact 3 is the most consequential: in v1, `list_all_facts` returned full key-value pairs, causing models to call `draft_email` instead of `send_email` after reading the stored rule, systematically misclassifying qwen3:32b and qwen3.5:9b as Latent Carriers. The v2 fix (keys-only return) corrected this; both models are Vulnerable Executors in the factorial. Artifact 10 is the inverse: the `list_all_facts` tool message instructs the model to "use `recall_fact` to retrieve values," creating a blocking dependency for qwen2.5:72b when `recall_fact` is removed under Memory Sandbox. The implication: tool return message phrasing is a first-class experimental variable, not an implementation detail.
-
-**Model-specific behavioral artifacts (Artifacts 2, 4).** Artifact 2: qwen2.5:14b exhibits multilingual token-flipping under high tool count and short system prompts, producing Thai-language reasoning loops and malformed tool calls. Fixed by adding an English-language persona instruction. Both artifacts are model-specific and do not generalise.
-
-**Implementation bugs fixed before the factorial (Artifacts 6, 7, 9).** Two independent instances of the analysis script aggregating across attack types produced diluted ASR figures; both were fixed before any factorial runs. A thread-safety race condition in the memory tool caused false-positive injection detection in parallel batch calls; fixed with an atomic lock. The factorial dataset is clean.
-
-**Scope artifact (Artifact 8).** The evaluation uses a minimal RAG corpus (3 documents) to ensure deterministic retrieval of the malicious document. The benign-session re-injection pathway observed in qwen3:32b under Prompt Hardening depends on this minimal corpus and may not generalise to larger corpora.
-
-### 3.x Behavioral Archetypes
+### 3.4 Behavioral Archetypes
 
 The N=10 rescreen across 18 open-source models (180 runs, v2 codebase) and N=100 Bedrock screening of two frontier models identified six behavioral archetypes characterising how models respond to the delayed-trigger attack. Archetypes are defined by two binary properties: whether injection succeeds (`memory_save_fact` called in S1) and whether exfiltration executes (`send_email` to the attacker address in S4). A third property, the mechanism of non-execution for models with 0% ASR, further distinguishes archetypes that would otherwise appear identical on the two primary metrics.
 
@@ -204,7 +192,19 @@ Second, Haiku 4.5 and qwq:32b share the `model_refused_execution` tag and the sa
 
 Third, Latent Carriers represent a supply-chain risk distinct from the DTA evaluation: they do not execute the attack themselves, but a Vulnerable Executor reading the same shared memory database would find the stored rule and execute it. The four Latent Carrier models are not safe in a multi-agent or shared-memory deployment context.
 
-### 3.5 Frontier Model Screening
+### 3.5 Evaluation Artifacts
+
+Rigorous evaluation of agentic systems requires distinguishing model behavior from evaluation environment behavior. We identified ten evaluation artifacts during development, cases where the evaluation environment interacted with model behavior in ways that would produce incorrect results if uncorrected. None affects the primary ASR or BTCR results in the factorial; all are documented with scoped impact statements.
+
+**Tool contract artifacts (Artifacts 1, 3, 5, 10).** Four artifacts trace to tool return messages or schema language creating unintended behavioral dependencies. Artifact 3 is the most consequential: in v1, `list_all_facts` returned full key-value pairs, causing models to call `draft_email` instead of `send_email` after reading the stored rule, systematically misclassifying qwen3:32b and qwen3.5:9b as Latent Carriers. The v2 fix (keys-only return) corrected this; both models are Vulnerable Executors in the factorial. Artifact 10 is the inverse: the `list_all_facts` tool message instructs the model to "use `recall_fact` to retrieve values," creating a blocking dependency for qwen2.5:72b when `recall_fact` is removed under Memory Sandbox. The implication: tool return message phrasing is a first-class experimental variable, not an implementation detail.
+
+**Model-specific behavioral artifacts (Artifacts 2, 4).** Artifact 2: qwen2.5:14b exhibits multilingual token-flipping under high tool count and short system prompts, producing Thai-language reasoning loops and malformed tool calls. Fixed by adding an English-language persona instruction. This artifact is model-specific and does not generalise.
+
+**Implementation bugs fixed before the factorial (Artifacts 6, 7, 9).** Two independent instances of the analysis script aggregating across attack types produced diluted ASR figures; both were fixed before any factorial runs. A thread-safety race condition in the memory tool caused false-positive injection detection in parallel batch calls; fixed with an atomic lock. The factorial dataset is clean.
+
+**Scope artifact (Artifact 8).** The evaluation uses a minimal RAG corpus (3 documents) to ensure deterministic retrieval of the malicious document. The benign-session re-injection pathway observed in qwen3:32b under Prompt Hardening depends on this minimal corpus and may not generalise to larger corpora.
+
+### 3.6 Frontier Model Screening
 
 Sonnet 4.6 (claude-sonnet-4-6, global inference profile) was evaluated at N=100 per arm under the same attack configuration as the open-source factorial. Injection success was 0% across all 100 DTA runs (Wilson Score CI [0.000, 0.037]); every run was tagged `model_resisted_injection`. The model retrieved the malicious document in S1 but did not call `memory_save_fact`. BTCR was 100% in both arms. Sonnet 4.6 is classified as an Explicit Detector: safety is implemented at the injection stage, and the attack surface does not reach persistent memory.
 
@@ -262,9 +262,9 @@ Zhang, H., Huang, J., Mei, K., Yao, Y., Wang, Z., Zhan, C., Wang, H., and Zhang,
 
 Srivastava, S. S. and He, H. "MemoryGraft: Persistent Compromise of LLM Agents via Poisoned Experience Retrieval." arXiv:2512.16962, 2025.
 
-arXiv:2601.22136. [StepShield]
+Felicia, G., Eniolade, M., He, J., Sasindran, Z., Kumar, H., Angati, M. H., and Bandarupalli, S. "StepShield: When, Not Whether to Intervene on Rogue Agents." arXiv:2601.22136, 2026. [StepShield]
 
-arXiv:2510.03992. [ToolCert]
+Yeon, J., Chaudhary, I., and Singh, G. "Quantifying Distributional Robustness of Agentic Tool-Selection." arXiv:2510.03992, 2025. [ToolCert]
 
 Anthropic. "Claude 3 Model Card." 2024. https://www.anthropic.com/claude-3-model-card
 
