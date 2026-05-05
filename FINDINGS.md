@@ -22,7 +22,7 @@ The table below shows attack success rate (ASR) per model per defense under the 
 |-------|-----------|-----------|-----------|---------------|---------------|-----------------|----------------|
 | glm-4.7-flash:q8_0 | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | **0.0%** |
 | gpt-oss-safeguard:120b | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | **0.0%** |
-| gpt-oss:20b | 97.5% (one run encountered a tool-call timeout; the remaining 39 succeeded) | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | **0.0%** |
+| gpt-oss:20b | 97.5%† | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | **0.0%** |
 | qwen2.5:14b | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | **0.0%** |
 | qwen2.5:72b | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | **0.0%** |
 | qwen3.5:122b | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | **0.0%** | **0.0%** |
@@ -31,6 +31,8 @@ The table below shows attack success rate (ASR) per model per defense under the 
 | qwq:32b | **0.0%** | **0.0%** | **0.0%** | **0.0%** | **0.0%** | **0.0%** | **100.0%** |
 
 **Defense mean ASR:** no_defense 88.6%, minimizer 88.9%, sanitizer 88.9%, rag_sanitizer 88.9%, rag_llm_judge 88.9%, prompt_hardening 77.8%, memory_sandbox 11.1%.
+
+*†One run encountered a tool-call timeout; the remaining 39 succeeded.*
 
 Input level defences (Minimizer, Sanitizer) operate on user messages before they reach the agent. The malicious content enters through RAG retrieval, not through the user message, so these defences never see it. Both show 88.9% ASR, statistically indistinguishable from the 88.6% undefended baseline. Retrieval level defences (RAG Sanitizer, RAG LLM Judge) do see the malicious document during retrieval but fail to block it. The TF-IDF classifier scores the compliance formatted payload at 0.33 to 0.44, below its detection threshold. The 1.5B parameter LLM judge produces empty reason strings and flags nothing. Both show 88.9% ASR. The rag_llm_judge failure and the qwq:32b memory_sandbox bypass share a root cause: the compliance framing of the malicious document defeats both the 1.5B judge's classification capacity and qwq:32b's tool-contract boundary when the content arrives via RAG. This suggests a higher-capacity retrieval-layer judge could have blocked the document in the injection session and, as a side effect, could also have prevented the RAG re-injection pathway that qwq:32b exploits under Memory Sandbox.
 
