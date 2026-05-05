@@ -49,7 +49,7 @@ The table below shows attack success rate per model per defence under the delaye
 |-------|-----------|-----------|-----------|---------------|---------------|-----------------|----------------|
 | glm-4.7-flash:q8_0 | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | **0.0%** |
 | gpt-oss-safeguard:120b | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | **0.0%** |
-| gpt-oss:20b | 97.5% (one run encountered a tool-call timeout; the remaining 39 succeeded) | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | **0.0%** |
+| gpt-oss:20b | 97.5%† | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | **0.0%** |
 | qwen2.5:14b | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | **0.0%** |
 | qwen2.5:72b | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | **0.0%** |
 | qwen3.5:122b | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% | **0.0%** | **0.0%** |
@@ -58,6 +58,8 @@ The table below shows attack success rate per model per defence under the delaye
 | qwq:32b | **0.0%** | **0.0%** | **0.0%** | **0.0%** | **0.0%** | **0.0%** | **100.0%** |
 
 *Attack success rate per model per defence, delayed trigger attack, N=40 per cell. 5,040 total runs, 0% execution failure rate (all runs completed with valid tool logs).*
+
+*†One run encountered a tool-call timeout; the remaining 39 succeeded.*
 
 The table is almost monotonic. Nearly every cell outside the memory_sandbox column reads 100%, and the defences are not failing by small margins; they are failing completely. Input level defences (minimiser and sanitiser) operate on the user message before it reaches the agent, but the malicious content enters through RAG retrieval, not through the user message, so these defences never have the opportunity to see it, let alone block it. Their mean ASR across 9 models is 88.9%, which is statistically indistinguishable from the 88.6% undefended baseline. Retrieval level defences (rag_sanitiser and rag_llm_judge) do operate on the retrieved documents and therefore do see the malicious memorandum, but the rag_sanitiser's TF-IDF classifier scores the compliance formatted payload at 0.33 to 0.44, well below its detection threshold, and the rag_llm_judge, which uses qwen2.5:1.5b as its evaluator, produces empty reason strings and flags nothing. Both sit at 88.9% mean ASR. One model in the table deserves a note of its own: gpt-oss-safeguard:120b is explicitly fine-tuned as a safety classifier, and it achieves 100% ASR under every defence except memory sandbox. Safety fine-tuning for classification tasks does not appear to transfer to agentic memory attacks. Prompt hardening is the partial exception at 77.8% mean ASR, and the reason it is lower is entirely attributable to one model: qwen3.5:122b drops from 100% ASR under no defence to 0% under prompt hardening (40/40 runs), making it the sole Vulnerable Executor where the security instructions in the system prompt actually override the stored compliance rule. For every other model, the agent reads the security instructions, acknowledges them in its reasoning trace, and exfiltrates anyway, citing the stored rule as mandatory regulatory policy that supersedes the system prompt.
 
