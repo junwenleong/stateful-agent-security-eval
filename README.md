@@ -1,5 +1,7 @@
 # Stateful Agent Security Evaluation
 
+**Paper:** [arXiv:2605.08442](https://arxiv.org/abs/2605.08442)
+
 **Six out of seven standard defences fail completely against delayed trigger attacks that persist through LLM agent memory. Tested across 5,040 runs, 9 models, 7 defences.**
 
 Additional findings: the only defence that works inverts to 100% attack success on one model, confirmed at both 16k and 32k context; prompt hardening can accelerate attacks via RAG re-injection; a safety fine-tuned model achieves 100% ASR; one frontier model stores security alerts instead of payloads; a latent carrier model persists financial credentials without attacker instruction.

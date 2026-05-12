@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 """Full verification of all canonical numbers against raw data.
 Verifications 1-6: factorial, n10, bedrock, haiku sandbox, headlines, analysis.json.
-Exit 0 = all pass, exit 1 = discrepancies found."""
+Exit 0 = all pass, exit 1 = discrepancies found.
+
+Paper: https://arxiv.org/abs/2605.08442
+Code and results: https://github.com/junwenleong/stateful-agent-security-eval
+"""
 import json, sys
 from collections import defaultdict
 from pathlib import Path

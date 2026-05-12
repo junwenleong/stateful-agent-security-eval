@@ -123,6 +123,6 @@ But the architectural gap that the results expose (that input, retrieval, and in
 
 ## Links
 
-[arXiv Paper](https://arxiv.org/abs/XXXX.XXXXX) · [GitHub Repository](https://github.com/junwenleong/stateful-agent-security-eval) · [Full Results (FINDINGS.md)](https://github.com/junwenleong/stateful-agent-security-eval/blob/main/FINDINGS.md) · [Verification Script](https://github.com/junwenleong/stateful-agent-security-eval/blob/main/scripts/verify_canonical.py)
+[arXiv Paper](https://arxiv.org/abs/2605.08442) · [GitHub Repository](https://github.com/junwenleong/stateful-agent-security-eval) · [Full Results (FINDINGS.md)](https://github.com/junwenleong/stateful-agent-security-eval/blob/main/FINDINGS.md) · [Verification Script](https://github.com/junwenleong/stateful-agent-security-eval/blob/main/scripts/verify_canonical.py)
 
 All numbers were programmatically verified against raw experimental data (5,700 records across 5 result files) using `verify_canonical.py`.
