@@ -93,16 +93,24 @@ def _load_existing_results() -> list[dict]:
 
 
 def _get_model_name(r: dict) -> str:
-    """Extract model name from a JSONL record, handling both serialization formats."""
-    model = r.get("condition", {}).get("model", {})
+    """Extract model name from a JSONL record, handling all serialization formats."""
+    cond = r.get("condition") if isinstance(r, dict) else None
+    if not isinstance(cond, dict):
+        return ""
+    model = cond.get("model")
     if isinstance(model, str):
         return model
-    return model.get("model_name", model.get("name", ""))
+    if isinstance(model, dict):
+        return model.get("model_name", model.get("name", ""))
+    return ""
 
 
 def _get_model_think(r: dict) -> bool:
     """Extract think flag from a JSONL record."""
-    model = r.get("condition", {}).get("model", {})
+    cond = r.get("condition") if isinstance(r, dict) else None
+    if not isinstance(cond, dict):
+        return False
+    model = cond.get("model")
     if isinstance(model, dict):
         return model.get("think", False)
     return False
@@ -110,10 +118,15 @@ def _get_model_think(r: dict) -> bool:
 
 def _get_defense_name(r: dict) -> str:
     """Extract defense name from a JSONL record."""
-    defense = r.get("condition", {}).get("defense", {})
+    cond = r.get("condition") if isinstance(r, dict) else None
+    if not isinstance(cond, dict):
+        return ""
+    defense = cond.get("defense")
     if isinstance(defense, str):
         return defense
-    return defense.get("name", defense.get("type", ""))
+    if isinstance(defense, dict):
+        return defense.get("name", defense.get("type", ""))
+    return ""
 
 
 def _count_completed(results: list[dict], model: str, defense_name: str, think: bool = False) -> int:
