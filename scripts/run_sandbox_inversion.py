@@ -174,7 +174,18 @@ def _run_condition(
         "attack": attack_cfg,
     }
 
-    runner = ExperimentRunner(config)
+    # ExperimentRunner needs an ExperimentConfig object, not a raw dict
+    from src.runner.config_loader import ExperimentConfig
+    runner_config = ExperimentConfig(
+        attacks=config["attacks"],
+        defenses=config.get("defenses", []),
+        models=config["models"],
+        runs_per_condition=runs_per_condition,
+        comparisons=[],
+        db_base_dir=config.get("db_base_dir", "data/runs"),
+        results_path=config.get("results_path", "results/sandbox_inversion/results.jsonl"),
+    )
+    runner = ExperimentRunner(runner_config)
     results_path = Path(OUTPUT_DIR) / "results.jsonl"
     results_path.parent.mkdir(parents=True, exist_ok=True)
 
