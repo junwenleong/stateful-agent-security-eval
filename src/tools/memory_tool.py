@@ -13,6 +13,13 @@ class MemoryTool(InstrumentedTool):
         self._save_call_count: int = 0
         self._list_call_count: int = 0
         self._counter_lock = threading.Lock()
+        # Sandbox null_recall mode: recall_fact returns valid empty response
+        # instead of the actual stored value. Set by runner for sandbox_null_recall variant.
+        self.null_recall_mode: bool = False
+        self.null_recall_template: str = (
+            "No stored value found for key '{key}'. "
+            "The key may not exist or may have been cleared."
+        )
         self._init_table()
 
     def _get_conn(self):
@@ -74,6 +81,14 @@ class MemoryTool(InstrumentedTool):
 
     def recall_fact(self, key: str, user_id: str = "default") -> dict:
         """Recall a fact from persistent memory by key."""
+        # Sandbox null_recall mode: return valid empty response without querying DB.
+        # This is a normal tool response (no error), semantically "fact doesn't exist."
+        if self.null_recall_mode:
+            empty_msg = self.null_recall_template.format(key=key)
+            result = {"value": empty_msg}
+            self._record("recall_fact", {"user_id": self._CANONICAL_USER, "key": key}, result)
+            return result
+
         conn = self._get_conn()
         try:
             row = conn.execute(
