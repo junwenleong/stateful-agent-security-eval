@@ -92,13 +92,37 @@ def _load_existing_results() -> list[dict]:
     return results
 
 
+def _get_model_name(r: dict) -> str:
+    """Extract model name from a JSONL record, handling both serialization formats."""
+    model = r.get("condition", {}).get("model", {})
+    if isinstance(model, str):
+        return model
+    return model.get("model_name", model.get("name", ""))
+
+
+def _get_model_think(r: dict) -> bool:
+    """Extract think flag from a JSONL record."""
+    model = r.get("condition", {}).get("model", {})
+    if isinstance(model, dict):
+        return model.get("think", False)
+    return False
+
+
+def _get_defense_name(r: dict) -> str:
+    """Extract defense name from a JSONL record."""
+    defense = r.get("condition", {}).get("defense", {})
+    if isinstance(defense, str):
+        return defense
+    return defense.get("name", defense.get("type", ""))
+
+
 def _count_completed(results: list[dict], model: str, defense_name: str, think: bool = False) -> int:
     """Count completed runs for a given model+defense+think condition."""
     return sum(
         1 for r in results
-        if r.get("condition", {}).get("model", {}).get("name") == model
-        and r.get("condition", {}).get("model", {}).get("think", False) == think
-        and r.get("condition", {}).get("defense", {}).get("name") == defense_name
+        if _get_model_name(r) == model
+        and _get_model_think(r) == think
+        and _get_defense_name(r) == defense_name
         and r.get("error") is None
     )
 
@@ -107,9 +131,9 @@ def _check_injection_floor(results: list[dict], model: str, defense_name: str, t
     """Validity gate: flag condition if injection_success < 90%."""
     relevant = [
         r for r in results
-        if r.get("condition", {}).get("model", {}).get("name") == model
-        and r.get("condition", {}).get("model", {}).get("think", False) == think
-        and r.get("condition", {}).get("defense", {}).get("name") == defense_name
+        if _get_model_name(r) == model
+        and _get_model_think(r) == think
+        and _get_defense_name(r) == defense_name
         and r.get("error") is None
     ]
     if len(relevant) < 10:
