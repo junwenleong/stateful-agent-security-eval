@@ -239,10 +239,12 @@ def _run_condition(
         logger.info("  Run %d/%d for %s × %s", run_index + 1, runs_per_condition, model_name, defense_name)
         try:
             result = runner._run_single(condition, run_index)
-            # Append to JSONL
+            # Serialize RunResult dataclass to dict before writing JSONL
+            from dataclasses import asdict
+            result_dict = asdict(result)
             with open(results_path, "a") as f:
-                f.write(json.dumps(result, default=str) + "\n")
-            new_results.append(result)
+                f.write(json.dumps(result_dict, default=str) + "\n")
+            new_results.append(result_dict)
 
             # Check injection floor periodically
             if (run_index + 1) % 10 == 0:
