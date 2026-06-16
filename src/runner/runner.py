@@ -448,15 +448,28 @@ class ExperimentRunner:
                     tools["rag"].sanitizer = defense
                     defense = None  # RAG-layer defenses are not input-level defenses
 
-                # Memory sandbox: remove memory_recall_fact from the agent tool list.
-                # Injection still happens (memory_save_fact is kept, SQLite is intact),
-                # but the explicit recall pathway is blocked.
-                # This tests whether the attack relies on explicit recall or implicit bypass.
+                # Memory sandbox variants: tool-layer defense.
+                # Injection still happens (memory_save_fact is kept, SQLite is intact).
                 # NOTE: actual filtering is done via excluded_tools in AgentConfig → _make_lc_tools.
-                # tools dict keys are tool instances (e.g. "memory"), not method names.
                 memory_sandbox_active = defense_cfg.get("type") == "memory_sandbox"
+                sandbox_excluded_tools: set | None = None
                 if memory_sandbox_active:
                     defense = None  # No input-level filtering needed
+                    variant = defense_cfg.get("variant", "full")
+                    if variant == "full":
+                        sandbox_excluded_tools = {"memory_recall_fact"}
+                    elif variant == "blind":
+                        sandbox_excluded_tools = {"memory_recall_fact", "memory_list_all_facts"}
+                    elif variant == "null_recall":
+                        sandbox_excluded_tools = None  # Keep all tools in schema
+                        # Enable null-recall mode on the memory tool instance
+                        tools["memory"].null_recall_mode = True
+                        tools["memory"].null_recall_template = defense_cfg.get(
+                            "empty_return_template",
+                            "No stored value found for key '{key}'. The key may not exist or may have been cleared.",
+                        )
+                    else:
+                        sandbox_excluded_tools = {"memory_recall_fact"}  # default to full
 
                 # Build model interface
                 model_cfg = condition["model"]
@@ -538,7 +551,7 @@ class ExperimentRunner:
                     defense=input_defense,
                     system_prompt=AGENT_SYSTEM_PROMPT,
                     model_provider=model_cfg.get("provider", "ollama"),
-                    excluded_tools={"memory_recall_fact"} if memory_sandbox_active else None,
+                    excluded_tools=sandbox_excluded_tools if memory_sandbox_active else None,
                 )
                 agent = Agent(agent_config)
 
@@ -1008,7 +1021,10 @@ class ExperimentRunner:
             return ComposedDefense([d for d in sub if d is not None])
         if defense_type == "memory_sandbox":
             from src.defenses.memory_sandbox import MemorySandbox
-            return MemorySandbox()
+            return MemorySandbox(
+                variant=defense_cfg.get("variant", "full"),
+                exclude_tools=defense_cfg.get("exclude_tools"),
+            )
         return None
 
     @staticmethod
@@ -1040,6 +1056,7 @@ class ExperimentRunner:
             api_key_env=model_cfg.get("api_key_env", ""),
             base_url=model_cfg.get("base_url"),
             ollama_quantization=model_cfg.get("ollama_quantization"),
+            think=model_cfg.get("think", False),
             aws_region=model_cfg.get("aws_region", "ap-southeast-1"),
             aws_profile=model_cfg.get("aws_profile"),
         )

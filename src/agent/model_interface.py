@@ -41,6 +41,7 @@ class ModelConfig:
     api_key_env: str = ""
     base_url: str | None = None
     ollama_quantization: str | None = None
+    think: bool = False  # Ollama thinking toggle (qwen3 etc). True = emit reasoning trace.
     aws_region: str = "ap-southeast-1"
     aws_profile: str | None = None
 
@@ -285,7 +286,7 @@ class OllamaInterface(ModelInterface):
             ],
             "options": {"temperature": 0.0},
             "stream": False,
-            "think": False,  # Disable extended thinking (qwen3 etc.) for reproducibility
+            "think": self.config.think,  # Reasoning trace toggle (qwen3 etc.)
         }
         if tools:
             payload["tools"] = tools
