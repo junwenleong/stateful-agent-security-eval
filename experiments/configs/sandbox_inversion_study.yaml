@@ -150,6 +150,44 @@ models:
     rag_session_query_limit: 15
     rate_limit: {max_concurrent: 1, rpm_limit: 999}
 
+  # ── Microsoft Family — Matched Pair (X5) ─────────────────────────────────
+  - provider: ollama
+    model_name: phi4-reasoning:14b
+    group: reasoning
+    base_model: "Phi-4-14B + reasoning RL (Microsoft)"
+    matched_control: phi4:14b
+    role: generality
+    rag_session_query_limit: 15
+    rate_limit: {max_concurrent: 1, rpm_limit: 999}
+
+  - provider: ollama
+    model_name: phi4:14b
+    group: control
+    base_model: "Phi-4-14B (Microsoft, unmodified)"
+    lineage_match_to: phi4-reasoning:14b
+    role: generality
+    rag_session_query_limit: 15
+    rate_limit: {max_concurrent: 1, rpm_limit: 999}
+
+  # ── OpenThinker + Qwen2.5-32B Matched Pair (X6) ──────────────────────────
+  - provider: ollama
+    model_name: openthinker:32b
+    group: reasoning
+    base_model: "Qwen2.5-32B-Instruct + OpenThinker reasoning (open-source RL)"
+    matched_control: qwen2.5:32b
+    role: generality
+    rag_session_query_limit: 15
+    rate_limit: {max_concurrent: 1, rpm_limit: 999}
+
+  - provider: ollama
+    model_name: qwen2.5:32b
+    group: control
+    base_model: "Qwen2.5-32B-Instruct (unmodified)"
+    lineage_match_to: openthinker:32b
+    role: generality
+    rag_session_query_limit: 15
+    rate_limit: {max_concurrent: 1, rpm_limit: 999}
+
   # ── N=10 Screen-Only (no matched control needed) ──────────────────────────
   - provider: ollama
     model_name: qwen3.5:122b
