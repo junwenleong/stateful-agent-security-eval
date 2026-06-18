@@ -52,11 +52,11 @@ DEFENSE_CONFIGS = {
 # Phase execution order (sequential, one model at a time)
 PHASES = {
     1: {"model": "qwen2.5:14b", "think": False, "conditions": ["no_defense", "sandbox_full", "sandbox_blind", "sandbox_null_recall"]},
-    2: {"model": "deepseek-r1:14b", "think": False, "conditions": ["no_defense", "sandbox_full", "sandbox_blind", "sandbox_null_recall"]},
+    2: {"model": "deepseek-r1:14b", "think": True, "conditions": ["no_defense", "sandbox_full", "sandbox_blind", "sandbox_null_recall"]},
     3: {"model": "qwen3:32b", "think": False, "conditions": ["no_defense", "sandbox_full", "sandbox_blind", "sandbox_null_recall"], "label": "qwen3:32b/think=false"},
     4: {"model": "qwen3:32b", "think": True, "conditions": ["no_defense", "sandbox_full", "sandbox_blind", "sandbox_null_recall"], "label": "qwen3:32b/think=true"},
     5: {"model": "qwq:32b", "think": False, "conditions": ["no_defense", "sandbox_full", "sandbox_blind", "sandbox_null_recall"]},
-    6: {"model": "deepseek-r1:32b", "think": False, "conditions": ["no_defense", "sandbox_full", "sandbox_blind", "sandbox_null_recall"]},
+    6: {"model": "deepseek-r1:32b", "think": True, "conditions": ["no_defense", "sandbox_full", "sandbox_blind", "sandbox_null_recall"]},
     7: {"model": "magistral:24b", "think": False, "conditions": ["no_defense", "sandbox_full"]},
     8: {"model": "mistral-small3.2:24b", "think": False, "conditions": ["no_defense", "sandbox_full"]},
     9: {"model": "phi4-reasoning:14b", "think": False, "conditions": ["no_defense", "sandbox_full"]},
@@ -66,7 +66,7 @@ PHASES = {
     13: {"model": "gemma4:31b", "think": False, "conditions": ["no_defense", "sandbox_full"]},
     14: {"model": "gemma3:27b", "think": False, "conditions": ["no_defense", "sandbox_full"]},
     15: {"model": "qwen2.5:72b", "think": False, "conditions": ["no_defense", "sandbox_full"]},
-    16: {"model": "deepseek-r1:70b", "think": False, "conditions": ["no_defense", "sandbox_full"]},
+    16: {"model": "deepseek-r1:70b", "think": True, "conditions": ["no_defense", "sandbox_full"]},
     17: {"model": "llama3.3:70b", "think": False, "conditions": ["no_defense", "sandbox_full"]},
     # N=10 screen-only (use --phase N with runs_per_condition override or run manually)
     18: {"model": "qwen3.5:122b", "think": False, "conditions": ["no_defense", "sandbox_full"]},
