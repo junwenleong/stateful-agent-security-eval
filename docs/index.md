@@ -121,6 +121,12 @@ But the architectural gap that the results expose (that input, retrieval, and in
 
 ---
 
+## v2 update (June 2026)
+
+A reasoning-mode ablation using Qwen3-32B's thinking toggle reveals a double dissociation: the sandbox variant that protects reasoning models collapses the attack for non-reasoning models (session 3 → session 0), while the variant that protects non-reasoning models is bypassed by reasoning models via goal-directed RAG fallback. No single memory-sandbox implementation is safe across both model classes. The bypass requires three co-occurring conditions: recall removed, task requires resolved external routing, and reasoning capability. Full results in [FINDINGS.md](https://github.com/junwenleong/stateful-agent-security-eval/blob/main/FINDINGS.md).
+
+---
+
 ## Links
 
 [arXiv Paper](https://arxiv.org/abs/2605.08442) · [GitHub Repository](https://github.com/junwenleong/stateful-agent-security-eval) · [Full Results (FINDINGS.md)](https://github.com/junwenleong/stateful-agent-security-eval/blob/main/FINDINGS.md) · [Verification Script](https://github.com/junwenleong/stateful-agent-security-eval/blob/main/scripts/verify_canonical.py)

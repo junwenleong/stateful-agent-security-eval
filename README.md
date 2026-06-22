@@ -6,6 +6,8 @@
 
 Additional findings: the only defence that works inverts to 100% attack success on one model at 16k context (at 32k the same model already exfiltrates under no defence, so there is no defended baseline to invert); prompt hardening can accelerate attacks via RAG re-injection; a safety fine-tuned model achieves 100% ASR; one frontier model stores security alerts instead of payloads; a latent carrier model persists financial credentials without attacker instruction.
 
+**v2 addition (June 2026):** A reasoning-mode ablation reveals a double dissociation: the sandbox variant protecting reasoning models collapses the attack for non-reasoning models (session 3 → session 0), while the variant protecting non-reasoning models is bypassed by reasoning models via goal-directed RAG fallback. No single memory-sandbox implementation is safe across both model classes. The qwq:32b Draft-Only archetype is inference-engine-sensitive (not reproduced under Ollama 0.21.2).
+
 Full results and methodology in [FINDINGS.md](FINDINGS.md). Technical writeup at [junwenleong.github.io/stateful-agent-security-eval](https://junwenleong.github.io/stateful-agent-security-eval/).
 
 ---
