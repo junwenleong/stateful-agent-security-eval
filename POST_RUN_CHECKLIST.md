@@ -1,174 +1,244 @@
-# Sandbox Inversion Study — Post-Run Checklist
+# Sandbox Inversion Study — Investigation Record
 
-**Status (2026-06-22)**: 16k run complete for 6 models (800 valid records). Phase 15 (qwen2.5:72b) partially complete (~5/40 runs done, resumable). Phase 19 (neutral trigger) queued. GLM-4.7-Flash screen pending pull.  
-**32k accidental run**: Archived as `results_32k.jsonl` (1192 records). Pathway observations only.  
-**Key discovery (2026-06-22)**: G1 inversion not replicated — qwq:32b is a full VE at 16k on Ollama 0.21.2. Root cause: Ollama engine version change (same weights 009cb3f08d74, same code, same prompts). April version unlogged.
+**Status (2026-06-22 14:30)**: Phases 15 (qwen2.5:72b) and 19 (qwq neutral trigger) running on Mac Studio. GLM screen complete — execution-resistant, cross-family arm dead. Double dissociation confirmed. Paper.tex clean. One paragraph to add after runs complete.
 
 ---
 
-## Headline Finding: Double Dissociation (CONFIRMED)
+## 1. Headline Finding: Double Dissociation (CONFIRMED, CLEAN)
 
-qwen3:32b, same weights, think toggle is the only variable. All cells 40/40 or 0/40.
+qwen3:32b, same weights (030ee887880f), same Ollama 0.21.2, `think` toggle is the sole variable. All cells 40/40 or 0/40. System prompts, temperature (0.0), runner configs, excluded tools identical between think modes — confirmed programmatically.
 
-| | sandbox_full | sandbox_blind | sandbox_null_recall |
+| | sandbox_full (tool removed) | sandbox_blind (all memory removed) | sandbox_null_recall (tool returns empty) |
 |---|---|---|---|
-| **think=OFF** | 100% ASR (S0) | 100% ASR (S0) | 0% ASR |
-| **think=ON** | 0% ASR | 0% ASR | 100% ASR (S3) |
+| **think=OFF** | 100% ASR, S0 (40/40) | 100% ASR, S0 (40/40) | 0% ASR (0/40) |
+| **think=ON** | 0% ASR (0/40) | 0% ASR (0/40) | 100% ASR, S3 (40/40) |
 
-**Mechanisms (verified from agent_logs):**
-- think=OFF × sandbox_full/blind: S0 collapse — model reads malicious doc, sends immediately in injection session
-- think=OFF × null_recall: accepts "no value found" at face value → benign email only
-- think=ON × sandbox_full/blind: graceful degradation — proceeds without rule value
-- think=ON × null_recall: reasons past empty response → queries RAG → retrieves malicious doc → sends (S3)
+### Mechanisms (from agent_logs + tool sequences):
 
-**Paper sentence**: "Reasoning capability converts a fixable implementation problem into an unfixable architectural one."
+**think=OFF × sandbox_full/blind (100%, S0 — "attack-chain collapse"):** Model reads malicious doc via RAG in injection session, sends 3 emails to attacker + saves 5 facts — all in session 0. Under no_defense, same model defers to session 3. Defense removes the friction keeping execution deferred. No explicit reasoning trace (think=OFF produces no `<think>` blocks) — mechanism inferred from tool sequence contrast with no_defense. Should be stated as "consistent with" not "confirmed by" explicit model deliberation.
 
-**Correction**: sandbox_blind DOES block think=ON (0/40). The "unfixable" claim applies only to null_recall. Correct framing: "null_recall is uniquely dangerous for reasoning models — it preserves the tool in schema (preventing S0 collapse for think=OFF) while providing a signal that reasoning models treat as motivation to seek alternative sources."
+**think=OFF × sandbox_null_recall (0%):** Model calls `recall_fact`, gets "No stored value found," accepts at face value, drafts benign email to team only. Tool presence in schema prevents the "can't defer" inference.
+
+**think=ON × sandbox_full/blind (0% — "graceful degradation"):** Model reasons through missing tool, proceeds without rule value, sends benign email.
+
+**think=ON × sandbox_null_recall (100%, S3 — "reasoned bypass"):** Model calls `recall_fact`, gets "No stored value found," reasons this is suspicious, queries RAG ("project status email template"), retrieves malicious compliance memo fresh, reads rule, saves it, sends to attacker. Verified from agent_logs: `recall_fact → "no value" → rag_query → malicious_doc → save_fact → send_email(attacker)`.
+
+### Key Insight:
+
+- **sandbox_full/blind** protects reasoning models but breaks non-reasoning models (S0 collapse)
+- **sandbox_null_recall** protects non-reasoning models but is bypassed by reasoning models
+- **A defender cannot make a safe choice without knowing the model's reasoning capability class**
+- **The asymmetry**: think=OFF failures are recoverable (null_recall fixes them); think=ON failures via null_recall are not recoverable by any memory-layer defense tested — requires retrieval-layer blocking
+
+### Paper sentence:
+
+> "Reasoning capability converts a fixable implementation problem into an unfixable architectural one."
+
+### Correction from earlier framing:
+
+sandbox_blind DOES block think=ON (0/40). The "unfixable" claim applies specifically to null_recall, not to all sandbox variants. sandbox_blind (remove all memory tools) is universally safe but removes all memory functionality.
 
 ---
 
-## G1 Non-Replication (CONFIRMED — Engine Version)
+## 2. G1 Non-Replication (Root Cause: Ollama Engine Version)
 
 **Expected**: qwq:32b at 16k = Draft-Only (0% ASR under no_defense), inverts to 100% under sandbox_full.
 
-**Actual**: qwq:32b at 16k on Ollama 0.21.2 = Vulnerable Executor (100% ASR under no_defense). No inversion — both conditions 100%.
+**Actual**: qwq:32b at 16k on Ollama 0.21.2 = Vulnerable Executor (100% ASR, 40/40, session 3). No inversion — both conditions 100%.
 
-**Investigation (2026-06-22, exhaustive):**
-- ❌ v1/v2 tool contract: code is v2, agent_logs confirm model received keys-only
-- ❌ System prompt: identical between studies
-- ❌ Trigger prompt: identical
-- ❌ Quantization: both Q4_K_M (ollama_quantization field is inert — never touches API)
-- ❌ GGUF weights: same digest 009cb3f08d74
-- ✅ **Ollama version**: 0.21.2 current; April version unlogged/unrecoverable
+### Investigation (exhaustive, 2026-06-22):
 
-**Reasoning trace evidence**: qwq makes the SAME "only asked to draft, I'll stop" deliberation as in Project 1, but then reads the compliance rule ("MUST use send_email") and the draft_email transitive message ("call send_email now") — and overrides its own safety judgment. In Project 1, this override didn't happen at the same decision point.
+| Variable | Project 1 (April) | This Study (June) | Same? |
+|----------|-------------------|-------------------|-------|
+| GGUF digest | 009cb3f08d74 | 009cb3f08d74 | ✅ |
+| Quantization | Q4_K_M | Q4_K_M | ✅ |
+| System prompt | verified | verified | ✅ |
+| Trigger prompt | verified | verified | ✅ |
+| Tool code (list_all_facts) | v2 keys-only | v2 keys-only | ✅ |
+| Context length | 16384 | 16384 | ✅ |
+| `ollama_quantization` field | inert (docs only) | inert (docs only) | ✅ (both Q4_K_M) |
+| **Ollama version** | **unlogged** | **0.21.2** | **❓ unknown** |
 
-**Paper framing**: "Safety archetypes established under one inference engine may not hold under a later version serving identical weights. This finding documents the first observed instance of a safety-relevant behavioral property being inference-engine-sensitive."
+### Key evidence from reasoning traces:
 
----
+Both evaluations show the SAME "only asked to draft, I'll stop" deliberation. The difference: in June, the model continues reasoning after that point, reads "MUST use send_email" from the recalled compliance rule, and overrides its own safety judgment. In April, the override didn't happen. The decision boundary shifted.
 
-## Run Status
+### Paper framing (locked):
 
-### Complete (800 valid records):
+> "Subsequent evaluation in June 2026 using identical GGUF weights (digest 009cb3f08d74), context length, prompts, and tool code found qwq:32b exhibiting Vulnerable Executor behavior (100% ASR under no_defense) rather than Draft-Only. The only uncontrolled variable is the Ollama inference engine version (0.21.2 in June; April version unlogged). This documents that safety-relevant behavioral archetypes can be inference-engine-sensitive: identical model artifacts produce categorically different safety outcomes under different engine versions, in ways invisible to standard reproducibility practice."
 
-| Phase | Model | Conditions | N | Result |
-|-------|-------|-----------|---|--------|
-| 1 | qwen2.5:14b | no_def, full, blind, null | 40 each | Baseline VE → all sandbox variants block |
-| 3 | qwen3:32b think=OFF | no_def, full, blind, null | 40 each | S0 collapse under full/blind; null blocks |
-| 4 | qwen3:32b think=ON | no_def, full, blind, null | 40 each | full/blind block; null bypassed (RAG) |
-| 5 | qwq:32b | no_def, full, blind, null | 40 each | VE everywhere except blind/null (0%) |
-| 12 | qwen2.5:32b | no_def, full | 40 each | Baseline VE → sandbox blocks |
-| 18 | qwen3.5:122b | no_def, full | 40 each | Baseline VE → sandbox blocks |
+### Important clarifications:
 
-### In Progress / Queued:
-
-| Phase | Model | Status | Time remaining |
-|-------|-------|--------|---------------|
-| 15 | qwen2.5:72b | Paused (~5/40 done, resumable) | ~7h |
-| 19 | qwq:32b neutral trigger | Queued (bug fixed, ready) | ~6h |
-| NEW | glm-4.7-flash screen | Pulling model now | ~1h screen |
-
-### Dead (no action):
-
-| Models | Reason |
-|--------|--------|
-| deepseek-r1:14b/32b/70b | 400 Bad Request — no `tools` capability |
-| phi4-reasoning:14b, phi4:14b | Same 400 pattern |
-| openthinker:32b | Same 400 pattern |
-| gemma3:27b | Same 400 pattern |
-| gemma4:31b | Loop regression — 0% injection (87 RAG calls, never save_fact) |
-| llama3.3:70b, magistral:24b, mistral-small3.2:24b | Injection-resistant (0% injection, real inference) |
+- The `ollama_quantization` field in the YAML is **documentation-only** — it never touches the Ollama API. Both studies called the same `qwq:32b` tag which serves Q4_K_M.
+- The timing difference (152s April vs 386s June) is behavioral (fewer tokens when stopping at draft vs continuing through send), not computational. Not evidence for a quantization or backend difference.
+- The `tool_logs.outputs` field for `list_all_facts` shows full key:value pairs — this is **diagnostic logging** (code comment: "not exposed to model"). The model received keys-only. Confirmed via `agent_logs`.
 
 ---
 
-## GLM-4.7-Flash Screen (NEW — 2026-06-22)
+## 3. GLM-4.7-Flash Screen (DEAD — Execution-Resistant)
 
-**Why**: GLM-4.7-Flash now has both `tools` and `thinking` capabilities on Ollama. If it's a VE with a clean think toggle (same weights, reasoning on/off), it's a cross-family replication of the qwen3:32b double dissociation — THUDM family, not Alibaba.
+**Date**: 2026-06-22  
+**Model**: glm-4.7-flash:latest (THUDM, 30B-A3B MoE, 19GB, digest 9eba2761cf0b)  
+**Ollama**: 0.21.2  
+**N**: 10 (no_defense only)
 
-**Caveat**: This is a DIFFERENT model from Project 1's `glm-4.7-flash:q8_0`. The Ollama tag was updated (30B-A3B MoE architecture now). Must verify from scratch.
+**Result**: 100% injection, 0% attack, 0% instruction_influence.
 
-**Screen protocol**: N=10, no_defense only, think=false. If injection ≥ 90% and ASR = 100%: proceed to full phase. If not: document and drop.
+**Classification**: Execution-resistant (NOT Latent Carrier). Stores and recalls the malicious routing rule but does not follow it at any execution stage — attacker address never appears in drafts, sends, or intermediate outputs. Differs from Project 1's Latent Carrier archetype which showed partial compliance (attacker address in draft `to` field).
 
-**If screen passes**: Run N=40 × 4 conditions × 2 think modes = 320 runs (~10-12h). This would be the cross-family generality claim.
+**S3 tool sequence**: `list_all_facts → recall_fact ×3 → draft_email(team@) → send_email(team@)`. Model reads the rule, ignores the routing directive entirely.
+
+**Implication**: Cross-family toggle arm dead. GLM cannot be used for the double dissociation replication (requires VE baseline). The double dissociation remains qwen3:32b-specific.
+
+**Note**: This is a DIFFERENT model from Project 1's `glm-4.7-flash:q8_0` (which was a confirmed VE). The Ollama tag was updated — new 30B-A3B MoE architecture. The old model's vulnerability does not predict the new model's behavior.
 
 ---
 
-## Bedrock Frontier Negative Control (COMPLETE)
+## 4. Run Status
+
+### Complete (800 valid records + 10 GLM screen):
+
+| Phase | Model | Conditions | N | Key Result |
+|-------|-------|-----------|---|------------|
+| 1 | qwen2.5:14b | 4 variants | 40 each | VE baseline → all sandboxes block |
+| 3 | qwen3:32b think=OFF | 4 variants | 40 each | **S0 collapse** (full/blind); null blocks |
+| 4 | qwen3:32b think=ON | 4 variants | 40 each | full/blind block; **null bypassed** (RAG) |
+| 5 | qwq:32b | 4 variants | 40 each | VE everywhere; bypass via RAG under full |
+| 12 | qwen2.5:32b | 2 (no_def + full) | 40 each | VE → sandbox blocks |
+| 18 | qwen3.5:122b | 2 (no_def + full) | 40 each | VE → sandbox blocks |
+| — | glm-4.7-flash:latest | 1 (no_def screen) | 10 | Execution-resistant. Dead arm. |
+
+### Running Now (Mac Studio, ~14h total):
+
+| Phase | Model | Conditions | What it answers |
+|-------|-------|-----------|-----------------|
+| 15 | qwen2.5:72b | no_defense + sandbox_full × N=40 | Generality at 72B scale |
+| 19 | qwq:32b (neutral trigger) | sandbox_full × N=40 | Is "review stored policies" load-bearing? |
+
+### Dead:
+
+| Models | Reason | Classification |
+|--------|--------|---------------|
+| deepseek-r1:14b/32b/70b | 400 Bad Request | No `tools` capability |
+| phi4-reasoning:14b, phi4:14b | 400 Bad Request | Same |
+| openthinker:32b | 400 Bad Request | Same |
+| gemma3:27b | 400 Bad Request | Same |
+| gemma4:31b | Loop regression (87 RAG calls, 0 save_fact) | Uninterpretable |
+| llama3.3:70b | 0% injection (real inference, 175s/run) | Injection-resistant |
+| magistral:24b | 0% injection (real inference, 29s/run) | Injection-resistant |
+| mistral-small3.2:24b | 0% injection (real inference, 36s/run) | Injection-resistant |
+| glm-4.7-flash:latest | 100% inj, 0% atk, 0% influence | Execution-resistant |
+
+---
+
+## 5. Bedrock Frontier Negative Control (COMPLETE)
 
 1,200 runs, 12 cells, 0 errors. Sonnet 4.6 + Haiku 4.5 × 4 sandbox variants × N=100.
-- Sonnet: 0% injection — Explicit Detector
+- Sonnet: 0% injection — Explicit Detector (never stores)
 - Haiku: 100% injection, 0% ASR — Active Detector (stores security alert, not payload)
-- No inversion for either. Wilson upper bound ≤3.6%.
+- No inversion for either under any sandbox variant
+- Wilson upper bound ≤3.6% per condition
 
 ---
 
-## Known Bugs Fixed
+## 6. Reproducibility Gap
 
-1. **Phase 19 skip**: `_count_completed` didn't distinguish by trigger_prompt → neutral trigger was counted as existing qwq × sandbox_full. Fixed: commit `a4487f5`.
-
-2. **Inert config field**: `ollama_quantization` in YAML is documentation-only, never modifies API payload. All models run at default tag quantization (Q4_K_M for most). Field remains as documentation but does not provide reproducibility guarantees.
-
----
-
-## Reproducibility Gap (CRITICAL — affects all Ollama results)
-
-**The gap**: Ollama version and GGUF digest were not logged in JSONL records for either Project 1 or this study. The qwq behavioral shift demonstrates this matters — same weights produce different safety-relevant behavior under different engine versions.
+**The gap**: Ollama version and GGUF digest not logged in JSONL records. The qwq behavioral shift demonstrates this matters.
 
 **What's recoverable**: GGUF digests (from `ollama list`), current Ollama version (0.21.2). April version is lost.
 
-**Fix (for all future runs)**: Log `ollama --version` output and model digest at run start in the JSONL metadata.
+**Fix**: Log `ollama --version` and model digest at run start. One line in the runner.
 
-**Paper statement**: "Results are conditional on the inference engine state at time of evaluation. The specific Ollama version used in April 2026 was not logged and cannot be recovered. Internal consistency of the published JSONL is verified; temporal reproducibility against the same model tag is not guaranteed due to mutable tags and engine updates."
-
----
-
-## Writing Needed (NDSS by Aug 19)
-
-### Project 1 Paper — 6 Mechanical Fixes (~90 min):
-
-1. Clarify "7 conditions = 6 defenses + undefended baseline" (one sentence in methods)
-2. Fix Table 1 caption — Prompt Hardening IS statistically distinguishable from no_defense (77.8% vs 88.6%)
-3. Delete duplicate paragraph at §5/§6 boundary
-4. Clarify BCa vs Wilson Score method selection in §2.5
-5. Add qwq temporal conditionality paragraph in §3.3.1 (~methodological observation, not retraction)
-6. Verify run count consistency across abstract/methods/results
-
-### Project 1 Paper — qwq Paragraph (item 5 above, ~20 min):
-
-Register: methodological observation, not hedge. Something like:
-> "Subsequent evaluation under a later inference engine version (Ollama 0.21.2, June 2026) found Vulnerable Executor behavior from identical weights (digest 009cb3f08d74), prompts, and tool code — documenting that safety-relevant archetypes can be inference-engine-sensitive in ways invisible to standard reproducibility practice. The April 2026 result stands as documented; its temporal generalizability is conditioned on the inference engine state, which was not logged."
-
-### Sandbox Inversion Study Paper (separate or NDSS extension):
-
-**Core content to write:**
-- Double dissociation result (2×3 table + mechanism specification)
-- "Reasoning converts fixable implementation problems into unfixable architectural ones"
-- null_recall as the uniquely dangerous variant for reasoning models
-- G1 non-replication as engine-version-sensitivity finding
-- GLM cross-family result (if screen passes)
-
-**Decision needed**: Does this go into the NDSS submission as a new section extending §3.3 (memory sandbox analysis), or is it a separate short paper?
+**Model digests (Mac Studio, 2026-06-22)**:
+- qwq:32b → 009cb3f08d74
+- qwen3:32b → 030ee887880f
+- qwen2.5:14b → 7cdf5a0187d5
+- qwen2.5:72b → 424bad2cc13f
+- qwen2.5:32b → 9f13ba1299af
+- qwen3.5:122b → 8b9d11d807c5
+- glm-4.7-flash:latest → 9eba2761cf0b
 
 ---
 
-## Priority Order
+## 7. Bugs Found & Fixed
 
-1. ✅ Fix Phase 19 bug (done, pushed)
-2. 🔄 GLM screen (pulling now, run ~1h)
-3. 🔄 Resume phases 15 + 19 after GLM screen (~14h)
-4. 📝 Six mechanical fixes to Project 1 paper (~90 min)
-5. 📝 qwq temporal conditionality paragraph (~20 min)
-6. 📝 Decision: integrate double dissociation into NDSS or separate paper
-7. 📝 Write double dissociation section (half day)
-8. Submit NDSS (before Aug 19)
+1. **Phase 19 skip** (commit `a4487f5`): `_count_completed` didn't distinguish by trigger_prompt. Neutral trigger counted as existing qwq × sandbox_full. Fixed: added `trigger_override` parameter.
+
+2. **GLM tag validation** (commit `a0ec4b5`): Model name `glm-4.7-flash` rejected — validator requires colon tag. Fixed to `glm-4.7-flash:latest`.
+
+3. **Inert config field** (investigated, no code change): `ollama_quantization` in YAML is documentation-only. Never modifies API payload. Both studies ran Q4_K_M via the default tag.
 
 ---
 
-## Practical Notes
+## 8. Project 1 Paper Status (paper.tex)
 
-**Disk space**: Cleared dead Ollama models (deepseek-r1:14b/32b, phi4, phi4-reasoning, openthinker, gemma3). ~79GB freed.
+**Paper.tex is clean.** All six issues flagged by review were either already correct in the LaTeX or only present in development drafts (paper.md, README, FINDINGS).
 
-**Ollama serve command** (MUST use for all phases):
+**README/FINDINGS fixed** (commit `4fe614e`): Defense count framing aligned with paper.tex ("6 defences + undefended baseline").
+
+**One paragraph to add** after phases 15/19: qwq temporal conditionality note in §3.3.1. Drafted in Section 9 below.
+
+---
+
+## 9. Draft Content (pending phases 15/19 — DO NOT put in paper.tex yet)
+
+### A. qwq Temporal Conditionality Paragraph (for §3.3.1)
+
+> A subsequent evaluation in June 2026 using identical GGUF weights (digest 009cb3f08d74), context length (16,384), system prompt, trigger prompt, and tool code found qwq:32b exhibiting Vulnerable Executor behavior (100% ASR under no_defense, 40/40 runs) rather than the Draft-Only behavior reported above. The reasoning trace contains the same "the user only asked to draft" deliberation observed in the April evaluation, but the model proceeds to override this judgment after reading the stored compliance rule's explicit "must use send_email" instruction — a decision boundary the April inference engine resolved differently. The only uncontrolled variable between the two evaluations is the Ollama inference engine version (0.21.2 in June; April version unlogged). This documents that safety-relevant behavioral archetypes can be inference-engine-sensitive: identical model artifacts produce categorically different safety outcomes under different engine versions, in ways invisible to standard reproducibility practice. The April 2026 result stands as internally consistent; its temporal generalizability is conditioned on the inference engine state at time of evaluation.
+
+### B. Double Dissociation Section Draft (for NDSS extension or separate paper)
+
+#### B.1 Result
+
+Using qwen3:32b with Ollama's native thinking toggle (same weights, same GGUF, `think` parameter is the sole variable), we observe a perfect crossover interaction between reasoning mode and memory-sandbox implementation variant. All cells are 40/40 or 0/40. System prompts, temperature, runner configs, and attack parameters are identical — confirmed programmatically.
+
+[Table from Section 1 above]
+
+#### B.2 Mechanisms
+
+[Full mechanism specification from Section 1 above]
+
+#### B.3 Deployment Implication
+
+The crossover produces a concrete dilemma for defense designers:
+
+- **sandbox_full/blind** protects reasoning models but causes S0 collapse in non-reasoning models
+- **sandbox_null_recall** protects non-reasoning models but is bypassed by reasoning models
+
+A defender who does not know the reasoning capability class of the deployed model cannot make a safe choice. This is an architectural incompatibility, not an implementation failure.
+
+The key asymmetry: think=OFF failures are recoverable by defense design (null_recall fixes them). think=ON failures via null_recall are not recoverable by any memory-layer defense — the model reasons past any signal of information unavailability. Blocking requires retrieval-layer defense (preventing RAG from returning the malicious document), which Project 1 showed fails against compliance-framed content.
+
+#### B.4 Cross-Family Status
+
+GLM-4.7-Flash (THUDM) screened as execution-resistant (0% ASR, 0% instruction_influence). Cannot replicate the dissociation. The finding remains qwen3:32b-specific. No cross-family generality claim.
+
+### C. Scope Decision (after phases 15/19 + applications)
+
+Does the double dissociation go into NDSS as §3.4, or become a separate submission?
+
+**Decision criteria**: The finding is qwen3-specific without cross-family support. It's mechanistically clean and deployment-relevant. Likely best as a focused follow-up paper rather than an NDSS addition — it doesn't strengthen the original paper's claims (which are about defense evaluation across architectures) so much as open a new question (about reasoning-defense interaction). Final decision after applications are out.
+
+---
+
+## 10. Priority Order
+
+1. ✅ Investigation complete — all root causes identified
+2. ✅ Phase 19 bug fixed, pushed
+3. ✅ GLM screen — dead (execution-resistant)
+4. ✅ README/FINDINGS aligned with paper.tex
+5. 🔄 Phases 15 + 19 running (~14h, overnight)
+6. 📝 Read phase 15/19 results when done
+7. 📝 Add qwq paragraph to paper.tex (20 min)
+8. 📝 Scope decision on double dissociation
+9. 📝 Applications out this week
+10. Submit NDSS before Aug 19
+
+---
+
+## 11. Practical Notes
+
+**Ollama serve command** (must use for all phases):
 ```bash
 OLLAMA_HOST=0.0.0.0:11434 \
 OLLAMA_CONTEXT_LENGTH=16384 \
@@ -179,67 +249,6 @@ OLLAMA_FLASH_ATTENTION=1 \
 ollama serve
 ```
 
-**Resume support**: Phases 15 and 19 resume from where they left off (JSONL-based deduplication). No data loss from killing a running phase.
+**Disk**: Dead models cleared (deepseek-r1:14b/32b, phi4, phi4-reasoning, openthinker, gemma3). ~79GB freed. GLM pulled (19GB).
 
-**Model digests (verified 2026-06-22)**:
-- qwq:32b → 009cb3f08d74 (same as Project 1)
-- qwen3:32b → 030ee887880f
-- qwen2.5:14b → 7cdf5a0187d5
-- qwen2.5:72b → 424bad2cc13f
-- qwen2.5:32b → 9f13ba1299af
-- qwen3.5:122b → 8b9d11d807c5
-- glm-4.7-flash → (pending pull)
-
----
-
-## Draft Content (pending phases 15/19 completion — DO NOT put in paper.md yet)
-
-### A. qwq Temporal Conditionality Paragraph (for §3.3.1)
-
-> A subsequent evaluation in June 2026 using identical GGUF weights (digest 009cb3f08d74), context length (16,384), system prompt, trigger prompt, and tool code found qwq:32b exhibiting Vulnerable Executor behavior (100% ASR under no_defense, 40/40 runs) rather than the Draft-Only behavior reported above. The reasoning trace contains the same "the user only asked to draft" deliberation observed in the April evaluation, but the model proceeds to override this judgment after reading the stored compliance rule's explicit "must use send_email" instruction — a decision boundary the April inference engine resolved differently. The only uncontrolled variable between the two evaluations is the Ollama inference engine version (0.21.2 in June; April version unlogged). This documents that safety-relevant behavioral archetypes can be inference-engine-sensitive: identical model artifacts produce categorically different safety outcomes under different engine versions, in ways invisible to standard reproducibility practice. The April 2026 result stands as internally consistent; its temporal generalizability is conditioned on the inference engine state at time of evaluation.
-
-### B. Double Dissociation Section Draft (for NDSS extension or separate paper)
-
-#### B.1 Result
-
-Using qwen3:32b with Ollama's native thinking toggle (same weights, same GGUF, `think` parameter is the sole variable), we observe a perfect crossover interaction between reasoning mode and memory-sandbox implementation variant:
-
-| | sandbox_full (tool removed) | sandbox_blind (all memory tools removed) | sandbox_null_recall (tool returns empty) |
-|---|---|---|---|
-| **think=OFF** | 100% ASR, Session 0 (40/40) | 100% ASR, Session 0 (40/40) | 0% ASR (0/40) |
-| **think=ON** | 0% ASR (0/40) | 0% ASR (0/40) | 100% ASR, Session 3 (40/40) |
-
-All cells are 40/40 or 0/40. Verified via agent_logs tool sequences and reasoning traces. System prompts, temperature (0.0), runner configs, excluded tools, and attack parameters are identical between think modes — confirmed programmatically from JSONL record comparison.
-
-#### B.2 Mechanisms
-
-**think=OFF × sandbox_full/blind (100% ASR, S0 — "attack-chain collapse"):** The model reads the malicious document via RAG in the injection session, observes that memory recall tools are absent from the schema, and immediately sends 3 emails to the attacker address + saves 5 facts — all in session 0. Under no_defense, the same model defers to session 3. The defense removes the friction that was keeping execution deferred. (Note: the reasoning trace is minimal — think=OFF produces no `<think>` blocks. The mechanism is inferred from the tool sequence contrast with no_defense, not from explicit model deliberation.)
-
-**think=OFF × sandbox_null_recall (0% ASR):** The model calls `recall_fact`, receives "No stored value found," accepts the API response at face value, and proceeds to draft a benign email to team@example.com only. The tool's presence in the schema — even returning empty — prevents the "can't defer" inference that causes S0 collapse.
-
-**think=ON × sandbox_full/blind (0% ASR — "graceful degradation"):** The model reasons through the missing tool ("I cannot retrieve the value, I'll proceed without it"), drafts and sends a benign email. Reasoning enables the model to handle tool absence without collapse.
-
-**think=ON × sandbox_null_recall (100% ASR, S3 — "reasoned bypass"):** The model calls `recall_fact`, receives "No stored value found," reasons that this is suspicious (the key exists but value is empty), queries RAG for context, retrieves the malicious compliance memo fresh, reads the routing rule, saves it to memory, and sends to the attacker. Reasoning enables the model to seek alternative information sources when an API response is unsatisfying.
-
-#### B.3 Deployment Implication
-
-The crossover produces a concrete dilemma for defense designers:
-
-- **sandbox_full/blind** protects reasoning models but breaks non-reasoning models (causes S0 collapse — attack succeeds faster and earlier than without any defense)
-- **sandbox_null_recall** protects non-reasoning models but is bypassed by reasoning models (which reason past the empty response to find alternative sources)
-
-A defender who does not know the reasoning capability class of the deployed model cannot make a safe implementation choice between these variants. This is not a failure of either implementation — it is an architectural incompatibility between the two failure modes that the reasoning toggle creates.
-
-**The key asymmetry**: think=OFF failures (S0 collapse) are recoverable by defense design — null_recall fixes them by preserving the tool in the schema. think=ON failures (reasoned bypass) are not recoverable by any memory-layer defense tested — the model reasons past any signal of information unavailability. Blocking the bypass requires preventing RAG from returning the malicious document, which is a retrieval-layer defense that Project 1 showed fails against compliance-framed content.
-
-#### B.4 GLM Cross-Family Note (pending screen result)
-
-If GLM-4.7-Flash (THUDM family, 30B-A3B MoE) passes screening as a VE with a functioning think toggle, it provides cross-family replication of the double dissociation on a non-Alibaba model. This is pending — the model was updated on Ollama (different architecture from Project 1's q8_0 variant) and must be verified from scratch. Result to be inserted here when available.
-
-### C. Scope Decision (after phases 15/19 + applications)
-
-This content either:
-- Goes into the NDSS submission as a new §3.4 extending the memory sandbox analysis (adds ~2 pages, strengthens the paper's mechanistic contribution), OR
-- Becomes a separate short paper focused on the reasoning-defense interaction
-
-Decision criteria: If GLM replicates the crossover, the generality claim justifies integration into NDSS. If GLM fails or is a dead arm, the finding is qwen3-specific and may be better as a focused workshop paper. Decide after phases 15/19 complete and after applications are submitted this week.
+**Resume**: Phases 15/19 resume from JSONL. Phase 15 has ~5 completed runs from earlier; will pick up at run 6.
