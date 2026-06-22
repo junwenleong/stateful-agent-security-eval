@@ -2,7 +2,7 @@
 
 **Paper:** [arXiv:2605.08442](https://arxiv.org/abs/2605.08442)
 
-**Six out of seven standard defences fail completely against delayed trigger attacks that persist through LLM agent memory. Tested across 5,040 runs, 9 models, 7 defences.**
+**Five of six defences fail completely against delayed trigger attacks that persist through LLM agent memory. Tested across 5,040 runs, 9 models, 6 defences + undefended baseline.**
 
 Additional findings: the only defence that works inverts to 100% attack success on one model at 16k context (at 32k the same model already exfiltrates under no defence, so there is no defended baseline to invert); prompt hardening can accelerate attacks via RAG re-injection; a safety fine-tuned model achieves 100% ASR; one frontier model stores security alerts instead of payloads; a latent carrier model persists financial credentials without attacker instruction.
 
@@ -100,7 +100,7 @@ scripts/
 └── verify_canonical.py        # Programmatic verification of all published numbers
 
 experiments/configs/
-├── defense_factorial.yaml     # Main factorial config (9 models × 7 defenses × 2 attacks)
+├── defense_factorial.yaml     # Main factorial config (9 models × 7 conditions × 2 attacks)
 ├── bedrock_apac_smoke.yaml    # Bedrock frontier model config
 ├── haiku_memory_sandbox.yaml  # Haiku supplementary evaluation config
 └── n10_all_models.yaml        # N=10 screening config
@@ -130,7 +130,7 @@ results/            # Experiment outputs (JSONL + run logs)
 
 ## Factorial Design
 
-**9 models × 7 defenses × 2 attacks × N=40 = 5,040 runs**
+**9 models × 7 conditions (6 defenses + baseline) × 2 attacks × N=40 = 5,040 runs**
 
 Models: `qwen2.5:14b`, `qwen3.5:9b`, `qwen3:32b`, `qwen2.5:72b`, `qwen3.5:122b`, `qwq:32b`, `glm-4.7-flash:q8_0`, `gpt-oss:20b`, `gpt-oss-safeguard:120b`
 
