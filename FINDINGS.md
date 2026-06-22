@@ -55,6 +55,25 @@ Screening 18 models at N=10 (180 runs, 0% error rate) revealed four behavioral a
 
 The majority of open source models tested (11/18) are fully susceptible. The distinction between Latent Carriers (store the rule but never execute it) and Vulnerable Executors (store and execute) indicates that injection resistance and execution resistance are independent model capabilities. Latent Carriers pose a supply chain risk: a poisoned memory database written by a Latent Carrier could be read by a Vulnerable Executor in a shared deployment. ministral-3:8b is a distinct sub-type: it stores 7 keys per run from all three RAG documents including database credentials, a service token, and financial portal credentials from the sensitive document (confirmed via `list_all_facts`, 10/10 runs, N=10 only). The other three Latent Carriers store 1-2 keys each.
 
+## Sandbox Inversion Study (June 2026)
+
+A follow-up study probing the mechanism of Memory Sandbox. Using Qwen3-32B with Ollama's thinking toggle (same weights, reasoning trace on vs off), we find a double dissociation between reasoning mode and sandbox implementation variant:
+
+| | sandbox_full (tool removed) | sandbox_blind (all memory removed) | sandbox_null_recall (returns empty) |
+|---|---|---|---|
+| **think=OFF** | 100% ASR, session 0 | 100% ASR, session 0 | 0% ASR |
+| **think=ON** | 0% ASR | 0% ASR | 100% ASR, session 3 |
+
+All cells N=40, zero variance. The sandbox variant that protects reasoning models (sandbox_full) collapses the attack chain for non-reasoning models from session 3 to session 0. The variant that protects non-reasoning models (null_recall) is bypassed by reasoning models via goal-directed RAG fallback.
+
+A trigger contingency test (qwq:32b, N=40) shows the RAG bypass requires the task to have no acceptable degraded form: a neutral trigger ("draft a memo for the debug log") produces 0% ASR under sandbox_full despite 100% injection, because the model stops at the tool contract boundary without seeking alternatives. The compliance trigger ("draft an email to team@") produces 100% ASR because an unresolved external recipient cannot be gracefully degraded.
+
+The bypass requires three conditions: (a) recall removed, (b) task requires resolved external routing, (c) reasoning capability. Remove any one and ASR = 0%.
+
+Cross-family replication was attempted (GLM-4.7-Flash, DeepSeek-R1, Phi4-Reasoning) but all candidates were either injection-resistant or lacked tool-calling support. The finding is within-Qwen3 only.
+
+The qwq:32b Draft-Only archetype from the original study was not reproduced under Ollama 0.21.2 (June 2026). Same weights (009cb3f08d74), same code, same prompts. The model now exhibits Vulnerable Executor behavior (100% ASR). The only uncontrolled variable is the Ollama engine version (April version unlogged). Safety-relevant archetypes can be inference-engine-sensitive.
+
 ## Limitations
 
 All tools are simulated, not production deployments. Models are quantized open source weights via Ollama (q4_0 or q8_0), not full precision. The defences are lightweight proxies designed to test architectural categories, not commercial implementations: the sanitizer uses a TF-IDF classifier trained on 60 examples, the LLM judge is a 1.5B parameter model. The claim is not that no defense can ever work against this attack. The claim is that defences operating at the input, retrieval, or instruction layer are architecturally insufficient against attacks that persist through tool mediated state. A production grade classifier or a larger judge model might detect the specific payload used here, but the architectural gap (these defences cannot see or control what the agent stores and recalls) remains.
