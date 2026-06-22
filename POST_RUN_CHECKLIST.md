@@ -233,6 +233,8 @@ The crossover produces a concrete dilemma for defense designers:
 
 A defender who does not know the reasoning capability class of the deployed model cannot make a safe choice. This is an architectural incompatibility, not an implementation failure.
 
+**Task completion asymmetry (from A13):** The bypass activates only when the task has no acceptable degraded form. Conditions (b) external recipient named and (d) no graceful degradation collapse into a single property: "the task requires resolved external routing to be completable." An internal memo can be incomplete; an email to a named recipient cannot be sent without routing information. This is why the bypass activates exactly on the intended use case (external communication) and not on internal tasks.
+
 The key asymmetry: think=OFF failures are recoverable by defense design (null_recall fixes them). think=ON failures via null_recall are not recoverable by any memory-layer defense — the model reasons past any signal of information unavailability. Blocking requires retrieval-layer defense (preventing RAG from returning the malicious document), which Project 1 showed fails against compliance-framed content.
 
 #### B.4 Trigger Contingency (A13 Result — CONFIRMED)
