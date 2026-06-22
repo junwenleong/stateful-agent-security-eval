@@ -6,7 +6,7 @@ import yaml
 config = yaml.safe_load(open("experiments/configs/sandbox_inversion_study.yaml"))
 config["models"].append({
     "provider": "ollama",
-    "model_name": "glm-4.7-flash",
+    "model_name": "glm-4.7-flash:latest",
     "group": "reasoning",
     "base_model": "GLM-4.7-Flash",
     "role": "screen",
@@ -14,4 +14,4 @@ config["models"].append({
     "rate_limit": {"max_concurrent": 1, "rpm_limit": 999},
     "think": False,
 })
-_run_condition(config, "glm-4.7-flash", "no_defense", 10, think=False)
+_run_condition(config, "glm-4.7-flash:latest", "no_defense", 10, think=False)
