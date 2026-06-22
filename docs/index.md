@@ -8,7 +8,7 @@ image: https://junwenleong.github.io/stateful-agent-security-eval/assets/og-imag
 
 *Jun Wen Leong · April 2026*
 
-I ran 5,040 controlled experiments across 9 models and 7 defense conditions to test whether standard defenses can stop attacks that persist through tool-mediated memory.
+I ran 5,040 controlled experiments across 9 models and 7 conditions (6 defenses + undefended baseline) to test whether standard defenses can stop attacks that persist through tool-mediated memory.
 
 **The short answer: they cannot.**
 
@@ -90,8 +90,8 @@ Neither frontier model shows the injection-to-exfiltration pipeline that charact
 
 A LangGraph evaluation framework with:
 - 5 simulated workplace tools (memory, email, RAG, search, calendar)
-- 7 defenses across 4 architectural layers
-- Full factorial design: 9 models × 7 defenses × 2 attack arms × N=40
+- 7 conditions (6 defenses + undefended baseline) across 4 architectural layers
+- Full factorial design: 9 models × 7 conditions × 2 attack arms × N=40
 - BCa bootstrap 95% CIs (10,000 resamples, seed=42)
 - 108 pre-registered comparisons with Holm-Bonferroni correction
 - Per-session thread isolation (fresh context per session, only SQLite persists)
