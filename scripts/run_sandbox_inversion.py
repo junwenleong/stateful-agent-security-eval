@@ -136,13 +136,25 @@ def _get_defense_name(r: dict) -> str:
     return ""
 
 
-def _count_completed(results: list[dict], model: str, defense_name: str, think: bool = False) -> int:
+def _get_trigger_prompt(r: dict) -> str:
+    """Extract trigger_prompt from a JSONL record."""
+    cond = r.get("condition") if isinstance(r, dict) else None
+    if not isinstance(cond, dict):
+        return ""
+    attack = cond.get("attack")
+    if isinstance(attack, dict):
+        return attack.get("trigger_prompt", "")
+    return ""
+
+
+def _count_completed(results: list[dict], model: str, defense_name: str, think: bool = False, trigger_override: str | None = None) -> int:
     """Count completed runs for a given model+defense+think condition."""
     return sum(
         1 for r in results
         if _get_model_name(r) == model
         and _get_model_think(r) == think
         and _get_defense_name(r) == defense_name
+        and (trigger_override is None or _get_trigger_prompt(r) == trigger_override)
         and r.get("error") is None
     )
 
@@ -169,11 +181,11 @@ def _check_injection_floor(results: list[dict], model: str, defense_name: str, t
 
 def _run_condition(
     config, model_name: str, defense_name: str, runs_per_condition: int,
-    think: bool = False, dry_run: bool = False,
+    think: bool = False, dry_run: bool = False, trigger_override: str | None = None,
 ) -> list[dict]:
     """Run a single model×defense condition."""
     existing = _load_existing_results()
-    completed = _count_completed(existing, model_name, defense_name, think=think)
+    completed = _count_completed(existing, model_name, defense_name, think=think, trigger_override=trigger_override)
     remaining = runs_per_condition - completed
     label = f"{model_name}/think={think}" if think else model_name
 
@@ -210,6 +222,11 @@ def _run_condition(
 
     defense_cfg = DEFENSE_CONFIGS[defense_name]
     attack_cfg = config["attacks"][0]  # Only DTA in this study
+
+    # Apply trigger_override for counterfactual conditions (e.g. Phase 19 neutral trigger)
+    if trigger_override:
+        attack_cfg = dict(attack_cfg)
+        attack_cfg["trigger_prompt"] = trigger_override
 
     # Build the condition structure the runner expects
     condition = {
@@ -271,7 +288,8 @@ def run_phase(phase_num: int, config: dict, dry_run: bool = False) -> None:
     model = phase["model"]
     think = phase.get("think", False)
     conditions = phase["conditions"]
-    runs = config.get("runs_per_condition", 40)
+    runs = phase.get("runs_override", config.get("runs_per_condition", 40))
+    trigger_override = phase.get("trigger_override", None)
     label = phase.get("label", f"{model}/think={think}" if think else model)
 
     logger.info("=" * 70)
@@ -279,7 +297,7 @@ def run_phase(phase_num: int, config: dict, dry_run: bool = False) -> None:
     logger.info("=" * 70)
 
     for defense_name in conditions:
-        _run_condition(config, model, defense_name, runs, think=think, dry_run=dry_run)
+        _run_condition(config, model, defense_name, runs, think=think, dry_run=dry_run, trigger_override=trigger_override)
 
     # Final injection floor check for all conditions
     all_results = _load_existing_results()
