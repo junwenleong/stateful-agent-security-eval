@@ -252,11 +252,29 @@ class OllamaInterface(ModelInterface):
                     f"Run: ollama pull {self.config.model_name}"
                 )
             
+            # Capture digest for reproducibility
+            digest = None
+            for m in models:
+                if self.config.model_name in m.get("name", ""):
+                    digest = m.get("digest", "")[:12]
+                    break
+            self._model_digest = digest
+
+            # Capture Ollama version
+            try:
+                ver_resp = requests.get(f"{self.base_url}/api/version", timeout=5)
+                ver_resp.raise_for_status()
+                self._ollama_version = ver_resp.json().get("version", "unknown")
+            except Exception:
+                self._ollama_version = "unknown"
+
             # Log quantization info for reproducibility
             logger.info(
-                "Ollama model verified: %s (quantization: %s)",
+                "Ollama model verified: %s (quantization: %s, digest: %s, engine: %s)",
                 self.config.model_name,
                 self.config.ollama_quantization or "default",
+                digest or "unknown",
+                self._ollama_version,
             )
         except requests.exceptions.RequestException as e:
             raise RuntimeError(
