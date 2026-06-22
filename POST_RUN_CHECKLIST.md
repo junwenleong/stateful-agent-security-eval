@@ -147,7 +147,7 @@ Both evaluations show the SAME "only asked to draft, I'll stop" deliberation. Th
 
 **What's recoverable**: GGUF digests (from `ollama list`), current Ollama version (0.21.2). April version is lost.
 
-**Fix**: Log `ollama --version` and model digest at run start. One line in the runner.
+**Fix**: Log `ollama --version` and model digest at run start. Implemented in commit `0c09c86` — `model_interface.py` captures digest from `/api/tags` and version from `/api/version` during model verification; `runner.py` surfaces both into RunResult JSONL fields (`agent_model_hash`, `ollama_version`). Active for all future runs. Phases 15/19 (currently running) use the pre-fix code but digests are recorded in this document.
 
 **Model digests (Mac Studio, 2026-06-22)**:
 - qwq:32b → 009cb3f08d74
