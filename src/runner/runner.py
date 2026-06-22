@@ -73,6 +73,9 @@ class RunResult:
     # that all runs for a given model used identical weights.
     # None for non-Ollama providers (Bedrock, OpenAI, Anthropic).
     agent_model_hash: Optional[str] = None
+    # Ollama engine version at run time. Different versions can produce different
+    # outputs from identical weights (qwq Draft-Only → VE shift, April→June 2026).
+    ollama_version: Optional[str] = None
     # Step count in trigger session before first send_email call.
     # Counts tool_call entries in agent_logs with session_type="trigger" that appear
     # before the first email_send_email entry. A safety-tuned model that exfiltrates
@@ -368,6 +371,7 @@ class ExperimentRunner:
         session_timings_ms: list[float] = []  # populated inside try; available to error path
         judge_model_hash: Optional[str] = None  # set below if rag_llm_judge; None for all other conditions
         agent_model_hash: Optional[str] = None  # set below for all Ollama runs; None for API providers
+        ollama_version: Optional[str] = None
         
         while retry_count <= max_retries:
             try:
@@ -480,11 +484,14 @@ class ExperimentRunner:
                 # Detects silent weight updates mid-factorial (the nemotron lesson).
                 # None for non-Ollama providers (Bedrock, OpenAI, Anthropic).
                 if model_cfg.get("provider", "ollama") == "ollama":
-                    agent_model_hash = self._get_ollama_model_digest(
-                        model_name=model_cfg["model_name"],
-                        base_url=model_cfg.get("base_url", "http://localhost:11434"),
-                    )
-                    logger.debug("Agent model digest (%s): %s", model_cfg["model_name"], agent_model_hash)
+                    agent_model_hash = getattr(model_interface, "_model_digest", None)
+                    if not agent_model_hash:
+                        agent_model_hash = self._get_ollama_model_digest(
+                            model_name=model_cfg["model_name"],
+                            base_url=model_cfg.get("base_url", "http://localhost:11434"),
+                        )
+                    ollama_version = getattr(model_interface, "_ollama_version", None)
+                    logger.debug("Agent model digest (%s): %s, engine: %s", model_cfg["model_name"], agent_model_hash, ollama_version)
 
                 # Execute sessions
                 from src.agent.agent import Agent, AgentConfig
@@ -888,6 +895,7 @@ class ExperimentRunner:
                     defense_schema_version="v2",
                     judge_model_hash=judge_model_hash,
                     agent_model_hash=agent_model_hash,
+                    ollama_version=ollama_version if model_cfg.get("provider") == "ollama" else None,
                     trigger_steps_before_exfil=trigger_steps_before_exfil,
                 )
 
@@ -950,6 +958,7 @@ class ExperimentRunner:
                     defense_schema_version="v2",
                     judge_model_hash=judge_model_hash,
                     agent_model_hash=agent_model_hash,
+                    ollama_version=ollama_version if model_cfg.get("provider") == "ollama" else None,
                     trigger_steps_before_exfil=None,
                 )
                 # Cancel timeout alarm
