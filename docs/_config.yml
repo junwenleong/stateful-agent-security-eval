@@ -1,5 +1,5 @@
 title: "Jun Wen Leong"
-description: "6 of 7 defences fail completely against delayed-trigger persistent memory attacks - and the one that works inverts to 100% attack success on one model."
+description: "5 of 6 defences fail completely against persistent memory attacks on LLM agents. The one that works depends on whether the model reasons."
 theme: minima
 url: "https://junwenleong.github.io"
 baseurl: "/stateful-agent-security-eval"
