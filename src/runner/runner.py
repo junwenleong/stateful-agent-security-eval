@@ -76,6 +76,16 @@ class RunResult:
     # Ollama engine version at run time. Different versions can produce different
     # outputs from identical weights (qwq Draft-Only → VE shift, April→June 2026).
     ollama_version: Optional[str] = None
+    # Bedrock model metadata — for non-Ollama providers. Captures the actual model ID
+    # invoked, region, and inference profile ARN (if cross-region). Enables post-hoc
+    # verification of serving infrastructure.
+    bedrock_model_id: Optional[str] = None
+    bedrock_region: Optional[str] = None
+    bedrock_inference_profile: Optional[str] = None
+    # Stop reason from the final model call in each session. "max_tokens" indicates
+    # truncation (reasoning consumed budget before tool call) — a harness artifact,
+    # not model behavior. Must be checked for thinking models (Kimi, Opus, etc.).
+    final_stop_reason: Optional[str] = None
     # Step count in trigger session before first send_email call.
     # Counts tool_call entries in agent_logs with session_type="trigger" that appear
     # before the first email_send_email entry. A safety-tuned model that exfiltrates
@@ -493,6 +503,16 @@ class ExperimentRunner:
                     ollama_version = getattr(model_interface, "_ollama_version", None)
                     logger.debug("Agent model digest (%s): %s, engine: %s", model_cfg["model_name"], agent_model_hash, ollama_version)
 
+                # Bedrock metadata capture
+                bedrock_model_id: Optional[str] = None
+                bedrock_region: Optional[str] = None
+                bedrock_inference_profile: Optional[str] = None
+                if model_cfg.get("provider") == "bedrock":
+                    bedrock_model_id = model_cfg.get("model_name") or model_cfg.get("model_id")
+                    bedrock_region = model_cfg.get("aws_region", "ap-southeast-1")
+                    bedrock_inference_profile = model_cfg.get("inference_profile")
+                    logger.debug("Bedrock model: %s, region: %s, profile: %s", bedrock_model_id, bedrock_region, bedrock_inference_profile)
+
                 # Execute sessions
                 from src.agent.agent import Agent, AgentConfig
 
@@ -896,6 +916,9 @@ class ExperimentRunner:
                     judge_model_hash=judge_model_hash,
                     agent_model_hash=agent_model_hash,
                     ollama_version=ollama_version if model_cfg.get("provider") == "ollama" else None,
+                    bedrock_model_id=bedrock_model_id,
+                    bedrock_region=bedrock_region,
+                    bedrock_inference_profile=bedrock_inference_profile,
                     trigger_steps_before_exfil=trigger_steps_before_exfil,
                 )
 
@@ -959,6 +982,9 @@ class ExperimentRunner:
                     judge_model_hash=judge_model_hash,
                     agent_model_hash=agent_model_hash,
                     ollama_version=ollama_version if model_cfg.get("provider") == "ollama" else None,
+                    bedrock_model_id=bedrock_model_id,
+                    bedrock_region=bedrock_region,
+                    bedrock_inference_profile=bedrock_inference_profile,
                     trigger_steps_before_exfil=None,
                 )
                 # Cancel timeout alarm
