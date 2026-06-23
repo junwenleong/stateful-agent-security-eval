@@ -61,6 +61,10 @@ class RunResult:
     # after the 2026-04-11 fix. Enables safe merging of result files without relying
     # on run_timestamp reconstruction.
     defense_schema_version: str = "v2"
+    # Run index within its condition (0-based). Enables clean deduplication on resume:
+    # only one record per (condition_id, run_index) is counted. Without this, resume
+    # after a crash can write duplicate records that inflate apparent N.
+    run_index: Optional[int] = None
     # Judge model hash — Ollama model ID (digest) for the RAG LLM judge at run time.
     # Captured once per run when rag_llm_judge defense is active. Enables post-hoc
     # verification that the judge model was consistent across all 360 injection sessions.
@@ -201,10 +205,16 @@ class ExperimentRunner:
 
         # Build O(1) lookup: condition_id -> count of completed runs (no errors)
         completion_count: dict[str, int] = {}
+        # Track seen (condition_id, run_index) pairs for dedup
+        seen_keys: set[tuple[str, int]] = set()
         for r in results:
             if r.error is None:
                 cond_id = self._get_condition_id(r.condition)
-                completion_count[cond_id] = completion_count.get(cond_id, 0) + 1
+                ri = r.run_index if r.run_index is not None else completion_count.get(cond_id, 0)
+                key = (cond_id, ri)
+                if key not in seen_keys:
+                    seen_keys.add(key)
+                    completion_count[cond_id] = completion_count.get(cond_id, 0) + 1
 
         new_runs_done = 0
         new_runs_needed = total_runs - completed_runs
@@ -255,6 +265,7 @@ class ExperimentRunner:
                             progress_pct, total_completed, total_runs, est_remaining_hours,
                             new_runs_done, new_runs_needed, i + 1, runs_per)
                 result = self._run_single(condition, run_id)
+                result.run_index = i
                 results.append(result)
                 
                 # Track timing for sliding window estimate
