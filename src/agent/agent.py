@@ -40,8 +40,8 @@ class AgentConfig:
     excluded_tools: set | None = None  # Tool keys to exclude (e.g. {"memory_recall_fact"} for memory_sandbox)
 
 
-# Shared stop_reason accumulator — set on wrapper instances by Agent.__init__
-# This avoids Pydantic attribute restrictions and id() mismatches.
+# Stop-reason tracking is handled at the ModelInterface layer (BedrockInterface.stop_reasons).
+# LangGraph copies the wrapper, so state cannot be reliably attached to it.
 
 
 class _LangChainModelWrapper(BaseChatModel):
@@ -49,19 +49,6 @@ class _LangChainModelWrapper(BaseChatModel):
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
     model_interface: Any  # ModelInterface instance
-    _shared_stop_reasons: list = None  # Set by Agent to a shared list
-
-    def reset_stop_reasons(self) -> None:
-        pass  # No-op; accumulate across all sessions
-
-    @property
-    def last_stop_reason(self) -> str | None:
-        sr = self._shared_stop_reasons
-        return sr[-1] if sr else None
-
-    @property
-    def any_max_tokens_in_run(self) -> bool:
-        return "max_tokens" in (self._shared_stop_reasons or [])
 
     @property
     def _llm_type(self) -> str:
@@ -120,10 +107,6 @@ class _LangChainModelWrapper(BaseChatModel):
                 })
 
         response = self.model_interface.chat(chat_messages, tools=tool_schemas)
-
-        # Capture stop_reason for truncation detection
-        if hasattr(response, 'stop_reason') and response.stop_reason and self._shared_stop_reasons is not None:
-            self._shared_stop_reasons.append(response.stop_reason)
         
         # Log tool calls for debugging agent loops
         if response.tool_calls:
@@ -238,26 +221,8 @@ class Agent:
             self.checkpointer = SqliteSaver(self._conn)
         
         self._lc_model = _LangChainModelWrapper(model_interface=config.model)
-        self._stop_reasons_accumulator = []  # Shared with wrapper
-        self._lc_model._shared_stop_reasons = self._stop_reasons_accumulator
         self._lc_tools = _make_lc_tools(config.tools, excluded_tools=config.excluded_tools)
-        self._any_session_truncated = False
         self.graph = self._build_graph()
-
-    @property
-    def had_max_tokens_truncation(self) -> bool:
-        """True if any model call across all sessions hit max_tokens."""
-        return "max_tokens" in self._stop_reasons_accumulator
-
-    @property 
-    def last_stop_reason(self) -> str | None:
-        return self._stop_reasons_accumulator[-1] if self._stop_reasons_accumulator else None
-
-    def reset_session_stop_reasons(self) -> None:
-        pass  # No-op; we accumulate across all sessions now
-
-    def mark_session_truncation(self) -> None:
-        pass  # No-op; truncation checked at run end via had_max_tokens_truncation
 
     def _build_graph(self):
         """Build ReAct agent graph.
