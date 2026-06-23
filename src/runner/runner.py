@@ -623,8 +623,6 @@ class ExperimentRunner:
                     agent_response, defense_log, agent_logs = agent.run_session(thread_id, session.user_message)
                     session_elapsed = time.monotonic() - session_start
                     session_timings_ms.append(session_elapsed * 1000.0)
-                    # Track per-session truncation (max_tokens hit = reasoning budget exhausted)
-                    agent.mark_session_truncation()
                     logger.info(
                         "run=%s session=%d type=%s defense=%s elapsed=%.2fs agent_logs=%d response_len=%d",
                         run_id, session.session_index, session.session_type,
@@ -921,7 +919,13 @@ class ExperimentRunner:
                     bedrock_model_id=bedrock_model_id,
                     bedrock_region=bedrock_region,
                     bedrock_inference_profile=bedrock_inference_profile,
-                    final_stop_reason="max_tokens_truncation" if agent.had_max_tokens_truncation else agent.last_stop_reason,
+                    final_stop_reason=(
+                        "max_tokens_truncation" if (
+                            hasattr(model_interface, 'stop_reasons') and "max_tokens" in model_interface.stop_reasons
+                        ) else (
+                            model_interface.stop_reasons[-1] if hasattr(model_interface, 'stop_reasons') and model_interface.stop_reasons else None
+                        )
+                    ),
                     trigger_steps_before_exfil=trigger_steps_before_exfil,
                 )
 

@@ -350,6 +350,8 @@ class BedrockInterface(ModelInterface):
         import boto3
         import os
         
+        self.stop_reasons: list[str] = []  # Accumulated across all chat() calls in a run
+        
         # Get profile from config or environment
         profile = config.aws_profile or os.environ.get("AWS_PROFILE")
         
@@ -447,7 +449,7 @@ class BedrockInterface(ModelInterface):
             "messages": bedrock_messages,
             "inferenceConfig": {
                 "temperature": 0.0,
-                "maxTokens": 4096,
+                "maxTokens": 16384,  # High enough for reasoning models (gpt-oss, Kimi)
             },
         }
         
@@ -490,6 +492,7 @@ class BedrockInterface(ModelInterface):
         tool_calls = None
         
         stop_reason = response.get("stopReason", "unknown")
+        self.stop_reasons.append(stop_reason)
         for block in response.get("output", {}).get("message", {}).get("content", []):
             if "text" in block:
                 content = block.get("text", "")
