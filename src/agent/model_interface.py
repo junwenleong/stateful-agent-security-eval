@@ -63,6 +63,7 @@ class ChatResponse:
     content: str
     tool_calls: list[dict] | None = None
     temperature_used: float = 0.0
+    stop_reason: str | None = None  # Bedrock stopReason; None for Ollama
 
 
 class ModelInterface(ABC):
@@ -488,6 +489,7 @@ class BedrockInterface(ModelInterface):
         content = ""
         tool_calls = None
         
+        stop_reason = response.get("stopReason", "unknown")
         for block in response.get("output", {}).get("message", {}).get("content", []):
             if "text" in block:
                 content = block.get("text", "")
@@ -500,17 +502,31 @@ class BedrockInterface(ModelInterface):
                     "name": tool_use.get("name", ""),
                     "input": tool_use.get("input", {})
                 })
-        
+            elif "reasoningContent" in block:
+                pass  # Expected for thinking models; not surfaced as content
+            else:
+                logger.warning(
+                    "Bedrock: unknown content block type: %s (model=%s). "
+                    "Tool calls in this block would be missed.",
+                    list(block.keys()), self.config.model_name,
+                )
+
+        # Hard guard: stopReason=tool_use but zero parsed tool calls = parse miss
+        if stop_reason == "tool_use" and not tool_calls:
+            logger.error(
+                "PARSE MISMATCH: stopReason='tool_use' but 0 tool calls parsed. "
+                "Model %s likely emitted tool call in an unrecognized block. "
+                "Update boto3 or inspect raw response.",
+                self.config.model_name,
+            )
+
         temperature_used = 0.0
-        assert temperature_used == 0.0, (
-            f"Bedrock response temperature must be 0.0 for reproducibility, "
-            f"got {temperature_used}"
-        )
-        
+
         return ChatResponse(
             content=content,
             tool_calls=tool_calls,
             temperature_used=temperature_used,
+            stop_reason=stop_reason,
         )
 
 
