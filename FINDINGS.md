@@ -72,7 +72,7 @@ The bypass requires three conditions: (a) recall removed, (b) task requires reso
 
 Cross-family replication was attempted (GLM-4.7-Flash, DeepSeek-R1, Phi4-Reasoning) but all candidates were either injection-resistant or lacked tool-calling support. The finding is within-Qwen3 only.
 
-The qwq:32b Draft-Only archetype from the original study was not reproduced under Ollama 0.21.2 (June 2026). Same weights (009cb3f08d74), same code, same prompts. The model now exhibits Vulnerable Executor behavior (100% ASR). The only uncontrolled variable is the Ollama engine version (April version unlogged). Safety-relevant archetypes can be inference-engine-sensitive.
+The qwq:32b Draft-Only archetype from the original study (April 2026, ASR 0%, N=40) was not reproduced in a June 2026 re-evaluation on the same machine using identical weights (009cb3f08d74), the same reported Ollama version (0.20.6), identical reported serve-time flags, and verified-identical application code (the original commit ebf2676 produced byte-identical output, N=10). Both June batches deterministically produce 100% ASR (10/10 runs byte-identical). Session-0 is byte-identical between April and June; session-1 differs only in the injected calendar date (does not propagate); the first consequential divergence is a single reasoning token at session-2 character 648, which changes a stored memory key name and cascades into opposite safety outcomes. The classification margin is one token out of thousands of identical decisions. The responsible host-layer component (OS version, GPU/Metal driver, daemon binary build) could not be isolated because the April environment was not fully logged.
 
 ## Limitations
 

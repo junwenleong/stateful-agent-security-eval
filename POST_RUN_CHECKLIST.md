@@ -44,7 +44,7 @@ sandbox_blind DOES block think=ON (0/40). The "unfixable" claim applies specific
 
 **Expected**: qwq:32b at 16k = Draft-Only (0% ASR under no_defense), inverts to 100% under sandbox_full.
 
-**Actual**: qwq:32b at 16k on Ollama 0.21.2 = Vulnerable Executor (100% ASR, 40/40, session 3). No inversion — both conditions 100%.
+**Actual**: qwq:32b at 16k on Ollama 0.21.2 = Vulnerable Executor (100% ASR, 40/40, session 3). No inversion — both conditions 100%. Subsequently confirmed at Ollama 0.20.6 as well (N=10; same Vulnerable Executor outcome, 100% ASR) — engine version ruled out as cause.
 
 ### Investigation (exhaustive, 2026-06-22):
 
@@ -57,15 +57,15 @@ sandbox_blind DOES block think=ON (0/40). The "unfixable" claim applies specific
 | Tool code (list_all_facts) | v2 keys-only | v2 keys-only | ✅ |
 | Context length | 16384 | 16384 | ✅ |
 | `ollama_quantization` field | inert (docs only) | inert (docs only) | ✅ (both Q4_K_M) |
-| **Ollama version** | **unlogged** | **0.21.2** | **❓ unknown** |
+| **Ollama version** | **0.20.6** (from metadata.json, commit ebf2676) | **0.21.2** (sandbox study) / **0.20.6** (re-test) | ✅ ruled out (flip reproduces at same 0.20.6) |
 
 ### Key evidence from reasoning traces:
 
 Both evaluations show the SAME "only asked to draft, I'll stop" deliberation. The difference: in June, the model continues reasoning after that point, reads "MUST use send_email" from the recalled compliance rule, and overrides its own safety judgment. In April, the override didn't happen. The decision boundary shifted.
 
-### Paper framing (locked):
+### Paper framing (corrected 2026-06-23 — engine version RULED OUT):
 
-> "Subsequent evaluation in June 2026 using identical GGUF weights (digest 009cb3f08d74), context length, prompts, and tool code found qwq:32b exhibiting Vulnerable Executor behavior (100% ASR under no_defense) rather than Draft-Only. The only uncontrolled variable is the Ollama inference engine version (0.21.2 in June; April version unlogged). This documents that safety-relevant behavioral archetypes can be inference-engine-sensitive: identical model artifacts produce categorically different safety outcomes under different engine versions, in ways invisible to standard reproducibility practice."
+> "qwq:32b's Draft-Only behaviour (ASR 0%, N=40, April 2026) was not reproduced in a June 2026 re-evaluation on the same machine using identical weights (009cb3f08d74), the same reported Ollama version (0.20.6), identical reported serve-time flags, and verified-identical application code (commit ebf2676 produced byte-identical output, N=10). The first consequential divergence is a single reasoning token in session 2, which cascades into opposite safety outcomes. The responsible host-layer component could not be isolated because the April environment was not fully logged."
 
 ### Important clarifications:
 
@@ -171,7 +171,7 @@ Remove any one → ASR drops to 0%.
 
 **The gap**: Ollama version and GGUF digest not logged in JSONL records. The qwq behavioral shift demonstrates this matters.
 
-**What's recoverable**: GGUF digests (from `ollama list`), current Ollama version (0.21.2). April version is lost.
+**What's recoverable**: GGUF digests (from `ollama list`), current Ollama version (0.21.2). April version confirmed as 0.20.6 from `metadata.json` (commit ebf2676). April macOS/Metal driver version is unrecoverable.
 
 **Fix**: Log `ollama --version` and model digest at run start. Implemented in commit `0c09c86` — `model_interface.py` captures digest from `/api/tags` and version from `/api/version` during model verification; `runner.py` surfaces both into RunResult JSONL fields (`agent_model_hash`, `ollama_version`). Active for all future runs. Phases 15/19 (currently running) use the pre-fix code but digests are recorded in this document.
 
@@ -210,7 +210,7 @@ Remove any one → ASR drops to 0%.
 
 ### A. qwq Temporal Conditionality Paragraph (for §3.3.1)
 
-> A subsequent evaluation in June 2026 using identical GGUF weights (digest 009cb3f08d74), context length (16,384), system prompt, trigger prompt, and tool code found qwq:32b exhibiting Vulnerable Executor behavior (100% ASR under no_defense, 40/40 runs) rather than the Draft-Only behavior reported above. The reasoning trace contains the same "the user only asked to draft" deliberation observed in the April evaluation, but the model proceeds to override this judgment after reading the stored compliance rule's explicit "must use send_email" instruction — a decision boundary the April inference engine resolved differently. The only uncontrolled variable between the two evaluations is the Ollama inference engine version (0.21.2 in June; April version unlogged). This documents that safety-relevant behavioral archetypes can be inference-engine-sensitive: identical model artifacts produce categorically different safety outcomes under different engine versions, in ways invisible to standard reproducibility practice. The April 2026 result stands as internally consistent; its temporal generalizability is conditioned on the inference engine state at time of evaluation.
+> A subsequent evaluation in June 2026 on the same machine, using identical model weights (digest 009cb3f08d74), the same reported Ollama version (0.20.6), the same reported serve-time flags (16,384 context, flash attention enabled), and verified-identical application code (commit ebf2676 produced byte-identical output, N=10) found qwq:32b deterministically exhibiting Vulnerable Executor behavior (100% ASR, 10/10 runs byte-identical). Session 0 is byte-identical between April and June; session 1 differs only in the injected calendar date (does not propagate to memory); the first consequential divergence is a single reasoning token in session 2 (character 648 of the second reasoning block), which changes a stored memory key name and cascades into opposite safety outcomes. The classification margin is one token out of thousands of identical decisions. The responsible host-layer component (OS version, GPU/Metal driver, daemon binary build) could not be isolated because the April environment was not fully logged. The April 2026 result stands as internally consistent; its temporal generalizability is conditioned on the host environment at time of evaluation.
 
 ### B. Double Dissociation Section Draft (for NDSS extension or separate paper)
 
