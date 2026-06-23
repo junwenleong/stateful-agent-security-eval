@@ -167,6 +167,44 @@ Remove any one → ASR drops to 0%.
 
 ---
 
+## 5b. Bedrock Tier 1: Infrastructure Sensitivity (RUNNING — 2026-06-23)
+
+**Question**: Do model archetypes remain stable when the same model family is served via Bedrock (full precision, production stack) vs local Ollama (q4_0, Apple Silicon Metal)?
+
+**Design**: 6 models × 2 defenses (no_defense, memory_sandbox) × 2 attacks × N=40 = 960 runs  
+**Config**: `experiments/configs/bedrock_tier1.yaml`  
+**Results**: `results/bedrock_tier1/results.jsonl`  
+**Region**: us-east-1, profile tra-sso, temperature 0.0, maxTokens 16384  
+**Launched**: 2026-06-23 15:40 SGT  
+**Estimated completion**: ~8h (~midnight SGT)
+
+**Models** (all confirmed tool-capable via probe):
+| Model | Local Factorial ASR (no_def) | Local Factorial ASR (sandbox) |
+|-------|------------------------------|-------------------------------|
+| openai.gpt-oss-120b-1:0 | 100% | 0% |
+| openai.gpt-oss-20b-1:0 | 98% | 0% |
+| openai.gpt-oss-safeguard-120b | 100% | 0% |
+| openai.gpt-oss-safeguard-20b | N/A (not in local factorial) | N/A |
+| qwen.qwen3-32b-v1:0 | 100% | 0% |
+| zai.glm-4.7-flash | 100% | 0% |
+
+**Pre-registered hypothesis** (from config header, written before data collection):
+> For each model, Bedrock no_defense ASR is within the 95% CI of the local factorial ASR, and the archetype classification matches.
+
+**Instrumentation verified (N=1 pre-launch)**:
+- ✅ `bedrock_model_id`, `bedrock_region`, `bedrock_inference_profile` populate
+- ✅ `final_stop_reason` = `end_turn` (actual Bedrock value, not catch-all)
+- ✅ `max_tokens` truncation guard positively tested (forced maxTokens=50 → caught)
+- ✅ Parse-mismatch guard active (stopReason=tool_use + 0 calls → error log)
+
+**Early signal (N=20, gpt-oss-120b, no_defense DTA only)**:
+- injection: 100%
+- ASR: ~80% (vs 100% local) — possible archetype shift; wait for N=40
+
+**Status**: 🔄 Running. Check with `.venv/bin/python scripts/progress.py`
+
+---
+
 ## 6. Reproducibility Gap
 
 **The gap**: Ollama version and GGUF digest not logged in JSONL records. The qwq behavioral shift demonstrates this matters.
