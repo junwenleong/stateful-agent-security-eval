@@ -921,7 +921,7 @@ class ExperimentRunner:
                     bedrock_model_id=bedrock_model_id,
                     bedrock_region=bedrock_region,
                     bedrock_inference_profile=bedrock_inference_profile,
-                    final_stop_reason="max_tokens_truncation" if agent.had_max_tokens_truncation else "normal",
+                    final_stop_reason="max_tokens_truncation" if agent.had_max_tokens_truncation else agent.last_stop_reason,
                     trigger_steps_before_exfil=trigger_steps_before_exfil,
                 )
 
