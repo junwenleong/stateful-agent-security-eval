@@ -12,7 +12,7 @@ I ran 5,040 controlled experiments across 9 models and 7 conditions (6 defenses 
 
 **The short answer: they cannot.**
 
-The one defense that works removes memory access entirely. But for one model, that defense inverts the failure mode, making the agent *more* vulnerable than having no defense at all.
+The one defense that works removes memory access entirely. But for one model, that defense inverted the failure mode under Ollama 0.20.6, making the agent *more* vulnerable than having no defense at all (this inversion is inference-engine-sensitive and does not reproduce under Ollama 0.21.2 — see [Limitations](#limitations)).
 
 ---
 
@@ -36,7 +36,7 @@ If you deploy agents with persistent memory and communication tools, the standar
 | Tool | **Memory Sandbox** | **11.1%** |
 | — | No defense (baseline) | 88.6% |
 
-Five defenses are statistically indistinguishable from having no defense at all. Memory Sandbox reduces ASR to 0% for 8 of 9 models. The 11.1% aggregate reflects one model (qwq:32b) that inverts to 100% under the sandbox.
+Five defenses are statistically indistinguishable from having no defense at all. Memory Sandbox reduces ASR to 0% for 8 of 9 models. The 11.1% aggregate reflects one model (qwq:32b) that inverted to 100% under the sandbox on Ollama 0.20.6; this behavior is inference-engine-sensitive (see below).
 
 ---
 
@@ -118,6 +118,8 @@ All models run against the same infrastructure (Unified Agentic Environment), so
 The tools are simulated, not production deployments. The models are quantized open-source weights, not full-precision API-served versions. The defenses are lightweight proxies designed to test architectural categories rather than replicate commercial implementations. A production-grade classifier or a larger judge model might detect the specific compliance-formatted payload used here.
 
 But the architectural gap that the results expose (that input, retrieval, and instruction-level defenses cannot reach the layer where the attack persists) is not a property of the classifier's training set or the judge's parameter count. It is a property of where these defenses sit relative to where the attack lives, and that does not change with scale.
+
+The qwq:32b Draft-Only archetype and its associated Memory Sandbox inversion (0% → 100% ASR) were observed under Ollama 0.20.6 but do not reproduce under Ollama 0.21.2 — the same weights now exhibit Vulnerable Executor behavior (100% ASR under no defense). This is reclassified as an inference-engine artifact rather than a stable model property. The double dissociation finding (v2) uses a different experimental design (thinking toggle on qwen3:32b) and is not affected by this issue.
 
 ---
 
