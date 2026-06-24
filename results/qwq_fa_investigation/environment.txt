@@ -1,0 +1,42 @@
+=== Date ===
+Wed 24 Jun 2026 17:23:00 UTC
+
+=== Ollama version ===
+Warning: could not connect to a running Ollama instance
+Warning: client version is 0.20.6
+
+=== Ollama binary hash ===
+db51a3fb2613fff17235c5123ec5d3f07193068997230c61e1b66cf98a86ca93  /usr/local/bin/ollama
+
+=== Ollama binary modification time ===
+lrwxr-xr-x  1 root  wheel  50  1 Apr 14:14 /usr/local/bin/ollama -> /Applications/Ollama.app/Contents/Resources/ollama
+
+=== brew info ollama (install date) ===
+==> ollama: stable 0.30.10 (bottled), HEAD
+Create, run, and share large language models (LLMs)
+https://ollama.com/
+Not installed
+From: https://github.com/Homebrew/homebrew-core/blob/HEAD/Formula/o/ollama.rb
+License: MIT
+==> Dependencies
+Required (1): mlx-c
+==> Options
+--HEAD
+
+=== qwq:32b GGUF blob timestamp ===
+
+=== macOS version ===
+ProductName:		macOS
+ProductVersion:		26.2
+BuildVersion:		25C56
+
+=== Metal/GPU info ===
+      Chipset Model: Apple M3 Ultra
+      Vendor: Apple (0x106b)
+      Metal Support: Metal 4
+
+=== KV cache env (should be unset) ===
+OLLAMA_KV_CACHE_TYPE=<unset>
+
+=== modelfile KV info ===
+no kv info in modelfile
