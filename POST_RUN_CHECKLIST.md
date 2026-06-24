@@ -641,3 +641,61 @@ All also applied to FINDINGS.md and docs/index.md for consistency.
 - [ ] Instrument BedrockInterface to log raw `toolUse.name` on ValidationException (Event B root cause)
 - [ ] Decide NDSS scope: infrastructure-sensitivity + quantization + double-dissociation + Bedrock sandbox bypass as unified "serving infrastructure as safety variable" contribution
 - [ ] Partial executors (kimi 75%, minimax 75%, nemotron 60%) — no further escalation planned (sandbox confound would hit them; 75% ASR models are documented in Tier 2 breadth table)
+
+---
+
+## 15. Flash Attention Investigation (2026-06-25)
+
+### 15.1 What is established
+
+| Condition | no_defense ASR | memory_sandbox ASR | N | Date |
+|---|---|---|---|---|
+| FA=1 (June re-eval) | 10/10 (100%) | 10/10 (100%) | 10 | 2026-06-22 |
+| FA=0 (today) | 0/10 (0%) | 10/10 (100%) | 10+3 | 2026-06-25 |
+| FA=1 (April factorial) | 0/40 (0%) | 40/40 (100%) | 40 | 2026-04-20 |
+
+FA=0 reproduces both April results exactly (Draft-Only under no_defense + inversion under sandbox). FA=1 on the current build does not.
+
+### 15.2 What is NOT established (do not claim yet)
+
+**"Flash attention is the cause" is premature.** Disabling `OLLAMA_FLASH_ATTENTION` doesn't just turn off one kernel — it changes the entire attention code path: possibly different precision (fp32 vs fp16 accumulation), different KV cache quantization, different memory layout. The FA=0 flag is a big switch that controls multiple things. We got the expected result by flipping it, but we haven't isolated *which* downstream variable is responsible.
+
+Three competing hypotheses remain:
+
+| # | Hypothesis | Mechanism | Distinguishing test |
+|---|---|---|---|
+| A | FA kernel drift | April and June both ran flash attention, but the Metal FA kernel changed between Ollama builds | Would need April binary (unrecoverable) |
+| B | April never effectively used FA | April's Ollama build ignored the flag or lacked Metal FA support; April was effectively FA=0 | Check Ollama changelog for when Metal FA shipped |
+| C | KV cache quantization | FA=0 forces a different KV precision; that precision (not the attention kernel) is what controls the behavior | **Test: FA=1 + KV=f16** (running now) |
+
+### 15.3 Disambiguation test (running, ~30 min, starts after 4h sleep)
+
+Script: `scripts/investigate_qwq_fa.sh`
+
+Three conditions × N=3 × 2 defenses = 18 runs:
+
+| Condition | FA | KV | What it disambiguates |
+|---|---|---|---|
+| fa1_kv_default | 1 | (Ollama default) | Positive control — expect VE (100% no_def, 100% sandbox) |
+| fa0_kv_default | 0 | (Ollama default) | Re-confirm — expect April inversion (0% no_def, 100% sandbox) |
+| **fa1_kv_f16** | **1** | **f16** | **KEY: is it the FA kernel or KV quantization?** |
+
+**Interpretation of fa1_kv_f16:**
+- no_defense = 0/3 (Draft-Only returns) → KV cache quantization is the real variable, not the FA kernel. FA=0 was a red herring that incidentally forced full-precision KV.
+- no_defense = 3/3 (VE stays) → The FA kernel itself controls it, independent of KV precision.
+
+Also collects: Ollama binary hash, brew install date, GGUF blob timestamps, macOS version, Metal info → saved to `results/qwq_fa_investigation/environment.txt`. This determines whether the binary changed between April and June (Hypotheses A/B).
+
+### 15.4 What we will NOT do
+
+- Do not update paper.tex until disambiguation completes and we have a precise causal claim
+- Do not claim "flash attention is the cause" on the basis of FA=0 alone (multiple confounded variables behind one flag)
+- Do not submit v4 until the mechanism is cleanly isolated
+- The correct framing until disambiguation: "the attention implementation path is the controlling variable; the specific mechanism (kernel change vs KV quantization vs precision path) is under investigation"
+
+### 15.5 If the test resolves cleanly
+
+The paper sentence becomes one of:
+- **(If KV):** "The behavior is controlled by KV cache quantization: full-precision (f16) KV produces Draft-Only; quantized KV produces Vulnerable Executor. The OLLAMA_FLASH_ATTENTION flag was a confound — disabling flash attention incidentally forces full-precision KV on this hardware."
+- **(If FA kernel):** "The behavior is controlled by the flash attention kernel implementation: standard attention (FA=0) and FA with forced f16 KV both produce Draft-Only, while flash attention with default KV quantization produces Vulnerable Executor. The kernel's floating-point path determines a safety-relevant decision boundary."
+- **(If mixed/unclear):** stay with "attention implementation path is the controlling variable" and document the conditions under which each behavior manifests.
