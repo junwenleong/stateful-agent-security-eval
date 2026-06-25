@@ -981,3 +981,70 @@ Script: `scripts/test_qwq_deep.sh` (~3-4h)
 | 15 | Jun 25 19:08 | 1 | def | single-token probe | 20 loads | — | identical | **FINGERPRINT: no single-token FP drift** |
 | 16 | Jun 25 19:12 | 1 | def | qwen2.5:14b × dates | 6 | 6/6 | VE | **CROSS-MODEL: qwq-specific** |
 | 17 | Jun 25 19:35 | 1 | def | date-sweep + weather | 6+5 | 11/11 (even 04-17=VE) | VE | **WARM-STATE: cannot reproduce** |
+
+### 15.24 Paper v4 Additions — Drafted (2026-06-25 22:43 SGT)
+
+File: `paper/v4_draft_additions.md` — 5 new sections, all from existing data, zero additional compute.
+
+| Section | Title | Words | Source data | Status |
+|---|---|---|---|---|
+| §3.4 | Evaluation Artifacts (10 artifacts, 4 groups) | ~500 | Pilot validation artifacts 1-10 | DRAFTED |
+| §3.5 | Frontier Safety Architecture Comparison (Sonnet vs Haiku vs qwq) | ~500 | N=100 Bedrock + N=40 Haiku supplementary + factorial qwq | DRAFTED |
+| §4.x | Defense Composition Creates New Attack Surfaces | ~350 | qwen3:32b prompt_hardening + memory_sandbox interaction (Iteration 42) | DRAFTED |
+| §4.7 | Within-Session Reproducibility ≠ Cross-Session Reproducibility | ~600 | Today's full 17-experiment elimination study | DRAFTED |
+| §4.8 | Behavioral Stability Index (BSI) | ~350 | Factorial + June re-eval + today's cross-model test | DRAFTED |
+
+**What these add to the paper's contribution:**
+1. Evaluation artifacts → citable by all future benchmark builders (methodology)
+2. Frontier comparison → "0% ASR admits 3 robustness classes" (novel taxonomic finding)
+3. Defense stacking → "composing defenses can make things worse" (counterintuitive, actionable)
+4. Reproducibility → "within-session ≠ cross-session" (challenges a universal assumption)
+5. BSI → practical metric others can adopt (framework contribution)
+
+**Combined effect:** Paper goes from "defense evaluation paper" to "defense evaluation + evaluation methodology + frontier safety architecture + defense interaction pathology." Four distinct citable angles.
+
+### 15.25 Full Investigation Timeline — 2026-06-25 (one day, 12+ hours)
+
+| Time (SGT) | What happened | Outcome |
+|---|---|---|
+| 01:23 | Started investigating June VE vs April Draft-Only | FA/KV ruled out |
+| 02:00 | FA=0 and KV=f16 tested | Both VE with Jun25 date |
+| 09:30 | Per-load test (20 fresh loads) | 20/20 VE, loads are deterministic |
+| 10:15 | Date sweep (6 dates, single warm load) | **04-17 = Draft-Only, rest = VE** |
+| 12:12 | Generality test (7 nonces) | **Weather = Draft-Only** (1/7 nonces flipped) |
+| 14:06 | Generality results confirmed | Date + nonce both flip |
+| 16:06 | N=10 interleaved (weather vs blank) | **0/10 vs 10/10, p<1e-5** |
+| 16:41 | Mechanism corrected | Session-2 task-boundary collapse, NOT memory degradation |
+| 16:57 | Controls battery (6 conditions × 5) | Position + content specific (only C2 flips) |
+| 17:46 | Reboot gatekeeper | **NOT STABLE** (10/10 VE after reboot) |
+| 18:20 | Multi-load verification (3 loads × 5) | 15/15 VE, injection verified → load-dependent |
+| 19:08 | Load fingerprint (20 loads) | 20/20 identical → no single-token FP drift |
+| 19:12 | Cross-model (qwen2.5:14b × dates) | Unaffected → qwq-specific |
+| 19:35 | Warm-state reproduction | Cannot reproduce (even 04-17 now VE) |
+| 21:30 | Final synthesis | 8 established facts, cause unisolated |
+| 22:00 | Deep battery scripted | Monologue + cache + dates + marathon (running overnight) |
+| 22:43 | v4 paper additions drafted | 5 sections, 2300 words |
+
+### 15.26 Key Self-Corrections Made Today (intellectual honesty record)
+
+| Time | What I claimed | What the data showed | Correction |
+|---|---|---|---|
+| ~14:00 | "Nonce drops monitoring_endpoint key in injection session → less authority → Draft-Only" | N=10 tool logs: both conditions save exactly 1 key in S0. Extra keys come from S2, not S0. | Mechanism is S2 task-boundary escalation, not S0 memory loss |
+| ~14:30 | "The date on calendar tool IS a clean position control (we already know position doesn't matter)" | That was cross-experiment (different loads/dates/states), not within-load comparison | Withdrew claim; controls battery was needed and run properly |
+| ~15:30 | "The 20-load test covers cross-load stability for the nonce" | 20-load test was baseline (no nonce). It established stability for the DEFAULT behavior only | Reboot gatekeeper was needed and killed the nonce claim |
+| ~16:00 | (Implicit) "The weather nonce is a stable safety switch" | Reboot + multi-load: 15/15 VE with verified injection. Effect is session-state-dependent. | "Specific tokens can flip in specific sessions, but no token is a universal switch" |
+
+**Lesson reinforced:** Do not claim a cause before testing it across the relevant boundary (loads, reboots, sessions). Within-load determinism creates a false sense of understanding. The v2 engine-version overclaim taught us this; today we caught ourselves 4 times applying the same discipline.
+
+### 15.27 What the Paper Can Now Claim (vs. v3)
+
+| Claim | v3 status | v4 status |
+|---|---|---|
+| 5 defense classes fail, 1 works | ✅ Established (5040 runs) | ✅ Unchanged |
+| memory_sandbox is the only effective defense | ✅ Established | ✅ + qwq inversion documented |
+| qwq Draft-Only archetype is environment-fragile | ✅ "cause could not be isolated" | ✅ SAME — but now with 17-experiment characterization of WHAT is fragile and WHAT is NOT the cause |
+| Defense composition can create new attack surfaces | ❌ Not in v3 | ✅ NEW (qwen3:32b prompt_hardening + memory_sandbox) |
+| 0% ASR admits distinct robustness classes | ❌ Not in v3 | ✅ NEW (Sonnet vs Haiku vs qwq comparison) |
+| Evaluation artifacts are first-class variables | Mentioned briefly in §3.4 | ✅ EXPANDED to systematic contribution |
+| Within-session ≠ cross-session reproducibility | ❌ Not in v3 | ✅ NEW (17-experiment elimination) |
+| BSI metric | ❌ Not in v3 | ✅ NEW (practical framework) |
