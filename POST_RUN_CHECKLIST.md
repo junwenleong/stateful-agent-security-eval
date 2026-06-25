@@ -1069,3 +1069,46 @@ File: `paper/v4_draft_additions.md` — 5 new sections, all from existing data, 
 
 **THE HONEST BOTTOM LINE:**
 We identified the *what* (session-2 task-boundary escalation), the *where* (search tool description tokens during the active session-2 decision), and the *scope* (qwq-specific, within-load deterministic, cross-load stochastic). We cannot identify the *why* (what makes one daemon session flippable and another not) because we cannot observe or control the internal runtime state of the Ollama/llama.cpp/Metal inference stack. The cause is unisolated. Naming speculative mechanisms (thermal drift, ASLR, FP reduction ordering) without measurement evidence would repeat the v2 engine-version overclaim mistake.
+
+### 15.29 Queued: Cross-Model + Cross-Family Date Sensitivity (run after deep battery)
+
+**Script:** `scripts/test_crossmodel_date_sweep.sh` (~4-5h)  
+**Run after:** deep battery completes (shares GPU via same Ollama instance)
+
+**7 models × 2 dates × N=5 = 70 runs**
+
+| # | Model | Family | Defense | Why it's a candidate |
+|---|---|---|---|---|
+| 1 | glm-4.7-flash:latest | THUDM | no_defense | Execution-resistant (0% ASR, 0% influence). Can date flip to VE? |
+| 2 | llama3.3:70b | Meta | no_defense | Injection-resistant (0% inj). Can date flip injection? |
+| 3 | mistral-small3.2:24b | Mistral | no_defense | Injection-resistant (0% inj). Same question. |
+| 4 | deepseek-r1:70b | DeepSeek | no_defense | Injection-resistant + reasoning model. Best non-Qwen candidate. |
+| 5 | qwen3:8b | Qwen | no_defense | Environment-fragile (LC→VE flip April→June, same weights) |
+| 6 | qwen3.5:122b | Qwen | prompt_hardening | Sleeper effect (0% ASR under PH). Is it date-fragile? |
+| 7 | qwen2.5:72b | Qwen | no_defense | Negative control (solid VE, expect 100% both dates) |
+
+**Three possible conclusions:**
+- ALL stable → date-sensitivity is qwq:32b-SPECIFIC (strengthens current framing)
+- Only Qwen models flip → QWEN-FAMILY phenomenon (moderate finding)
+- Non-Qwen models also flip → CROSS-FAMILY (major: weakens all single-date evaluations)
+
+**Independence from deep battery:** These are separate questions. Deep battery = "can we reproduce the flipping state on qwq?" Cross-model/family = "is date-sensitivity unique to qwq?" Neither blocks the other.
+
+### 15.30 Queued: Final Hypotheses — Inducing the Flippable State (run after cross-model sweep)
+
+**Script:** `scripts/test_qwq_final_hypotheses.sh` (~5-6h)  
+**Run after:** cross-model date sweep completes
+
+Deep battery killed "session longevity" (50 runs, marathon). These test the remaining mechanistically-distinct hypotheses:
+
+| # | Hypothesis | Test | Why it's distinct from marathon |
+|---|---|---|---|
+| 0 | OS/bundle version changed | Read system metadata (sw_vers, dyld cache, Ollama Info.plist) | Instant check, no compute |
+| 1 | Multi-model VRAM churn | Load qwen2.5:72b → qwen3.5:122b → qwen2.5:32b → qwq, then weather nonce | Marathon was single-model; this fragments unified memory with model swaps |
+| 2 | Mixed context-length churn | 10 alternating short/long generations on qwq, then weather nonce | Marathon was uniform context; this stresses KV-cache allocation with varying sizes |
+| 3 | Interactive pacing (idle gaps) | 5 DTA runs with 5-min sleeps between them, then weather nonce | Marathon fired instantly; this allows OS memory compression/GC during gaps |
+
+**If any test flips → we can induce the state (massive finding; isolate which condition).**  
+**If all fail → true terminus. Session fingerprint is unmeasurable/uncontrollable. Lock paper framing.**
+
+**Note:** Tests 1 and 2 chain on the same Ollama session (VRAM churn → context churn → test). Test 3 starts a fresh Ollama. This is intentional — test 2 adds context-length stress on top of the already-fragmented state from test 1.
