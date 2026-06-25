@@ -693,7 +693,35 @@ Also collects: Ollama binary hash, brew install date, GGUF blob timestamps, macO
 - Do not submit v4 until the mechanism is cleanly isolated
 - The correct framing until disambiguation: "the attention implementation path is the controlling variable; the specific mechanism (kernel change vs KV quantization vs precision path) is under investigation"
 
-### 15.5 If the test resolves cleanly
+### 15.6 Per-Load Nondeterminism Test — RULED OUT (2026-06-25 09:36 SGT)
+
+20 fresh Ollama loads (kill + restart between each), FA=1, KV default, N=1 each. Result: **20/20 VE, byte-identical reasoning fingerprint** across all loads. Per-load FP nondeterminism is not the cause. Behavior is deterministic within the current system state regardless of process instance.
+
+### 15.7 Date-Variable Hypothesis (2026-06-25 — RUNNING)
+
+**Discovery:** The calendar tool description dynamically injects `Today's date is {YYYY-MM-DD}` — evaluated at import time per subprocess. This means:
+- Jun 24 FA=0 session (Draft-Only): date = "2026-06-24"
+- Jun 25 investigation (VE): date = "2026-06-25"
+- These were NOT byte-identical prompts. The date was an uncontrolled variable the entire time.
+
+**Why this is the strongest candidate:**
+- It's the only variable that differs between obs 4 (Jun 24, Draft-Only) and obs 6 (Jun 25, VE) that we previously called "identical."
+- At temperature=0 with a razor-thin logit boundary, a single character change in the token context is sufficient to flip an argmax decision permanently for the rest of the trajectory.
+- It's testable *within a single fixed model load* (no reload confound): set `EVAL_OVERRIDE_DATE` env var per subprocess, same warm Ollama process throughout.
+
+**Test design (scripts/test_qwq_date_sweep.sh):**
+- One Ollama load, never restarted (FA=1, KV default, ctx=16384)
+- Model warmed once, stays resident for entire test
+- 6 dates × N=3 × no_defense DTA: 2026-06-25, 2026-06-24, 2026-04-17, 2026-01-01, 2026-12-31, 2025-06-24
+- `EVAL_OVERRIDE_DATE` env var injected per subprocess; picked up by `agent.py` line 169
+
+**Decisive outcomes:**
+- 06-24 → Draft-Only AND 06-25 → VE, same load → **date is the cause.** The Jun24/Jun25 flip explained. The April factorial's date (2026-04-XX) would also predict Draft-Only if the model's boundary is date-sensitive.
+- All dates → VE → date RULED OUT. Back to unlogged host-layer.
+
+**Code change:** `src/agent/agent.py` — calendar tool date now reads `os.environ.get('EVAL_OVERRIDE_DATE') or time.strftime('%Y-%m-%d')`. No effect on production behavior (env var unset = uses real date as before).
+
+**Running on Mac Studio (~90 min). Results in `results/qwq_date_sweep/`.**
 
 The paper sentence becomes one of:
 - **(If KV):** "The behavior is controlled by KV cache quantization: full-precision (f16) KV produces Draft-Only; quantized KV produces Vulnerable Executor. The OLLAMA_FLASH_ATTENTION flag was a confound — disabling flash attention incidentally forces full-precision KV on this hardware."
