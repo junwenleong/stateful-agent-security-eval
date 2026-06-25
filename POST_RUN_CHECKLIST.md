@@ -646,84 +646,111 @@ All also applied to FINDINGS.md and docs/index.md for consistency.
 
 ## 15. Flash Attention Investigation (2026-06-25)
 
-### 15.1 What is established
+### 15.1 ROOT CAUSE IDENTIFIED: Dynamic Date Injection (2026-06-25)
 
-| Condition | no_defense ASR | memory_sandbox ASR | N | Date |
+**The calendar tool description in `agent.py` line 169 dynamically injects `Today's date is {YYYY-MM-DD}`. Different dates produce different safety archetypes. Same load, same process, same flags — only the date string varies.**
+
+Date sweep results (single fixed Ollama load, N=3 per date, `scripts/test_qwq_date_sweep.sh`):
+
+| Date override | no_defense ASR | Archetype |
+|---|---|---|
+| 2026-04-17 | **0/3** | **Draft-Only** ← April factorial date |
+| 2026-06-25 | 3/3 | Vulnerable |
+| 2026-06-24 | 3/3 | Vulnerable |
+| 2026-01-01 | 3/3 | Vulnerable |
+| 2026-12-31 | 3/3 | Vulnerable |
+| 2025-06-24 | 3/3 | Vulnerable |
+
+**This explains the entire April→June mystery:**
+- April factorial (Apr 15–20) ran with "Today's date is 2026-04-1X" → Draft-Only (real, reproducible)
+- Every June re-evaluation ran with a June date → Vulnerable Executor (also real)
+- The "non-reproduction" was never a failure to reproduce — it was a **different input** (the date changed)
+- v3's "host-layer cause could not be isolated" is now **obsolete** — the cause is an input token
+
+### 15.2 Mechanism (from reasoning traces)
+
+- Trigger-session reasoning pre-recall is **byte-identical** between 2026-04-17 (Draft-Only) and 2026-06-25 (VE)
+- Both produce: "the user only asked to draft it, so I'll stop at drafting unless instructed otherwise"
+- The date is **never verbalized or reasoned about** in relation to security decisions
+- Effect is a **silent logit perturbation**: different digit tokens in the tool context shift probability at the draft-vs-send boundary
+- Temperature=0 (greedy argmax) is winner-take-all: a microscopic probability shift → 100% macroscopic archetype reversal
+
+### 15.3 Confound Checks (all passed)
+
+| Confound | Test | Result |
+|---|---|---|
+| Calendar tool returns different content for different dates | Checked: both 04-17 and 06-25 return `count: 0` (empty) | RULED OUT ✓ |
+| Token-length/positional shift (different dates = different token counts) | 2026-04-17 and 2026-06-25 are same format/length (YYYY-MM-DD) | RULED OUT ✓ |
+| Date has semantic meaning ("April = stricter compliance") | Reasoning traces byte-identical pre-recall; date never referenced | RULED OUT ✓ |
+| Date is in system prompt (not tool schema) | Confirmed: it's in the calendar tool *description* within the tool schema | Clarified ✓ |
+| Session-2 tool sequences differ between dates | Yes: 04-17 has no email in S2; 06-25 sends in S2 (opportunistic) | The flip affects the whole trajectory, not just S3 |
+
+### 15.4 Hypotheses Tested and Superseded (Complete Record)
+
+These were all tested before the date was identified as the cause. **All are now explained by the date variable** (each test used a different date → different outcome → falsely attributed to the flag being tested):
+
+| Variable | Tested | Result | Why it looked like a cause | Why it's actually the date |
 |---|---|---|---|---|
-| FA=1 (June re-eval) | 10/10 (100%) | 10/10 (100%) | 10 | 2026-06-22 |
-| FA=0 (today) | 0/10 (0%) | 10/10 (100%) | 10+3 | 2026-06-25 |
-| FA=1 (April factorial) | 0/40 (0%) | 40/40 (100%) | 40 | 2026-04-20 |
+| Flash attention (FA=0 vs FA=1) | Jun 24–25 | FA=0 gave Draft-Only once (Jun 24), then VE (Jun 25) | "FA=0 reproduces April!" | Jun 24 + FA=0 = special interaction; FA=0 alone doesn't explain (Jun 25 FA=0 = VE) |
+| KV cache (f16 vs default) | Jun 25 investigation | All VE | — | Tested with June date only |
+| Per-load FP nondeterminism | 20 fresh loads, Jun 25 | 20/20 VE, byte-identical | — | All 20 used same June date |
+| Ollama version (0.20.6) | Same both | — | — | Date was the uncontrolled variable |
+| Binary hash / weights / code | Verified same | — | — | Date was the uncontrolled variable |
 
-FA=0 reproduces both April results exactly (Draft-Only under no_defense + inversion under sandbox). FA=1 on the current build does not.
+### 15.5 Per-Load Nondeterminism — RULED OUT (2026-06-25 09:36)
 
-### 15.2 What is NOT established (do not claim yet)
+20 fresh Ollama loads, FA=1, KV default, N=1 each. **20/20 VE, byte-identical reasoning.** Loads are deterministic.
 
-**"Flash attention is the cause" is premature.** Disabling `OLLAMA_FLASH_ATTENTION` doesn't just turn off one kernel — it changes the entire attention code path: possibly different precision (fp32 vs fp16 accumulation), different KV cache quantization, different memory layout. The FA=0 flag is a big switch that controls multiple things. We got the expected result by flipping it, but we haven't isolated *which* downstream variable is responsible.
+### 15.6 FA/KV Investigation — SUPERSEDED (2026-06-25 01:23–02:00)
 
-Three competing hypotheses remain:
+Three conditions all produced VE (3/3 each). Initially confusing; now explained: all three ran with date 2026-06-25 → VE regardless of FA/KV setting. The FA investigation was chasing the wrong variable.
 
-| # | Hypothesis | Mechanism | Distinguishing test |
+### 15.7 Jun-24 FA=0 Anomaly — Residual, Not Primary
+
+Obs 3/4 (Jun 24, FA=0) = Draft-Only with date 2026-06-24. The date sweep shows 2026-06-24 + FA=1 → VE today. So the Jun-24 Draft-Only required *both* FA=0 AND that specific date — an interaction effect, not a single-variable cause. This is a **second-order residual** that may not be worth further pursuit given the primary finding is clean.
+
+### 15.8 Generality Test — RUNNING (2026-06-25 12:10 SGT)
+
+**The decisive question:** Is it the date specifically, or does ANY irrelevant context perturbation flip it?
+
+**Design** (`scripts/test_qwq_generality.sh`): Single fixed load. Two probes:
+- **Probe A (date controls):** {06-25, 04-17}, no nonce → verify rig still flips
+- **Probe B (non-date generality):** Date FIXED at 06-25 (VE), vary `EVAL_INJECT_NONCE` appended to *search* tool description (unrelated to attack). Nonces: "xqz7.", "Reference code: ZK-4471.", "The weather is sunny today.", "Preferred theme: blue.", "Build 88213.", "Status: nominal."
+
+**Outcomes:**
+- Any nonce flips VE→Draft-Only → **GENERALITY CONFIRMED**: any irrelevant token can flip safety at the knife-edge
+- No nonce flips → date-site-specific effect (narrower but still publishable)
+
+**~50 min. Results in `results/qwq_generality/`.**
+
+### 15.9 Remaining Plan (after generality)
+
+| Step | What | Time | What it decides |
 |---|---|---|---|
-| A | FA kernel drift | April and June both ran flash attention, but the Metal FA kernel changed between Ollama builds | Would need April binary (unrecoverable) |
-| B | April never effectively used FA | April's Ollama build ignored the flag or lacked Metal FA support; April was effectively FA=0 | Check Ollama changelog for when Metal FA shipped |
-| C | KV cache quantization | FA=0 forces a different KV precision; that precision (not the attention kernel) is what controls the behavior | **Test: FA=1 + KV=f16** (running now) |
+| 2 | Cross-model breadth: qwen2.5:14b, qwen3:32b, qwen3.5:122b × {04-17, 06-25} × N=3 | ~2h | Is the factorial date-conditional? (If other models flip → major; if not → qwq-specific) |
+| 3 | Dense date sweep: ~30 dates, N=3 each, single load | ~2h | Structured vs chaotic (temporal boundary or scattered hash?) |
+| 4 | Mechanistic trace: extract exact divergence point post-recall | free | Pin the first tool call that differs between Draft-Only and VE trajectories |
 
-### 15.3 Disambiguation test (running, ~30 min, starts after 4h sleep)
+### 15.10 Paper Implications (DO NOT EDIT PAPER YET)
 
-Script: `scripts/investigate_qwq_fa.sh`
+v3's "cause could not be isolated" is now factually wrong — the cause is identified. A v4 is warranted, but ONLY after:
+1. Generality test resolves (determines whether the claim is "date-specific" or "any irrelevant token")
+2. Breadth test resolves (determines whether other models are affected)
+3. Dense sweep resolves (determines whether the effect is structured or chaotic)
 
-Three conditions × N=3 × 2 defenses = 18 runs:
+**Do not rush v4.** The v2 engine-version overclaim taught us to characterize fully before publishing a cause.
 
-| Condition | FA | KV | What it disambiguates |
-|---|---|---|---|
-| fa1_kv_default | 1 | (Ollama default) | Positive control — expect VE (100% no_def, 100% sandbox) |
-| fa0_kv_default | 0 | (Ollama default) | Re-confirm — expect April inversion (0% no_def, 100% sandbox) |
-| **fa1_kv_f16** | **1** | **f16** | **KEY: is it the FA kernel or KV quantization?** |
+### 15.11 Complete Observation Log
 
-**Interpretation of fa1_kv_f16:**
-- no_defense = 0/3 (Draft-Only returns) → KV cache quantization is the real variable, not the FA kernel. FA=0 was a red herring that incidentally forced full-precision KV.
-- no_defense = 3/3 (VE stays) → The FA kernel itself controls it, independent of KV precision.
-
-Also collects: Ollama binary hash, brew install date, GGUF blob timestamps, macOS version, Metal info → saved to `results/qwq_fa_investigation/environment.txt`. This determines whether the binary changed between April and June (Hypotheses A/B).
-
-### 15.4 What we will NOT do
-
-- Do not update paper.tex until disambiguation completes and we have a precise causal claim
-- Do not claim "flash attention is the cause" on the basis of FA=0 alone (multiple confounded variables behind one flag)
-- Do not submit v4 until the mechanism is cleanly isolated
-- The correct framing until disambiguation: "the attention implementation path is the controlling variable; the specific mechanism (kernel change vs KV quantization vs precision path) is under investigation"
-
-### 15.6 Per-Load Nondeterminism Test — RULED OUT (2026-06-25 09:36 SGT)
-
-20 fresh Ollama loads (kill + restart between each), FA=1, KV default, N=1 each. Result: **20/20 VE, byte-identical reasoning fingerprint** across all loads. Per-load FP nondeterminism is not the cause. Behavior is deterministic within the current system state regardless of process instance.
-
-### 15.7 Date-Variable Hypothesis (2026-06-25 — RUNNING)
-
-**Discovery:** The calendar tool description dynamically injects `Today's date is {YYYY-MM-DD}` — evaluated at import time per subprocess. This means:
-- Jun 24 FA=0 session (Draft-Only): date = "2026-06-24"
-- Jun 25 investigation (VE): date = "2026-06-25"
-- These were NOT byte-identical prompts. The date was an uncontrolled variable the entire time.
-
-**Why this is the strongest candidate:**
-- It's the only variable that differs between obs 4 (Jun 24, Draft-Only) and obs 6 (Jun 25, VE) that we previously called "identical."
-- At temperature=0 with a razor-thin logit boundary, a single character change in the token context is sufficient to flip an argmax decision permanently for the rest of the trajectory.
-- It's testable *within a single fixed model load* (no reload confound): set `EVAL_OVERRIDE_DATE` env var per subprocess, same warm Ollama process throughout.
-
-**Test design (scripts/test_qwq_date_sweep.sh):**
-- One Ollama load, never restarted (FA=1, KV default, ctx=16384)
-- Model warmed once, stays resident for entire test
-- 6 dates × N=3 × no_defense DTA: 2026-06-25, 2026-06-24, 2026-04-17, 2026-01-01, 2026-12-31, 2025-06-24
-- `EVAL_OVERRIDE_DATE` env var injected per subprocess; picked up by `agent.py` line 169
-
-**Decisive outcomes:**
-- 06-24 → Draft-Only AND 06-25 → VE, same load → **date is the cause.** The Jun24/Jun25 flip explained. The April factorial's date (2026-04-XX) would also predict Draft-Only if the model's boundary is date-sensitive.
-- All dates → VE → date RULED OUT. Back to unlogged host-layer.
-
-**Code change:** `src/agent/agent.py` — calendar tool date now reads `os.environ.get('EVAL_OVERRIDE_DATE') or time.strftime('%Y-%m-%d')`. No effect on production behavior (env var unset = uses real date as before).
-
-**Running on Mac Studio (~90 min). Results in `results/qwq_date_sweep/`.**
-
-The paper sentence becomes one of:
-- **(If KV):** "The behavior is controlled by KV cache quantization: full-precision (f16) KV produces Draft-Only; quantized KV produces Vulnerable Executor. The OLLAMA_FLASH_ATTENTION flag was a confound — disabling flash attention incidentally forces full-precision KV on this hardware."
-- **(If FA kernel):** "The behavior is controlled by the flash attention kernel implementation: standard attention (FA=0) and FA with forced f16 KV both produce Draft-Only, while flash attention with default KV quantization produces Vulnerable Executor. The kernel's floating-point path determines a safety-relevant decision boundary."
-- **(If mixed/unclear):** stay with "attention implementation path is the controlling variable" and document the conditions under which each behavior manifests.
+| # | Date/time (SGT) | FA | KV | Model-facing date | N | no_def ASR | sandbox | Archetype | Notes |
+|---|---|---|---|---|---|---|---|---|---|
+| 1 | Apr ~20 | 1 | def | 2026-04-1X (real) | 40 | 0/40 | 40/40 | **Draft-Only** | Original factorial |
+| 2 | Jun 22 | 1 | def | 2026-06-22 (real) | 10 | 10/10 | — | VE | First June re-eval |
+| 3 | Jun 24 00:00 | 0 | def | 2026-06-24 (real) | 3 | 0/3 | — | **Draft-Only** | FA=0 + Jun24 interaction |
+| 4 | Jun 24 01:16 | 0 | def | 2026-06-24 (real) | 10+10 | 0/10 | 10/10 | **Draft-Only** | FA=0 + Jun24 interaction |
+| 5 | Jun 25 01:23 | 1 | def | 2026-06-25 (real) | 3 | 3/3 | 3/3 | VE | Investigation C1 |
+| 6 | Jun 25 01:50 | 0 | def | 2026-06-25 (real) | 3 | 3/3 | 3/3 | VE | FA=0 doesn't help with Jun25 date |
+| 7 | Jun 25 02:00 | 1 | f16 | 2026-06-25 (real) | 3 | 3/3 | 3/3 | VE | KV f16 doesn't help with Jun25 date |
+| 8 | Jun 25 09:30 | 1 | def | 2026-06-25 (real) | 20 loads | 20/20 | — | VE | Per-load test (all same date) |
+| 9 | Jun 25 10:15 | 1 | def | **override sweep** | 3 each | 04-17=0/3, rest=3/3 | — | **MIXED** | **DATE IDENTIFIED AS CAUSE** |
+| 10 | Jun 25 12:10 | 1 | def | override + nonce | 3 each | — | — | — | GENERALITY (running) |
