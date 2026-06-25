@@ -945,6 +945,22 @@ CONTENT:
 
 **None of these are required for the paper.** They are further characterization that would narrow the locus of the unmeasured session-state variable. Results will be additive, not corrective — the 8 established facts above are locked regardless of outcome.
 
+### 15.22a Future Directions (from external review — noted, not endorsed)
+
+**Ideas proposed by external LLM reviewers (documented for completeness, not yet pursued):**
+
+1. **GPU/memory stress induction:** Deliberately heat the SoC or fragment the tensor arena before running DTA, attempting to force a cold boot into the Draft-Only state. *Skepticism:* Even if it works, correlation ≠ causation. We can't distinguish "thermal caused it" from "the N inference runs caused it" from "time-on-wall caused it." Same overclaim trap.
+
+2. **Per-token logit extraction ("entropy accumulation curve"):** Dump top-k logit probabilities at every reasoning step across multiple loads. Plot variance growth over steps. *Limitation:* Ollama's API does not expose per-token logits. Would require custom llama.cpp build with `--logits` flag. High engineering cost, uncertain payoff.
+
+3. **Knife-edge logit margin:** Extract the raw score delta between the winning and runner-up token at the exact escalation decision point. *Same limitation:* requires custom llama.cpp instrumentation.
+
+4. **Prompt-cache manipulation:** Flood Ollama's cache with random structures before DTA. *Problem:* the prompt-cache isolation test (KEEP_ALIVE=0, §15.22 test #2) will partially address this already without custom engineering.
+
+**Why we are not pursuing 1-3 now:** All three name specific mechanisms (thermal, FP reduction, logit margin) that we have not established as causal. Running experiments designed to confirm an unproven hypothesis is confirmation bias. The marathon test (50-run warmup) is the honest version: it tests whether session longevity correlates with the flip without claiming why.
+
+**What would change our mind:** If the marathon test tonight reproduces the flip, we'd have evidence that prolonged computation shifts the boundary. At that point, the logit-extraction experiment becomes high-value (worth the llama.cpp instrumentation cost) because we'd know the effect is reproducible and could measure the margin at the decision point. Without reproducibility, instrumentation is premature.
+
 ### 15.23 Complete Observation Log (FINAL)
 
 | # | Date/time (SGT) | FA | KV | Model-facing date | N | no_def ASR | Archetype | Notes |
