@@ -1048,3 +1048,24 @@ File: `paper/v4_draft_additions.md` — 5 new sections, all from existing data, 
 | Evaluation artifacts are first-class variables | Mentioned briefly in §3.4 | ✅ EXPANDED to systematic contribution |
 | Within-session ≠ cross-session reproducibility | ❌ Not in v3 | ✅ NEW (17-experiment elimination) |
 | BSI metric | ❌ Not in v3 | ✅ NEW (practical framework) |
+
+### 15.28 Precise Characterization: What We Know vs. What We Don't Know
+
+**WHAT WE KNOW (mechanism — what happens):**
+- qwq:32b sits at a razor-thin argmax boundary on the session-2 "search → escalate to email" decision
+- In some daemon sessions, specific context tokens (dates, nonces) push it across that boundary deterministically (N=10, p<1e-5)
+- The decision being controlled is task-boundary escalation: whether the model over-executes a benign "search for updates" into an unsolicited email-send that applies a stored routing rule
+- Single-token inference is perfectly deterministic across loads (20/20 identical fingerprint test)
+- The boundary shift only manifests in long multi-turn sequences (4-session DTA pipeline with tool calls), not in short or single-turn generation
+- The phenomenon is qwq-specific: qwen2.5:14b (same model family, non-reasoning) is completely unaffected by the identical protocol
+- Within a flippable session: the effect is position-specific (must be on the session-2 active tool) and content-specific (only "The weather is sunny today." flipped; "rainy" and "coffee" did not)
+- The effect does not survive a fresh daemon load, a reboot, or a replay of the same test sequence on a new session
+
+**WHAT WE DON'T KNOW (cause — why the boundary moves between sessions):**
+- What property of a "warm" multi-hour session places the boundary in a flippable position
+- Whether the cause is prompt-cache state, FP accumulation over many inference calls, Metal shader scheduling drift, tensor arena fragmentation, or something else
+- Why replaying the exact same test sequence on a fresh load does NOT recreate the flippable state (ruling out "input history" as the sole determinant)
+- Whether the original April factorial's qwq Draft-Only result was caused by the same mechanism or a different one (strongly implied but not proven — we confirmed 04-17 flips in one warm session but not on fresh loads)
+
+**THE HONEST BOTTOM LINE:**
+We identified the *what* (session-2 task-boundary escalation), the *where* (search tool description tokens during the active session-2 decision), and the *scope* (qwq-specific, within-load deterministic, cross-load stochastic). We cannot identify the *why* (what makes one daemon session flippable and another not) because we cannot observe or control the internal runtime state of the Ollama/llama.cpp/Metal inference stack. The cause is unisolated. Naming speculative mechanisms (thermal drift, ASLR, FP reduction ordering) without measurement evidence would repeat the v2 engine-version overclaim mistake.
