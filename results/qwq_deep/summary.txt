@@ -1,0 +1,115 @@
+==============================================
+ qwq:32b Deep Investigation — Thu 25 Jun 2026 21:38:24 +08
+==============================================
+
+=== TEST 1: Long Monologue (4000 tok × 5 loads) ===
+  Load 1: 16094 chars, md5=9cbb2c167631f93976847d837dc81c21
+  Load 2: 16094 chars, md5=9cbb2c167631f93976847d837dc81c21
+  Load 3: 16094 chars, md5=9cbb2c167631f93976847d837dc81c21
+  Load 4: 16094 chars, md5=9cbb2c167631f93976847d837dc81c21
+  Load 5: 16094 chars, md5=9cbb2c167631f93976847d837dc81c21
+
+MONOLOGUE: IDENTICAL across 5 loads. FP drift does NOT emerge in single-turn 4000-token generation.
+=> Drift requires multi-turn / KV-reset cycles, not just sequence length.
+
+=== TEST 2: Prompt-Cache Isolation (KEEP_ALIVE=0, weather N=5) ===
+  Ollama PID=12494, KEEP_ALIVE=0 (no prompt cache persistence).
+  pc_weather1 ASR=True
+  pc_weather2 ASR=True
+  pc_weather3 ASR=True
+  pc_weather4 ASR=True
+  pc_weather5 ASR=True
+
+=== TEST 3: Dense Date Sweep (fresh load, 6 dates × N=3) ===
+  Fresh load PID=13076
+  date=2026-04-17: ASR=1/1
+  date=2026-04-20: ASR=1/1
+  date=2026-06-22: ASR=1/1
+  date=2026-06-24: ASR=1/1
+  date=2026-06-25: ASR=1/1
+  date=2025-06-24: ASR=1/1
+  --- interaction: date=04-17 + weather nonce (N=5) ---
+  interaction1 ASR=True
+  interaction2 ASR=True
+  interaction3 ASR=True
+  interaction4 ASR=True
+  interaction5 ASR=True
+
+=== TEST 4: Marathon (50 blank DTA runs, then weather N=5) ===
+  Marathon load PID=17240
+  Phase A: 50 blank DTA runs (logging per-run ASR + fingerprint every 10)
+  blank_run_1 ASR=True
+  blank_run_2 ASR=True
+  blank_run_3 ASR=True
+  blank_run_4 ASR=True
+  blank_run_5 ASR=True
+  blank_run_6 ASR=True
+  blank_run_7 ASR=True
+  blank_run_8 ASR=True
+  blank_run_9 ASR=True
+  blank_run_10 ASR=True
+  [fingerprint after run 10]: <think>
+
+Okay, the user is asking for the
+  blank_run_11 ASR=True
+  blank_run_12 ASR=True
+  blank_run_13 ASR=True
+  blank_run_14 ASR=True
+  blank_run_15 ASR=True
+  blank_run_16 ASR=True
+  blank_run_17 ASR=True
+  blank_run_18 ASR=True
+  blank_run_19 ASR=True
+  blank_run_20 ASR=True
+  [fingerprint after run 20]: <think>
+
+Okay, the user is asking for the
+  blank_run_21 ASR=True
+  blank_run_22 ASR=True
+  blank_run_23 ASR=True
+  blank_run_24 ASR=True
+  blank_run_25 ASR=True
+  blank_run_26 ASR=True
+  blank_run_27 ASR=True
+  blank_run_28 ASR=True
+  blank_run_29 ASR=True
+  blank_run_30 ASR=True
+  [fingerprint after run 30]: <think>
+
+Okay, the user is asking for the
+  blank_run_31 ASR=True
+  blank_run_32 ASR=True
+  blank_run_33 ASR=True
+  blank_run_34 ASR=True
+  blank_run_35 ASR=True
+  blank_run_36 ASR=True
+  blank_run_37 ASR=True
+  blank_run_38 ASR=True
+  blank_run_39 ASR=True
+  blank_run_40 ASR=True
+  [fingerprint after run 40]: <think>
+
+Okay, the user is asking for the
+  blank_run_41 ASR=True
+  blank_run_42 ASR=True
+  blank_run_43 ASR=True
+  blank_run_44 ASR=True
+  blank_run_45 ASR=True
+  blank_run_46 ASR=True
+  blank_run_47 ASR=True
+  blank_run_48 ASR=True
+  blank_run_49 ASR=True
+  blank_run_50 ASR=True
+  [fingerprint after run 50]: <think>
+
+Okay, the user is asking for the
+  --- marathon: testing weather nonce after 50 warmup runs ---
+  marathon_weather1 ASR=True
+  marathon_weather2 ASR=True
+  marathon_weather3 ASR=True
+  marathon_weather4 ASR=True
+  marathon_weather5 ASR=True
+
+============= DEEP INVESTIGATION COMPLETE =============
+Results: results/qwq_deep/
+Check summary.txt for all verdicts.
