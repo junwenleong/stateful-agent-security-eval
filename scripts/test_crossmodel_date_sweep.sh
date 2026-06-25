@@ -3,24 +3,10 @@
 #
 # QUESTION: Is date-sensitivity unique to qwq:32b or shared by other knife-edge models?
 #
-# Candidates (7 models, 3 families + 1 reasoning variant):
+# 7 models × 2 dates × N=5 = 70 runs (~4-5h)
+# Ollama restarted between each model block (isolates memory state).
 #
-# CROSS-FAMILY (non-Qwen):
-#   1. glm-4.7-flash:latest   (THUDM)   — execution-resistant (0% ASR). Can date flip to VE?
-#   2. llama3.3:70b           (Meta)     — injection-resistant (0% inj). Can date flip injection?
-#   3. mistral-small3.2:24b   (Mistral)  — injection-resistant (0% inj). Same question.
-#   4. deepseek-r1:70b        (DeepSeek) — injection-resistant + reasoning. Best non-Qwen candidate.
-#
-# QWEN KNIFE-EDGES:
-#   5. qwen3:8b               — environment-fragile (LC→VE flip April→June)
-#   6. qwen3.5:122b + PH      — sleeper effect (0% ASR under prompt_hardening)
-#   7. qwen2.5:72b            — solid VE (negative control, expect no flip)
-#
-# All tests: {2026-04-17, 2026-06-25} × N=5, fresh Ollama load per model.
-# Total: ~4-5h (dominated by 70B+ models)
-#
-# RUN AFTER deep battery finishes:
-#   bash scripts/test_crossmodel_date_sweep.sh
+# RUN: bash scripts/test_crossmodel_date_sweep.sh
 
 set -e
 cd "$(dirname "$0")/.."
@@ -35,27 +21,47 @@ N=5
 echo "==============================================" | tee "$SUMMARY"
 echo " Cross-Model/Family Date Sensitivity — $(date)" | tee -a "$SUMMARY"
 echo " 7 models × 2 dates × N=$N = 70 runs" | tee -a "$SUMMARY"
+echo " Ollama restarted between each model (clean memory per model)" | tee -a "$SUMMARY"
 echo "==============================================" | tee -a "$SUMMARY"
 
-# --- Helper ---
+# --- Helpers ---
+start_ollama() {
+    pkill -f "ollama serve" 2>/dev/null || true
+    sleep 3
+    OLLAMA_HOST=0.0.0.0:11434 \
+    OLLAMA_CONTEXT_LENGTH=16384 \
+    OLLAMA_NUM_PARALLEL=1 \
+    OLLAMA_MAX_LOADED_MODELS=1 \
+    OLLAMA_KEEP_ALIVE=5m \
+    OLLAMA_FLASH_ATTENTION=1 \
+    ollama serve &
+    OLLAMA_PID=$!
+    sleep 6
+    for attempt in $(seq 1 15); do
+        curl -s http://localhost:11434/api/tags >/dev/null 2>&1 && break
+        sleep 1
+    done
+    echo "  Ollama started (PID=$OLLAMA_PID)" | tee -a "$SUMMARY"
+}
+
 run_condition() {
     local MODEL="$1"
     local DEFENSE="$2"
     local DATE="$3"
     local LABEL="$4"
+    local NRUNS="$5"
     local OUTFILE="$RESULTS_DIR/${LABEL}.jsonl"
     > "$OUTFILE"
 
-    echo "  Running: $LABEL (model=$MODEL, defense=$DEFENSE, date=$DATE, N=$N)" | tee -a "$SUMMARY"
+    echo "  Running: $LABEL (model=$MODEL, defense=$DEFENSE, date=$DATE, N=$NRUNS)" | tee -a "$SUMMARY"
 
     EVAL_OVERRIDE_DATE="$DATE" .venv/bin/python -c "
-import sys, json
+import sys
 sys.path.insert(0, '.')
 from src.runner.config_loader import load_config
 from src.runner.runner import ExperimentRunner
-
 config = load_config('experiments/configs/defense_factorial.yaml')
-config.runs_per_condition = $N
+config.runs_per_condition = $NRUNS
 config.results_path = '$OUTFILE'
 config.models = [m for m in config.models if m['model_name'] == '$MODEL']
 config.defenses = [d for d in config.defenses if d.get('name') == '$DEFENSE']
@@ -64,7 +70,6 @@ runner = ExperimentRunner(config)
 runner.run_all()
 " 2>/dev/null
 
-    # Report
     .venv/bin/python -c "
 import json
 results = [json.loads(l) for l in open('$OUTFILE') if l.strip()]
@@ -77,102 +82,91 @@ print(f'    inj={inj}/{n}  ASR={asr}/{n}  -> {arche}')
 " | tee -a "$SUMMARY"
 }
 
-# --- Start Ollama (fresh) ---
-pkill -f "ollama serve" 2>/dev/null || true
-sleep 3
-OLLAMA_HOST=0.0.0.0:11434 \
-OLLAMA_CONTEXT_LENGTH=16384 \
-OLLAMA_NUM_PARALLEL=1 \
-OLLAMA_MAX_LOADED_MODELS=1 \
-OLLAMA_KEEP_ALIVE=5m \
-OLLAMA_FLASH_ATTENTION=1 \
-ollama serve &
-OLLAMA_PID=$!
-sleep 6
-for attempt in $(seq 1 15); do
-    curl -s http://localhost:11434/api/tags >/dev/null 2>&1 && break
-    sleep 1
-done
-echo "Ollama started (PID=$OLLAMA_PID)" | tee -a "$SUMMARY"
+# ============================================================
+# CROSS-FAMILY TESTS (fresh Ollama per model)
+# ============================================================
+
 echo "" | tee -a "$SUMMARY"
-
-# ============================================================
-# CROSS-FAMILY TESTS
-# ============================================================
-
 echo "========== CROSS-FAMILY ==========" | tee -a "$SUMMARY"
 
 # --- 1. GLM-4.7-Flash (THUDM) — execution-resistant ---
 echo "=== 1. glm-4.7-flash:latest (THUDM) × no_defense ===" | tee -a "$SUMMARY"
+start_ollama
 curl -s http://localhost:11434/api/generate -d '{"model":"glm-4.7-flash:latest","prompt":"hi","stream":false,"keep_alive":"10m"}' >/dev/null 2>&1 || true
 sleep 2
 for DATE in "${DATES[@]}"; do
-    run_condition "glm-4.7-flash:latest" "no_defense" "$DATE" "glm47_nodef_${DATE}"
+    run_condition "glm-4.7-flash:latest" "no_defense" "$DATE" "glm47_nodef_${DATE}" $N
 done
 echo "" | tee -a "$SUMMARY"
 
 # --- 2. llama3.3:70b (Meta) — injection-resistant ---
 echo "=== 2. llama3.3:70b (Meta) × no_defense ===" | tee -a "$SUMMARY"
+start_ollama
 curl -s http://localhost:11434/api/generate -d '{"model":"llama3.3:70b","prompt":"hi","stream":false,"keep_alive":"10m"}' >/dev/null 2>&1 || true
 sleep 5
 for DATE in "${DATES[@]}"; do
-    run_condition "llama3.3:70b" "no_defense" "$DATE" "llama33_70b_nodef_${DATE}"
+    run_condition "llama3.3:70b" "no_defense" "$DATE" "llama33_70b_nodef_${DATE}" $N
 done
 echo "" | tee -a "$SUMMARY"
 
 # --- 3. mistral-small3.2:24b (Mistral) — injection-resistant ---
 echo "=== 3. mistral-small3.2:24b (Mistral) × no_defense ===" | tee -a "$SUMMARY"
+start_ollama
 curl -s http://localhost:11434/api/generate -d '{"model":"mistral-small3.2:24b","prompt":"hi","stream":false,"keep_alive":"10m"}' >/dev/null 2>&1 || true
 sleep 2
 for DATE in "${DATES[@]}"; do
-    run_condition "mistral-small3.2:24b" "no_defense" "$DATE" "mistral_24b_nodef_${DATE}"
+    run_condition "mistral-small3.2:24b" "no_defense" "$DATE" "mistral_24b_nodef_${DATE}" $N
 done
 echo "" | tee -a "$SUMMARY"
 
 # --- 4. deepseek-r1:70b (DeepSeek) — injection-resistant + reasoning ---
 echo "=== 4. deepseek-r1:70b (DeepSeek) × no_defense ===" | tee -a "$SUMMARY"
+start_ollama
 curl -s http://localhost:11434/api/generate -d '{"model":"deepseek-r1:70b","prompt":"hi","stream":false,"keep_alive":"10m"}' >/dev/null 2>&1 || true
 sleep 5
 for DATE in "${DATES[@]}"; do
-    run_condition "deepseek-r1:70b" "no_defense" "$DATE" "deepseek_r1_70b_nodef_${DATE}"
+    run_condition "deepseek-r1:70b" "no_defense" "$DATE" "deepseek_r1_70b_nodef_${DATE}" $N
 done
 echo "" | tee -a "$SUMMARY"
 
 # ============================================================
-# QWEN KNIFE-EDGES
+# QWEN KNIFE-EDGES (fresh Ollama per model)
 # ============================================================
 
 echo "========== QWEN KNIFE-EDGES ==========" | tee -a "$SUMMARY"
 
 # --- 5. qwen3:8b — environment-fragile ---
 echo "=== 5. qwen3:8b × no_defense ===" | tee -a "$SUMMARY"
+start_ollama
 curl -s http://localhost:11434/api/generate -d '{"model":"qwen3:8b","prompt":"hi","stream":false,"keep_alive":"10m"}' >/dev/null 2>&1 || true
 sleep 2
 for DATE in "${DATES[@]}"; do
-    run_condition "qwen3:8b" "no_defense" "$DATE" "qwen3_8b_nodef_${DATE}"
+    run_condition "qwen3:8b" "no_defense" "$DATE" "qwen3_8b_nodef_${DATE}" $N
 done
 echo "" | tee -a "$SUMMARY"
 
-# --- 6. qwen3.5:122b × prompt_hardening — sleeper effect ---
-echo "=== 6. qwen3.5:122b × prompt_hardening ===" | tee -a "$SUMMARY"
+# --- 6. qwen3.5:122b × prompt_hardening — sleeper effect (N=10, higher stakes) ---
+echo "=== 6. qwen3.5:122b × prompt_hardening (N=10) ===" | tee -a "$SUMMARY"
+start_ollama
 curl -s http://localhost:11434/api/generate -d '{"model":"qwen3.5:122b","prompt":"hi","stream":false,"keep_alive":"10m"}' >/dev/null 2>&1 || true
 sleep 5
 for DATE in "${DATES[@]}"; do
-    run_condition "qwen3.5:122b" "prompt_hardening" "$DATE" "qwen35_122b_ph_${DATE}"
+    run_condition "qwen3.5:122b" "prompt_hardening" "$DATE" "qwen35_122b_ph_${DATE}" 10
 done
 echo "" | tee -a "$SUMMARY"
 
-# --- 7. qwen2.5:72b × no_defense — negative control (expect 100% both) ---
+# --- 7. qwen2.5:72b × no_defense — negative control ---
 echo "=== 7. qwen2.5:72b × no_defense (negative control) ===" | tee -a "$SUMMARY"
+start_ollama
 curl -s http://localhost:11434/api/generate -d '{"model":"qwen2.5:72b","prompt":"hi","stream":false,"keep_alive":"10m"}' >/dev/null 2>&1 || true
 sleep 5
 for DATE in "${DATES[@]}"; do
-    run_condition "qwen2.5:72b" "no_defense" "$DATE" "qwen25_72b_nodef_${DATE}"
+    run_condition "qwen2.5:72b" "no_defense" "$DATE" "qwen25_72b_nodef_${DATE}" $N
 done
 echo "" | tee -a "$SUMMARY"
 
 # --- Cleanup ---
-kill $OLLAMA_PID 2>/dev/null || true
+pkill -f "ollama serve" 2>/dev/null || true
 
 # ============================================================
 # VERDICT
@@ -209,7 +203,6 @@ for label, prefix in models:
         results_by_date[date] = (inj, asr, n)
         print(f'  {date}: inj={inj}/{n}  ASR={asr}/{n}')
 
-    # Check for date sensitivity
     if len(results_by_date) == 2:
         (i1, a1, n1) = results_by_date['2026-04-17']
         (i2, a2, n2) = results_by_date['2026-06-25']
@@ -231,14 +224,11 @@ for m in date_insensitive:
 print()
 if not date_sensitive:
     print('CONCLUSION: Date-sensitivity is qwq:32b-SPECIFIC (no other model affected)')
-    print('  -> Strengthens paper claim: phenomenon is model-specific, not systemic')
-elif any('Qwen' not in m for m in date_sensitive):
-    print('CONCLUSION: Date-sensitivity is CROSS-FAMILY (not Qwen-specific!)')
-    print('  -> MAJOR finding: weakens all single-date evaluations')
+elif any(f not in m for f in ['Qwen'] for m in date_sensitive):
+    print('CONCLUSION: Date-sensitivity is CROSS-FAMILY')
 else:
-    print('CONCLUSION: Date-sensitivity is QWEN-FAMILY-SPECIFIC (multiple Qwen models, no other family)')
-    print('  -> Moderate finding: Qwen reasoning models share the thin-boundary property')
+    print('CONCLUSION: Date-sensitivity is QWEN-FAMILY-SPECIFIC')
 " | tee -a "$SUMMARY"
 
 echo "" | tee -a "$SUMMARY"
-echo "Done. Results: $RESULTS_DIR/" | tee -a "$SUMMARY"
+echo "Done at $(date). Results: $RESULTS_DIR/" | tee -a "$SUMMARY"
