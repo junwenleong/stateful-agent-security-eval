@@ -1,0 +1,53 @@
+==============================================
+ qwq:32b Load Fingerprinting — Thu 25 Jun 2026 19:08:28 +08
+ 20 fresh loads, single-token probe, temp=0
+==============================================
+  Load 1: <think>
+Okay, the user wants me to complete the sentence "The capital of France 
+  Load 2: <think>
+Okay, the user wants me to complete the sentence "The capital of France 
+  Load 3: <think>
+Okay, the user wants me to complete the sentence "The capital of France 
+  Load 4: <think>
+Okay, the user wants me to complete the sentence "The capital of France 
+  Load 5: <think>
+Okay, the user wants me to complete the sentence "The capital of France 
+  Load 6: <think>
+Okay, the user wants me to complete the sentence "The capital of France 
+  Load 7: <think>
+Okay, the user wants me to complete the sentence "The capital of France 
+  Load 8: <think>
+Okay, the user wants me to complete the sentence "The capital of France 
+  Load 9: <think>
+Okay, the user wants me to complete the sentence "The capital of France 
+  Load 10: <think>
+Okay, the user wants me to complete the sentence "The capital of France 
+  Load 11: <think>
+Okay, the user wants me to complete the sentence "The capital of France 
+  Load 12: <think>
+Okay, the user wants me to complete the sentence "The capital of France 
+  Load 13: <think>
+Okay, the user wants me to complete the sentence "The capital of France 
+  Load 14: <think>
+Okay, the user wants me to complete the sentence "The capital of France 
+  Load 15: <think>
+Okay, the user wants me to complete the sentence "The capital of France 
+  Load 16: <think>
+Okay, the user wants me to complete the sentence "The capital of France 
+  Load 17: <think>
+Okay, the user wants me to complete the sentence "The capital of France 
+  Load 18: <think>
+Okay, the user wants me to complete the sentence "The capital of France 
+  Load 19: <think>
+Okay, the user wants me to complete the sentence "The capital of France 
+  Load 20: <think>
+Okay, the user wants me to complete the sentence "The capital of France 
+
+============= ANALYSIS =============
+Total loads: 40
+Unique responses: 2
+VARIES across loads:
+  '<think>': 20 times
+  'Okay, the user wants me to complete the sentence "The capital of France': 20 times
+=> Metal FP nondeterminism is measurable at single-token level!
+Results: results/qwq_fingerprint/
