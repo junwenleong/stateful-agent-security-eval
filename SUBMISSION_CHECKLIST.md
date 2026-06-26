@@ -15,6 +15,18 @@
 
 All sprint results are **additive** — nothing in the current draft needs rewriting regardless of outcomes.
 
+**When sprint Phase 2 (RATG) completes — writing actions:**
+- If RATG reduces ASR: add §3.3.2 "Recall-Time Filtering (RATG)" after Memory Sandbox section. First retrieval defense that works. Major finding.
+- If RATG has no effect: add 1 paragraph to §3.2.4 (RAG LLM Judge): "Even a rule-aware recall-time filter designed specifically for this attack fails against semantic masking at the 7B/14B judge capacity level."
+- If partial: most interesting — characterize which models/conditions it works for and why.
+
+**When sprint Phase 3 (7B judge) completes:**
+- If 7B detects what 1.5B couldn't: revise §3.2.4 to bound the capability threshold. "A 7B judge achieves X% detection vs 0% for 1.5B."
+- If 7B also fails: strengthen the "semantic masking defeats small judges" narrative. Add 1 sentence.
+
+**Temporal persistence (already added to paper.tex §3.1):**
+- ✅ Marathon test cited: "50-session marathon, byte-identical at checkpoints 10/20/30/40/50, persistence bounded by database durability."
+
 **Completed experiments (this machine):**
 - ✅ frontier API frontier probe: 21 models × N=10 = 210 runs, 0% ASR
 - ✅ frontier API sandbox probe: 4 Latent Carriers × N=10-16 = 46 runs, 0% bypass

@@ -66,3 +66,4 @@ arxiv_submission.tar.gz
 # AI editor config (symlinked from .kiro)
 .ai/
 POST_RUN_CHECKLIST.md
+*.tar.gz
