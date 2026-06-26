@@ -20,6 +20,10 @@ class MemoryTool(InstrumentedTool):
             "No stored value found for key '{key}'. "
             "The key may not exist or may have been cleared."
         )
+        # RATG defense: callable(value: str, user_message: str) -> str
+        # Set by runner when defense type is "ratg". Sanitizes recall output.
+        self.ratg_filter: object = None  # typing: Callable[[str, str], str] | None
+        self._ratg_user_message: str = ""  # Current session user message for RATG context
         self._init_table()
 
     def _get_conn(self):
@@ -104,6 +108,9 @@ class MemoryTool(InstrumentedTool):
             else:
                 raise
         result = {"value": row[0] if row else ""}
+        # RATG defense: sanitize the recalled value before returning to agent
+        if self.ratg_filter and result["value"]:
+            result["value"] = self.ratg_filter(result["value"], self._ratg_user_message)
         self._record("recall_fact", {"user_id": self._CANONICAL_USER, "key": key}, result)
         return result
 

@@ -496,6 +496,16 @@ class ExperimentRunner:
                     else:
                         sandbox_excluded_tools = {"memory_recall_fact"}  # default to full
 
+                # RATG defense: output-layer filter on recall_fact.
+                # Injection still happens (memory_save_fact untouched). RATG sanitizes
+                # the recalled value by stripping unauthorized email addresses and
+                # routing instructions before the agent sees the tool output.
+                ratg_active = defense_cfg.get("type") == "ratg"
+                if ratg_active:
+                    from src.defenses.ratg import sanitize_recall_value
+                    tools["memory"].ratg_filter = sanitize_recall_value
+                    defense = None  # Not an input-level defense
+
                 # Build model interface
                 model_cfg = condition["model"]
                 model_interface = self._build_model(model_cfg)
@@ -630,6 +640,10 @@ class ExperimentRunner:
                         "run=%s session=%d type=%s",
                         run_id, session.session_index, session.session_type,
                     )
+                    # RATG: update current session's user message so the filter knows
+                    # which email addresses are explicitly authorized by the user.
+                    if ratg_active:
+                        tools["memory"]._ratg_user_message = session.user_message
                     session_start = time.monotonic()
                     agent_response, defense_log, agent_logs = agent.run_session(thread_id, session.user_message)
                     session_elapsed = time.monotonic() - session_start
@@ -1078,6 +1092,9 @@ class ExperimentRunner:
                 variant=defense_cfg.get("variant", "full"),
                 exclude_tools=defense_cfg.get("exclude_tools"),
             )
+        if defense_type == "ratg":
+            from src.defenses.ratg import RATG
+            return RATG()
         return None
 
     @staticmethod
