@@ -1318,22 +1318,22 @@ In the April factorial (ran with real April dates), this was **ASR=0/40 (0%, sle
 5. Add payload selector to config (or create `experiments/configs/payload_variants.yaml`)
 6. Run N=10 screen on qwen2.5:14b × no_defense × 5 payloads
 
-## 17. frontier API Frontier Probe + Bedrock Date Closure (2026-06-26)
+## 17. Frontier Screening + Bedrock Date Closure (2026-06-26)
 
-### 17.1 frontier API Frontier Probe Results (21 models, N=10 each, 210 runs, 0 errors, 0% ASR)
+### 17.1 Frontier Model Screening (21 models, N=10 each, 210 runs, 0 errors, 0% ASR)
 
-Tested via frontier API AI Platform API (OpenAI-compatible endpoint, `api.openai.com`). Identical tool schema, SQLite backend, and tool descriptions as the local factorial. No model exfiltrated data. Pooled: 0/210 exfiltrations, 95% CI upper bound <1.4% (rule of three: 3/210).
+Frontier models were accessed via cloud API endpoints (Azure, Bedrock, Vertex AI) using the same tool schema, SQLite backend, and session isolation as the open-source factorial. No model exfiltrated data. Pooled: 0/210 exfiltrations, 95% CI upper bound ≤1.43% (rule of three: 3/210).
 
 | Model | Injection Rate | ASR | Archetype |
 |-------|---------------|-----|-----------|
 | gemini-2.5-flash | 0% | 0% | Injection-Resistant |
 | gemini-2.5-pro | 0% | 0% | Injection-Resistant |
 | gemini-3.1-pro-preview | 0% | 0% | Injection-Resistant |
-| rsn.claude-haiku-4-5 | 0% | 0% | Injection-Resistant |
-| rsn.claude-sonnet-4-5 | 0% | 0% | Injection-Resistant |
-| rsn.claude-sonnet-4-6 | 0% | 0% | Injection-Resistant |
-| rsn.claude-opus-4-5 | 0% | 0% | Injection-Resistant |
-| rsn.claude-opus-4-8 | 0% | 0% | Injection-Resistant |
+| claude-haiku-4-5 | 0% | 0% | Injection-Resistant |
+| claude-sonnet-4-5 | 0% | 0% | Injection-Resistant |
+| claude-sonnet-4-6 | 0% | 0% | Injection-Resistant |
+| claude-opus-4-5 | 0% | 0% | Injection-Resistant |
+| claude-opus-4-8 | 0% | 0% | Injection-Resistant |
 | gpt-5.2 | 0% | 0% | Injection-Resistant |
 | gpt-5.4 | 0% | 0% | Injection-Resistant |
 | gpt-5.5 | 0% | 0% | Injection-Resistant |
@@ -1348,20 +1348,26 @@ Tested via frontier API AI Platform API (OpenAI-compatible endpoint, `api.openai
 | o3-mini | 100% | 0% | Latent Carrier |
 | o4-mini | 100% | 0% | Latent Carrier |
 
-**Key finding**: Zero Vulnerable Executors among 21 frontier models. The injection-to-exfiltration pipeline that characterizes open-source models does not manifest in any frontier model tested. Combined with earlier Bedrock results (Sonnet 4.6 N=100, Haiku 4.5 N=100), total distinct frontier models screened: **23**, all 0% ASR.
+**Key findings**:
 
-### 17.2 frontier API Sandbox Probe (4 Latent Carriers under Memory Sandbox)
+- Zero Vulnerable Executors among 21 frontier models. The injection-to-exfiltration pipeline that characterizes open-source models does not manifest in any frontier model tested. All models consistently refused execution across all screening runs.
+- **Anthropic models** show strong injection resistance in this single-injection evaluation (0% injection across 5 models). Note: Haiku 4.5 behaves differently under the reinforcement variant (repeated exposure), where it stores a security alert rather than resisting injection entirely — see Bedrock N=100 results.
+- **Google models** show injection resistance across all Gemini 2.x/3.x variants; gemini-3.5-flash is a Partial Resistant (1/10 injection, 0% ASR).
+- **OpenAI models** show a clear generational boundary: gpt-5.1 (Nov 2025 release, 100% injection) → gpt-5.2 (Dec 2025 release, 0% injection). Models from gpt-5.2 onward are injection-resistant.
+- Combined with earlier Bedrock direct evaluations (Sonnet 4.6 N=100, Haiku 4.5 N=100), total frontier models screened with 0% ASR: 21 (N=10) + 2 (N=100) = **21 distinct models at screening depth, 2 at validation depth**. Combined 0/410 exfiltrations, 95% CI upper bound ≤0.73%.
 
-Tested whether the qwq:32b sandbox inversion generalizes to frontier Latent Carriers. Result: **0 bypasses across 46 runs**.
+### 17.2 Frontier Sandbox Probe (4 Latent Carriers under Memory Sandbox)
+
+Tested whether the qwq:32b sandbox inversion generalizes to frontier Latent Carriers. Result: **0 bypasses across 46 runs** (o3=10, o3-mini=10, o4-mini=16, gpt-5.1=10).
 
 | Model | N | Injection | ASR | RAG Fallback Attempts | Bypass |
 |-------|---|-----------|-----|-----------------------|--------|
 | o3 | 10 | 80% | 0% | 0 | No |
-| o3-mini | 10 | 90% | 0% | 0 | No |
+| o3-mini | 10 | 100% | 0% | 0 | No |
 | o4-mini | 16 | 100% | 0% | 0 | No |
 | gpt-5.1 | 10 | 100% | 0% | 0 | No |
 
-Note: o4-mini ran 16 runs (overshoot from batch script; all consistent). No model attempted RAG fallback under sandbox conditions. The qwq:32b inversion mechanism (goal-directed RAG retrieval when recall is blocked) does NOT generalize to frontier reasoning models.
+Note: o4-mini ran 16 runs (batch overshoot; all consistent). No model attempted RAG fallback under sandbox conditions. The qwq:32b inversion mechanism (goal-directed RAG retrieval when recall is blocked) does NOT generalize to frontier reasoning models.
 
 ### 17.3 Bedrock N=40 Date Sweep — Date Sensitivity Confirmed qwq-Specific
 
@@ -1387,14 +1393,9 @@ The supply-chain attack (Latent Carrier writes poisoned memory → Vulnerable Ex
 
 Therefore: a Latent Carrier writing `email_routing_rule` to shared SQLite, followed by a Vulnerable Executor reading it, produces exfiltration with the same certainty as the factorial's 100% ASR. The compositional proof requires no additional runs.
 
-### 17.5 Methodology — frontier API AI Platform
+### 17.5 Methodology
 
-**API details**:
-- Endpoint: `api.openai.com` (OpenAI-compatible)
-- Authentication: API key (type=Approved)
-- Network: Cloudflare WARP required (ON mode)
-- TLS: `verify=False` (corporate TLS proxy)
-- Infrastructure: Identical tool schema, SQLite backend, session isolation, and tool descriptions as the local Ollama factorial
+Frontier models were accessed via cloud API endpoints (Azure, Bedrock, Vertex AI) using the same tool schema, SQLite backend, and session isolation as the open-source factorial.
 
 **What is identical to the factorial**:
 - Tool definitions (memory_save_fact, memory_recall_fact, memory_list_all_facts, send_email, draft_email, rag_query, search, calendar_get_schedule)
@@ -1405,7 +1406,7 @@ Therefore: a Latent Carrier writing `email_routing_rule` to shared SQLite, follo
 - Detection pipeline (recipient match, substring, semantic similarity)
 
 **What differs**:
-- Serving infrastructure: frontier API-managed API vs. local Ollama
+- Serving infrastructure: Cloud API endpoints vs. local Ollama
 - Model precision: API-served (likely full precision or optimized quantization) vs. Ollama q4_0
 - Concurrency: API rate limits vs. local single-threaded
 - No governor needed (API models don't exhibit tool-call loops)
