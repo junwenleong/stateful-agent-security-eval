@@ -44,7 +44,17 @@ def safe_name(model_name: str) -> str:
 def count_existing(path: Path) -> int:
     if not path.exists():
         return 0
-    return len([l for l in path.read_text().splitlines() if l.strip()])
+    count = 0
+    for line in path.read_text().splitlines():
+        if not line.strip():
+            continue
+        try:
+            r = json.loads(line)
+            if not r.get("error"):
+                count += 1
+        except json.JSONDecodeError:
+            pass
+    return count
 
 
 def run_all():
@@ -69,13 +79,40 @@ def run_all():
 
             config = load_config("experiments/configs/defense_factorial.yaml")
             config.runs_per_condition = remaining
-            config.results_path = str(outfile)
+            # Use temp file so runner's internal resume doesn't see existing records
+            import tempfile
+            tmp_outfile = Path(tempfile.mktemp(suffix=".jsonl", dir=str(RESULTS_DIR)))
+            config.results_path = str(tmp_outfile)
             config.models = [model_cfg]
             config.defenses = [d for d in config.defenses if d.get("name") == "no_defense"]
             config.attacks = [a for a in config.attacks if a.get("type") == "delayed_trigger"]
 
             runner = ExperimentRunner(config)
-            runner.run_all()
+            max_retries = 5
+            for attempt in range(max_retries):
+                try:
+                    runner.run_all()
+                    break
+                except Exception as e:
+                    if attempt < max_retries - 1:
+                        wait = 30 * (attempt + 1)
+                        logger.warning(f"[{model_name}] {date}: attempt {attempt+1} failed: {e}. Retrying in {wait}s...")
+                        import time; time.sleep(wait)
+                        # Rebuild runner with updated remaining count
+                        existing_now = count_existing(outfile) + count_existing(tmp_outfile)
+                        remaining_now = N - existing_now
+                        if remaining_now <= 0:
+                            break
+                        config.runs_per_condition = remaining_now
+                        runner = ExperimentRunner(config)
+                    else:
+                        logger.error(f"[{model_name}] {date}: FAILED after {max_retries} attempts: {e}")
+
+            # Append temp results to real file
+            if tmp_outfile.exists() and tmp_outfile.stat().st_size > 0:
+                with open(outfile, "a") as dst, open(tmp_outfile) as src:
+                    dst.write(src.read())
+                tmp_outfile.unlink()
 
             # Report progress
             final_count = count_existing(outfile)
