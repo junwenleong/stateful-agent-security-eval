@@ -1,0 +1,9 @@
+[
+  "qwen.qwen3-next-80b-a3b",
+  "mistral.mistral-large-3-675b-instruct",
+  "zai.glm-5",
+  "nvidia.nemotron-super-3-120b",
+  "moonshot.kimi-k2-thinking",
+  "minimax.minimax-m2.5",
+  "us.meta.llama4-maverick-17b-instruct-v1:0"
+]
