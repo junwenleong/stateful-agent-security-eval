@@ -1,5 +1,12 @@
 # Sandbox Inversion Study — Investigation Record
 
+> **⚠️ FROZEN (2026-06-27).** This file served as a working journal from April–June 2026. All findings are now in the authoritative sources:
+> - **Submission**: `paper/paper.tex`
+> - **Numbers**: `canonical_numbers.md`
+> - **Public summary**: `FINDINGS.md`, `docs/index.md`, `README.md`
+>
+> Do not update this file further. It is retained for historical context only.
+
 **Status (2026-06-26 05:27 SGT)**: Deep battery COMPLETE (all hypotheses killed). Cross-model/family date sweep RUNNING (~4-5h). Final hypotheses (VRAM churn, context churn, idle gaps, kitchen sink) QUEUED. Paper v3 on arXiv. 9 established facts locked. Cause unisolated — pending final two scripts for terminus or breakthrough.
 
 ---
