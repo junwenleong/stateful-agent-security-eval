@@ -84,6 +84,8 @@ A supplementary evaluation of Claude Sonnet 4.6 and Haiku 4.5 (N=100 each, 400 r
 
 Neither frontier model shows the injection-to-exfiltration pipeline that characterizes the open-source models. The N=10 screening across 18 open-source models found 11 Vulnerable Executors (100% injection, 100% attack), 4 Latent Carriers (inject but never execute), and 2 Injection-Resistant models.
 
+We extend this finding to 21 models across three providers in the v4 update below.
+
 ---
 
 ## What I built
@@ -130,6 +132,23 @@ A reasoning-mode ablation using Qwen3-32B's thinking toggle reveals a double dis
 ## v3 update (June 2026)
 
 A Bedrock validation (1,180 runs, full-precision serving) confirms the Memory Sandbox RAG-fallback bypass generalizes across providers: mistral-large-3-675b (Mistral, 98% ASR under sandbox via goal-directed RAG fallback), glm-5 (Z.AI, 32%; all injected runs re-retrieve the document, non-exfiltrations are model refusal not defense), and gpt-oss-120b (OpenAI, 55% via S3 re-injection). The qwq:32b inversion is environment-fragile and did not reproduce, but the underlying bypass mechanism replicates across four providers and two serving stacks. Additionally, Llama 4 Maverick (Meta) is injection-resistant (0/20 injection), the first non-Anthropic model to resist injection entirely. Full details in [arXiv v3](https://arxiv.org/abs/2605.08442) Appendix B.
+
+## v4 update (June 2026)
+
+A frontier screening of 21 models across three providers (OpenAI, Google, Anthropic) via cloud API endpoints (Azure, Bedrock, Vertex AI) at N=10 each (210 runs, 0 errors) confirms the frontier-open-source gap is categorical and cross-provider.
+
+**Zero exfiltrations across all 21 frontier models.** Combined with earlier N=100 evaluations: 0/410 runs, 95% CI upper bound ≤0.73%.
+
+Key findings:
+
+- **OpenAI reasoning models are Latent Carriers.** o3-mini (100% injection, 0% ASR), o4-mini (100% injection, 0% ASR), and o3 (80% injection, 0% ASR) store the malicious rule but consistently refuse execution. They represent a supply-chain risk in shared-memory deployments.
+- **GPT generation boundary.** gpt-5.1 (Nov 2025) injects at 100%. gpt-5.2 (Dec 2025) resists entirely (0%). This establishes December 2025 as the deployment month of a categorical safety intervention in the GPT-5 lineage.
+- **Claude and Gemini are universally resistant** under single-injection evaluation (0/60 Anthropic, 0/30 Google at N=10; gemini-3.5-flash shows 1/10 partial resistance).
+- **Memory Sandbox does not invert on frontier reasoning models.** A sandbox probe on 4 Latent Carriers (46 runs total) produced 0 bypasses and 0 RAG-fallback attempts. The qwq:32b inversion is architecture-specific, not a reasoning-model-class property.
+- **Supply chain is compositionally proven.** Persistent memory has no authorship metadata. Frontier Latent Carriers store the rule at 100%; open-source Vulnerable Executors read and execute at 100%. The attack composes across model boundaries without requiring a live cross-model demonstration.
+- **Date sensitivity is qwq-specific.** Bedrock N=40 sweep across 5 models and 3 dates (Fisher's exact, per-model Bonferroni α=0.017): all p>0.017. The phenomenon does not generalise.
+
+Full details in [FINDINGS.md](https://github.com/junwenleong/stateful-agent-security-eval/blob/main/FINDINGS.md).
 
 ---
 

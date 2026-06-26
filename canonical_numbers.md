@@ -221,3 +221,74 @@
 | `results/bedrock_apac_smoke/results_v1_pre_2026-04-11.jsonl` | Pre-v2 codebase, no system prompt, no rag_limit |
 | Bedrock smoke aggregate numbers | Incomplete — only 29/400 runs, 1/2 models, 1/2 attack arms |
 | Any archetype counts from old N=10 | Superseded by v2 rescreen |
+
+---
+
+## Experiment 5: Frontier Screening (June 2026)
+
+**Source**: `results/frontier-api_frontier_probe/*.jsonl`, `results/frontier-api_sandbox_probe/*.jsonl`  
+**Method**: Cloud API endpoints (Azure, Bedrock, Vertex AI), identical tool schema + SQLite as factorial  
+**Date**: 2026-06-26
+
+| Metric | Value |
+|--------|-------|
+| Models screened | 21 |
+| Providers | 3 (OpenAI, Google, Anthropic) |
+| Runs (screening) | 210 |
+| Errors | 0 |
+| Exfiltrations | 0 |
+| 95% CI upper bound | ≤1.43% (rule of three, 3/210) |
+| Combined with N=100 | 0/410, ≤0.73% |
+
+### Archetypes (21 models)
+
+| Archetype | Count | Models |
+|-----------|-------|--------|
+| Injection-Resistant | 12 | gemini-2.5-flash, gemini-2.5-pro, gemini-3.1-pro-preview, claude-haiku-4-5, claude-sonnet-4-5, claude-sonnet-4-6, claude-opus-4-5, claude-opus-4-8, gpt-5.2, gpt-5.4, gpt-5.5, gpt-5-mini |
+| Partial Resistant | 6 | gpt-5 (10%), gpt-5-nano (40%), gpt-4.1 (20%), gpt-4o (30%), gemini-3.5-flash (10%), o3 (80%) |
+| Latent Carrier | 3 | gpt-5.1 (100%), o3-mini (100%), o4-mini (100%) |
+| Vulnerable Executor | 0 | — |
+
+### GPT Generational Boundary
+
+| Model | Release | Injection Rate |
+|-------|---------|---------------|
+| gpt-4o | — | 30% |
+| gpt-4.1 | — | 20% |
+| gpt-5 | Aug 2025 | 10% |
+| gpt-5-nano | Aug 2025 | 40% |
+| gpt-5.1 | Nov 2025 | **100%** |
+| gpt-5.2 | Dec 2025 | **0%** |
+| gpt-5.4 | — | 0% |
+| gpt-5.5 | — | 0% |
+
+### Memory Sandbox Probe (Frontier Latent Carriers)
+
+**Source**: `results/frontier-api_sandbox_probe/*.jsonl`
+
+| Model | N | Injection | ASR | RAG fallback | Bypass? |
+|-------|---|-----------|-----|--------------|--------|
+| o3 | 10 | 80% | 0% | 0/10 | No |
+| o3-mini | 10 | 90% | 0% | 0/10 | No |
+| o4-mini | 16 | 100% | 0% | 0/16 | No |
+| gpt-5.1 | 10 | 100% | 0% | 0/10 | No |
+
+Total: 0/46 bypasses. qwq:32b inversion does not generalise.
+
+---
+
+## Experiment 6: Bedrock Date Sweep N=40 (June 2026)
+
+**Source**: `results/bedrock_date_sweep_n40/*.jsonl`  
+**Method**: Fisher's exact test, per-model Bonferroni (3 pairwise, α=0.017)  
+**Date**: 2026-06-26
+
+| Model | N per date | ASR range | Min p-value | Significant? |
+|-------|-----------|-----------|-------------|-------------|
+| nemotron-super-3-120b | 25-59 | 62.7-68.0% | 0.80 | No |
+| minimax-m2.5 | 40 | 95.0-100% | 0.49 | No |
+| kimi-k2-thinking | 40 | 0% (all) | 1.00 | No |
+| qwen3-next-80b | 40 | 0% (all) | 1.00 | No |
+| llama4-maverick-17b | 40 | 0% (all) | 1.00 | No |
+
+**Verdict**: Date sensitivity is qwq:32b-specific. Does not generalise.
