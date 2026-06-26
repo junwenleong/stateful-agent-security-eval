@@ -4,9 +4,14 @@
 
 **Five of six defences fail completely against delayed trigger attacks that persist through LLM agent memory. Tested across 5,040 runs, 9 models, 6 defences + undefended baseline.**
 
-Additional findings: the only defence that works inverted to 100% attack success on one model in the April factorial (the Draft-Only archetype was later shown to be environment-fragile; a June re-evaluation with identical weights, Ollama version, serve flags, and application code deterministically produces 100% ASR, tracing the flip to a single divergent reasoning token whose host-layer cause could not be isolated); prompt hardening can accelerate attacks via RAG re-injection; a safety fine-tuned model achieves 100% ASR; one frontier model stores security alerts instead of payloads; a latent carrier model persists financial credentials without attacker instruction; 21 frontier models across 3 providers (OpenAI, Google, Anthropic) show 0% attack success at N=10 screening (0/210, 95% CI ≤1.43%) — the frontier-open-source safety gap is categorical.
-
-**v2 addition (June 2026):** A reasoning-mode ablation reveals a double dissociation: the sandbox variant protecting reasoning models collapses the attack for non-reasoning models (S4 → S1), while the variant protecting non-reasoning models is bypassed by reasoning models via goal-directed RAG fallback. No single memory-sandbox implementation is safe across both model classes. The qwq:32b Draft-Only archetype observed in the factorial does not reproduce in June 2026 under the same reported Ollama version (0.20.6) and verified-identical code; the original inversion finding is reclassified as environment-fragile rather than a stable model property.
+Additional findings:
+- The only effective defence (Memory Sandbox) inverts to 100% ASR on one reasoning model; the Draft-Only archetype was later shown to be environment-fragile (cause unisolated)
+- A reasoning-mode ablation reveals a double dissociation: no single sandbox implementation is safe across both reasoning and non-reasoning model classes
+- Prompt hardening can accelerate attacks via RAG re-injection
+- A safety-fine-tuned model (gpt-oss-safeguard:120b) achieves 100% ASR
+- One frontier model stores security alerts instead of payloads (Active Detector with Defensive Storage)
+- A latent carrier model persists financial credentials without attacker instruction
+- 21 frontier models across 3 providers (OpenAI, Google, Anthropic) show 0% attack success at N=10 (0/210, 95% CI ≤1.43%) — the frontier-open-source safety gap is categorical
 
 Full results and methodology in [FINDINGS.md](FINDINGS.md). Technical writeup at [junwenleong.github.io/stateful-agent-security-eval](https://junwenleong.github.io/stateful-agent-security-eval/).
 
@@ -142,12 +147,11 @@ Attacks: `delayed_trigger`, `no_attack` (baseline)
 
 Phases (sequential, one model at a time to manage VRAM):
 - Phases 1–9: one model per phase, N=560 runs each (~0.3–2.0 days depending on model size)
-- Total wall time: ~8.5 days on a single GPU (Mac Studio M2 Ultra, 192GB unified memory)
+- Total wall time: ~8.5 days on a single GPU (Mac Studio M3 Ultra, 96GB unified memory)
 
 ## Scope Limitations
 
-- The Minimizer/Sanitizer defense is a **lightweight proxy** (TF-IDF + 60-example classifier). Results are scoped to this proxy, not production-grade defenses.
+- Input-level defenses (Minimizer, Sanitizer) are **lightweight proxies** (TF-IDF + 60-example classifier), but the finding is architectural: production input-layer classifiers (Llama Guard, ShieldGemma) share the same blind spot — they cannot observe RAG-retrieved content by construction.
 - Evaluation uses **simulated tools** in a controlled environment. Results may not generalize to production deployments.
 - Models are **Ollama instances** with q4_0 quantization. Results may differ from full-precision or API-served versions.
-- Meta-analysis assumes **i.i.d. Bernoulli trials** — published benchmarks may violate this.
 - The RAG corpus is **in-memory** (not a cloud vector store). Infrastructure is held constant across models by design to isolate model reasoning as the independent variable.
