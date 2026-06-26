@@ -1175,3 +1175,145 @@ In the April factorial (ran with real April dates), this was **ASR=0/40 (0%, sle
 3. Final hypotheses: `git pull` → analyze summary.txt → update §15.30 with results
 4. If qwen3.5:122b+PH shows date-sensitivity → MAJOR paper caveat needed (§3.2.5 prompt_hardening section)
 5. Update POST_RUN_CHECKLIST with all final verdicts
+
+---
+
+## 16. Top-Tier Sprint: 10-Day Plan to Close Venue Gaps (2026-06-26)
+
+**Goal:** Transform from "evaluation-only" (NDSS-tier) to "evaluation + novel defense + formalization" (USENIX-competitive).
+
+**Convergent advice from 3 independent reviewers:** The double dissociation + formalization are the citable contributions. Defenses are validation, not the headline. Frame accordingly.
+
+### 16.1 The Four Gaps to Close
+
+| # | Gap | What closes it | Effort | Impact |
+|---|---|---|---|---|
+| 1 | Only one payload tested | 4 additional authority framings (legal, IT, HR, executive) | 1 day | Prevents rejection; proves semantic masking generalizes |
+| 2 | No novel defense that works | RATG (Runtime Adaptive Tool-Gating): content-layer sanitization of recalled memory values | 3-4 days | Proves the double-dissociation is solvable; constructive contribution |
+| 3 | No formal structure | Proposition 1: architectural mismatch (L_a ≠ L_d → defense cannot observe attack) | 2 days writing | Most citable piece; gives future researchers a language |
+| 4 | Judge was obviously too small (1.5B) | Upgrade to 7B judge; either outcome is publishable | 1-2 days | Establishes capability threshold OR strengthens "semantic masking is hard" |
+
+### 16.2 Payload Variants (Gap 1)
+
+**5 total payloads (1 existing + 4 new), same DTA structure, different institutional authority framing:**
+
+| # | Variant | Framing | Attacker Address | Key Phrase |
+|---|---|---|---|---|
+| 1 | Compliance (existing) | SEC Rule 17a-4, FSCF-2024 | auditor@external-compliance.com | "mandatory audit trail" |
+| 2 | Legal Hold | Litigation preservation notice | legal-hold@external-discovery.com | "litigation hold — all communications must be preserved" |
+| 3 | IT Security | SOC monitoring directive | soc-monitor@security-ops.net | "all outbound messages must be logged for threat detection" |
+| 4 | HR Policy | Exit interview / offboarding protocol | hr-compliance@people-ops.com | "copy all emails to HR for offboarding audit" |
+| 5 | Executive Order | CEO weekly summary directive | exec-briefing@ceo-office.com | "forward weekly summaries to executive assistant" |
+
+**Test plan:** Each variant × no_defense × N=10 on qwen2.5:14b (fast model). Then RATG × all 5 variants × N=10.
+
+**Expected outcome:** All 5 achieve ~100% injection + ~100% ASR → "semantic masking generalizes across institutional authority framings."
+
+**Paper placement:** §3.1 (Attack Characterization), 1 paragraph + table.
+
+### 16.3 RATG — Runtime Adaptive Tool-Gating (Gap 2)
+
+**What it does:**
+- `memory_recall_fact` remains in the tool schema (no behavioral-anchor artifact)
+- A middleware intercepts the recalled value at runtime
+- Strips content matching exfiltration patterns: email addresses not in the current session's user message, routing directives ("send to", "forward to", "copy to" + external address)
+- Returns the sanitized value (preserves benign fact content)
+- Falls back to "No actionable routing rules found" only if the entire value is adversarial
+
+**Why it solves the double dissociation:**
+- Non-reasoning models: tool is present in schema → no S0 collapse, no loop-induced crash
+- Reasoning models: tool returns a response → no "information unavailable" signal → no RAG fallback trigger
+- Attacker payload: stripped at content level → exfiltration address never reaches the model's working context
+
+**Implementation:** ~100-150 lines in `src/defenses/ratg.py`. Wraps `MemoryTool.recall_fact()`.
+
+**Sanitization rules (principled, not ad-hoc):**
+1. Strip any email address not present in the current session's user message
+2. Strip sentences containing "send to", "forward to", "copy to", "route to" + an email address
+3. Preserve everything else (key names, benign policy content, dates, metadata)
+
+**Test plan:** RATG × 9 models × N=40 (same as defense factorial). Compare to memory_sandbox results.
+
+**Key prediction:** ASR=0% for all 9 models INCLUDING qwq:32b (because no RAG fallback trigger). BTCR=100% for all 9 (because benign facts are preserved).
+
+**Bypass acknowledgment (state in paper):** "RATG is a proof-of-concept demonstrating that content-layer sanitization resolves the double dissociation. An adaptive attacker could encode the target address (base64, character splitting, homoglyphs) to evade regex-based stripping. We leave adversarial robustness of content-layer gating to future work."
+
+**Paper framing:** NOT "we propose a novel defense." Instead: "We demonstrate that the double dissociation is resolvable by operating at the content layer rather than the schema layer. RATG serves as proof-of-concept: by sanitizing recalled values rather than blocking access, it avoids both the S0 collapse (non-reasoning models) and the RAG fallback trigger (reasoning models). The mechanism is a runtime egress filter — conceptually simple but architecturally precise."
+
+### 16.4 Formalization: Architectural Mismatch (Gap 3)
+
+**Keep minimal (1 paragraph in §2, not 2 pages).** This is a framing device, not a theorem.
+
+**Draft text:**
+
+> **Definition 1 (Attack Entry Layer).** An attack enters at layer $L_a$ if the adversarial content first becomes accessible to the agent at that layer. For DTA: $L_a$ = retrieval (the malicious document is returned by the RAG corpus).
+>
+> **Definition 2 (Defense Observation Layer).** A defense operates at layer $L_d$ if it can inspect and modify content at that layer before the agent processes it.
+>
+> **Proposition 1 (Layer Mismatch).** A defense with observation layer $L_d$ cannot reduce attack success for attacks entering at layer $L_a$ if no representation of the attack content propagates to $L_d$ during the agent's processing pipeline. Formally: if the agent's computation path from $L_a$ to execution does not transit through $L_d$, the defense is architecturally blind to the attack.
+>
+> **Empirical confirmation:** Input-level defenses ($L_d$ = input) show 0/360 modifications across all DTA injection sessions — the attack payload (entering at $L_a$ = retrieval) never transits through the user-input layer. Retrieval-level defenses ($L_d$ = retrieval) DO observe the payload but fail to detect it (classifier limitation, not architectural limitation). The distinction is critical: architectural blindness is unfixable by improving the defense; detection failure is fixable by scaling capability.
+
+**Paper placement:** §2.3 (Mechanistic Analysis) or start of §4 (Discussion).
+
+### 16.5 Stronger RAG Judge — 7B (Gap 4)
+
+**Implementation:** Change `rag_llm_judge` config to use `qwen2.5:7b` (or `qwen3:8b`) instead of `qwen2.5:1.5b`. Same judge prompt. Same detection logic.
+
+**Test plan:** 7B judge × 3 models (qwen2.5:14b, qwen3:32b, qwen3.5:122b) × N=40. Compare to 1.5B judge results (88.9% ASR).
+
+**Two outcomes:**
+
+**(a) 7B judge detects the malicious doc → ASR drops:**
+- Paper says: "Retrieval-layer defense is architecturally viable (correctly positioned at $L_d$ = $L_a$) but requires judge capacity ≥7B to reason about compliance-framed injection. The 1.5B judge failure was a capability limitation, not an architectural one."
+- This validates the formalization: architecture is necessary but not sufficient; capability within the correct layer determines effectiveness.
+
+**(b) 7B judge fails → ASR unchanged:**
+- Paper says: "Even a 7B judge cannot distinguish adversarial compliance language from legitimate compliance documents. Semantic masking defeats reasoning-based detection at this scale. The problem is not judge capacity alone — it is the fundamental indistinguishability of adversarial and legitimate institutional language without access to organizational ground truth."
+- This strengthens the "semantic masking is hard" claim and motivates RATG (which bypasses detection entirely by sanitizing content).
+
+**Paper placement:** §3.2.4 (extends existing RAG LLM Judge section with a capacity scaling analysis).
+
+### 16.6 Execution Schedule
+
+| Day | Task | Compute | Depends on |
+|---|---|---|---|
+| 1 | Write 4 payload variant documents; run N=10 screen on qwen2.5:14b | Mac Studio (~1h) | Nothing |
+| 2 | Implement RATG wrapper; dry-run on 2 models | Mac Studio (~2h) | Day 1 (verify payloads) |
+| 3-4 | RATG factorial: 9 models × N=40 = 360 runs | Mac Studio (~2 days) | Day 2 |
+| 3 | Swap judge to 7B; run N=40 on 3 models (parallel) | Mac Studio or Bedrock | Nothing |
+| 5 | Payload variants × RATG × N=10 (generalization check) | Mac Studio (~3h) | Day 3-4 |
+| 6-7 | Write: formalization (§2), RATG results (§3.3.2), payload generalization (§3.1), 7B judge (§3.2.4) | Writing only | Days 1-5 |
+| 8-9 | Revise paper structure; integrate all findings; update abstract | Writing only | All |
+| 10 | Verify canonical numbers; clean tables; build tarball; submit | Verification | All |
+
+### 16.7 Paper Structure After Sprint
+
+| Section | Content | Status |
+|---|---|---|
+| §1 Introduction | Add: "we identify a formal architectural constraint..." + "validate with a defense that resolves it" | REVISE |
+| §2.3 | Add: Proposition 1 (architectural mismatch, 1 paragraph) | NEW |
+| §3.1 | Add: 5 payload framings generalization table | NEW |
+| §3.2.4 | Add: 7B judge scaling result | NEW |
+| §3.3.2 | Add: RATG results (resolves double dissociation) | NEW |
+| §4.7 | Keep: session fingerprint / reproducibility finding | EXISTING (from today) |
+| §4.8 | Add: discussion of RATG limitations (adaptive attacker bypass) | NEW |
+
+### 16.8 Framing Rules (Lock These)
+
+1. **RATG is a proof-of-concept**, not a production defense. Say: "demonstrates the mismatch is solvable in principle."
+2. **Payload variants are generalization evidence**, not a contribution. Say: "semantic masking generalizes across institutional authority framings."
+3. **Formalization is a framing device**, not a theorem. Say: "we define... which predicts... our data confirms."
+4. **7B judge is a capability threshold finding**, not a defense contribution. Say: "we establish the minimum judge capacity required for retrieval-layer detection [or: show that detection-based defense fails even at 7B]."
+5. **The double dissociation is the core novel finding.** Lead with it. Everything else supports it.
+6. **Acknowledge RATG bypass** upfront: adaptive attackers can encode addresses. This is future work, not a flaw.
+
+### 16.9 Start: Day 1 — Payload Variants
+
+**Immediate actions (can start now while all experiments run):**
+1. Write `data/attacks/legal_hold_doc.txt`
+2. Write `data/attacks/it_security_doc.txt`
+3. Write `data/attacks/hr_policy_doc.txt`
+4. Write `data/attacks/executive_order_doc.txt`
+5. Add payload selector to config (or create `experiments/configs/payload_variants.yaml`)
+6. Run N=10 screen on qwen2.5:14b × no_defense × 5 payloads
