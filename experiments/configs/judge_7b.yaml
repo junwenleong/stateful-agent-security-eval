@@ -56,3 +56,10 @@ defenses:
   - type: rag_llm_judge
     name: rag_llm_judge_7b
     judge_model: qwen2.5:7b
+
+comparisons:
+  - name: judge_7b_vs_no_defense
+    type: primary
+    metric: attack_success
+    condition_a: {model: "qwen2.5:14b", attack: "delayed_trigger", defense: "no_defense"}
+    condition_b: {model: "qwen2.5:14b", attack: "delayed_trigger", defense: "rag_llm_judge_7b"}

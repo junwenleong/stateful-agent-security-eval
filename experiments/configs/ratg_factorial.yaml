@@ -103,3 +103,10 @@ defenses:
   - name: no_defense
   - name: ratg
     type: ratg
+
+comparisons:
+  - name: ratg_vs_no_defense
+    type: primary
+    metric: attack_success
+    condition_a: {model: "qwen2.5:14b", attack: "delayed_trigger", defense: "no_defense"}
+    condition_b: {model: "qwen2.5:14b", attack: "delayed_trigger", defense: "ratg"}
