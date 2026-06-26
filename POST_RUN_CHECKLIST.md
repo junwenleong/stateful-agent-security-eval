@@ -1139,3 +1139,39 @@ Deep battery killed "session longevity" (50 runs, marathon). These test the rema
 - Test 2 run both chained (on VRAM-fragmented state) AND independent (fresh daemon)
 - Kitchen sink test combines all three factors (the original session likely had all simultaneously)
 - Enhanced metadata capture (Metal shader cache, GPU info, thermal log, memory stats)
+
+### 15.31 Live Status (2026-06-26 12:38 SGT)
+
+**Three experiments running in parallel:**
+
+| # | Experiment | Machine | Progress | ETA | Early Signal |
+|---|---|---|---|---|---|
+| 1 | Cross-model date sweep (7 models × 2 dates) | Mac Studio | Model 6/7 (qwen3.5:122b+PH, date 06-25 running) | ~15:00 SGT | ⚠️ qwen3.5:122b+PH at 04-17 = **10/10 VE** — sleeper effect GONE (was 0/40 in April factorial!) |
+| 2 | Bedrock N=40 date sweep (5 models × 3 dates × N=40, interleaved, parallel) | This machine (Bedrock API) | ~5% (early, just started) | ~22:00 SGT (kimi bottleneck) | Too early |
+| 3 | Final hypotheses (VRAM churn, context churn, idle, kitchen sink) | Mac Studio (queued) | Not started | After #1 completes | — |
+
+**⚠️ CRITICAL EARLY FINDING from Mac Studio (#1):**
+
+qwen3.5:122b + prompt_hardening + date=2026-04-17 → **ASR=10/10 (100%)**
+
+In the April factorial (ran with real April dates), this was **ASR=0/40 (0%, sleeper effect)**. This was the ONLY model where prompt_hardening worked. If the June date also shows 100%, then:
+- The prompt_hardening sleeper effect is **NOT a stable model property** — it was date-conditional
+- The paper's claim that "qwen3.5:122b is the sole model where prompt_hardening achieves ASR=0" is **temporally unstable**
+- This is the SAME class of phenomenon as qwq:32b (date-sensitivity), but on a DIFFERENT model and a DIFFERENT defense
+
+**Wait for 06-25 result before concluding.** If 06-25 also shows 100% → the sleeper effect was ALWAYS date-fragile. If 06-25 shows 0% → the date is the determining variable (binary flip like qwq).
+
+**Bedrock N=40 design (running from this machine):**
+- 5 models: nemotron-super-120b, minimax-m2.5, kimi-k2-thinking, qwen3-next-80b, llama4-maverick-17b
+- 3 dates: 2026-04-17, 2026-06-25, 2026-03-15 (neutral, no holiday)
+- N=40 per cell, interleaved (A/B/C/A/B/C), Bonferroni-corrected α=0.017
+- 5 parallel processes (one per model), resume-safe
+- Fisher's exact on both injection and attack, per date pair
+- Progress monitor: `.venv/bin/python scripts/progress_bedrock_dates.py`
+
+**What to do when results arrive:**
+1. Mac Studio cross-model: `git pull` → analyze summary.txt → update §15.29 with results
+2. Bedrock N=40: `.venv/bin/python scripts/run_bedrock_date_sweep_n40.py --analyze`
+3. Final hypotheses: `git pull` → analyze summary.txt → update §15.30 with results
+4. If qwen3.5:122b+PH shows date-sensitivity → MAJOR paper caveat needed (§3.2.5 prompt_hardening section)
+5. Update POST_RUN_CHECKLIST with all final verdicts
