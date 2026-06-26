@@ -89,3 +89,10 @@ attacks:
 
 defenses:
   - name: no_defense
+
+comparisons:
+  - name: compliance_vs_legal_hold
+    type: primary
+    metric: attack_success
+    condition_a: {model: "qwen2.5:14b", attack: "compliance", defense: "no_defense"}
+    condition_b: {model: "qwen2.5:14b", attack: "legal_hold", defense: "no_defense"}
