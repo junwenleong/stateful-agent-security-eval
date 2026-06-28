@@ -150,6 +150,21 @@ Key findings:
 
 Full details in [FINDINGS.md](https://github.com/junwenleong/stateful-agent-security-eval/blob/main/FINDINGS.md).
 
+## v5 update (June 2026)
+
+A loaded-corpus threat model evaluation reveals that the empty-corpus frontier probe (v4) understated vulnerability. When the malicious document is present in the RAG corpus under authority-escalation framing:
+
+- **GPT-4o exfiltrates at 60.3%** (N=68, Wilson CI [48.4%, 71.1%]) — the most widely deployed OpenAI model is the most vulnerable
+- **Generational hardening is monotonic**: GPT-4o (60%) → GPT-4.1 (30%) → GPT-5 (15%) → GPT-5.4/5.5 (0%)
+- **All OpenAI models inject at 100%** — even GPT-5.5 stores the malicious rule. Execution is blocked but injection is not. Supply-chain risk persists.
+- **Anthropic is categorically different**: Sonnet 4.6 shows 0% injection across 3 payload framings with loaded corpus. Detects semantic intent, not surface patterns.
+- **System-prompt mitigation is generation-dependent**: GPT-5/4.1 fully mitigable (0% ASR with security-hardened prompt). GPT-4o partially mitigable (60% → 3.3%, residual leak confirmed — CI excludes 0%).
+- **Concurrent work positioning**: Trojan Hippo (arXiv:2605.01970) reports 85-100% ASR under adaptive attacks on Gemini 3.1 Pro and GPT-5-mini. Our fixed-framing results are lower-bound estimates; the generational trend, vendor divergence, and injection-execution dissociation are novel contributions not reported elsewhere.
+
+The key architectural insight: the frontier safety gap is not between open-source and frontier — it is between *injection-layer resistance* (Anthropic) and *execution-layer resistance* (OpenAI). Only injection-layer resistance eliminates the stored payload from persistent memory entirely.
+
+Full details in [FINDINGS.md](https://github.com/junwenleong/stateful-agent-security-eval/blob/main/FINDINGS.md).
+
 ---
 
 ## Links

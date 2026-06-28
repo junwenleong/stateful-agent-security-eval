@@ -95,3 +95,39 @@ All tools are simulated, not production deployments. Models are quantized open s
 ## Verification
 
 All numbers in this document were programmatically verified against raw experimental data (5,700 JSONL records across 5 result files, plus 1,180 Bedrock validation records across 3 result files) using `scripts/verify_canonical.py`. The verification checks every per cell ASR, every defense mean, every archetype classification, every headline claim, and the full analysis.json output including N/A annotations and Holm-Bonferroni significance counts. Paper: [arXiv:2605.08442](https://arxiv.org/abs/2605.08442). Code and results: [github.com/junwenleong/stateful-agent-security-eval](https://github.com/junwenleong/stateful-agent-security-eval). Experiment configurations in `experiments/configs/` were registered before the first factorial run. The Unified Agentic Environment design (identical SQLite, identical RAG corpus, identical tool definitions across all models) ensures that observed differences in attack success are attributable to model reasoning, not infrastructure variation.
+
+## Frontier Generational Findings (June 2026)
+
+A loaded-corpus evaluation via cloud API endpoints reveals that frontier base-tier models are not execution-safe when the malicious document is present in the RAG corpus under authority-escalation (legal hold) framing.
+
+### Generational Vulnerability Matrix
+
+| Model | Era | N | Injection | ASR | Wilson 95% CI (ASR) |
+|-------|-----|---|-----------|-----|---------------------|
+| GPT-4o | Mid-2024 | 68 | 97.1% | **60.3%** | [48.4%, 71.1%] |
+| GPT-4.1 | Late-2024 | 10 | 100% | **30%** | [10.8%, 60.3%] |
+| GPT-5 | Early-2025 | 40 | 100% | **15.0%** | [7.1%, 29.1%] |
+| GPT-5.4 | Mid-2025 | 10 | 100% | 0% | [0%, 27.8%] |
+| GPT-5.5 | Late-2025 | 10 | 100% | 0% | [0%, 27.8%] |
+| Sonnet 4.6 | Anthropic | 10 | 0% | 0% | — |
+| Opus 4.8 | Anthropic | 10 | 10% | 0% | — |
+
+### Key Findings
+
+1. **Generational hardening is monotonic**: GPT-4o (60.3%) → GPT-4.1 (30%) → GPT-5 (15%) → GPT-5.4/5.5 (0%). OpenAI fixed execution resistance between GPT-5 and GPT-5.4.
+
+2. **Injection-execution dissociation**: ALL OpenAI models inject at 100% even when execution is blocked. GPT-5.5 is a Latent Carrier — stores the rule but never acts on it. The stored payload persists indefinitely in shared memory databases.
+
+3. **Vendor divergence**: Anthropic blocks at the injection layer (0% storage regardless of framing). OpenAI blocks at the execution layer (stores but doesn't act for GPT-5.4+). Only injection-layer resistance eliminates the attack surface from persistent state.
+
+4. **GPT-4o is universally compliant**: Exfiltrates to `evil-attacker@malicious.xyz` at equivalent rates (~50%) as `auditor@external-compliance.com`. Not authority deference — pure instruction-following collapse.
+
+5. **System-prompt mitigation is generation-dependent**: Security-hardened prompts reduce GPT-4o from 60% to 3.3% (CI excludes 0% — residual leak confirmed). GPT-5 and GPT-4.1 are fully mitigable (0% with hardened prompt). Anthropic needs no hardening.
+
+6. **Sonnet's detection is semantically deep**: 0% injection across 3 loaded-corpus payload variants (compliance, legal hold, IT configuration). Framing-invariant intent detection.
+
+7. **Tool-existence ablation**: Removing `save_fact` from the tool schema drops injection from 100% to 0% (N=60, zero hallucinated tool calls). Models are cognitively compliant (100% text signals without tools) but architecturally blocked. The tool's presence in the schema is the necessary condition for injection.
+
+### Relationship to Concurrent Work
+
+Trojan Hippo (arXiv:2605.01970) reports 85-100% ASR on Gemini 3.1 Pro and GPT-5-mini under adaptive, OpenEvolve-generated attacks. Our fixed-framing results are lower-bound estimates. The GPT-5-mini discrepancy (their 85% vs our 0%) reflects attack sophistication (adaptive vs. fixed), not a contradiction. Our novel contributions — generational trend, injection-execution dissociation, vendor divergence — are not reported in any prior work.

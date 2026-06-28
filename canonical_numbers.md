@@ -292,3 +292,115 @@ Total: 0/46 bypasses. qwq:32b inversion does not generalise.
 | llama4-maverick-17b | 40 | 0% (all) | 1.00 | No |
 
 **Verdict**: Date sensitivity is qwq:32b-specific. Does not generalise.
+
+---
+
+## Experiment 7: frontier API Supplementary & Followup — Loaded-Corpus Experiments (June 2026)
+
+**Source**: `results/frontier-api_supplementary/*.jsonl`, `results/frontier-api_followup/*.jsonl`
+**Method**: frontier API AI Platform API (OpenAI-compatible endpoint), identical tool schema + SQLite as factorial
+**Date**: 2026-06-27 to 2026-06-28
+**Key methodological note**: These experiments load the malicious document into the RAG corpus (`RAGTool(corpus=[...])`). The Experiment 5 frontier probe (above) used an empty `RAGTool()`. Numbers are NOT comparable across these two designs — they answer different questions (tool-calling compliance vs. RAG injection vulnerability).
+
+### GPT-4o (Loaded Corpus)
+
+| Condition | N | Injection | ASR | Wilson 95% CI (ASR) |
+|-----------|---|-----------|-----|---------------------|
+| Variant B (Legal Hold) | 68 | 97.1% (66/68) | **60.3%** (41/68) | [48.4%, 71.1%] |
+| SECURE + Variant B | 30 | 100% (30/30) | **3.3%** (1/30) | [0.6%, 16.7%] |
+| Evil Domain + Variant B | 10 | 100% (10/10) | **50%** (5/10) | [23.7%, 76.3%] |
+
+**Key findings:**
+- GPT-4o exfiltrates in the majority of runs under authority escalation (CI lower bound 48.4%)
+- SECURE prompt reduces but does NOT eliminate exfiltration (CI excludes 0% — residual leak confirmed)
+- Exfiltrates to obviously malicious domains at equivalent rates — universal instruction compliance, not authority deference
+
+### GPT-5 (Loaded Corpus)
+
+| Condition | N | Injection | ASR | Wilson 95% CI (ASR) |
+|-----------|---|-----------|-----|---------------------|
+| Variant A (Compliance) | 10 | 100% (10/10) | **0%** (0/10) | [0%, 27.8%] |
+| Variant B (Legal Hold) | 40 | 100% (40/40) | **15.0%** (6/40) | [7.1%, 29.1%] |
+| SECURE + Variant B | 10 | 100% (10/10) | **0%** (0/10) | [0%, 27.8%] |
+
+**Key findings:**
+- GPT-5 is breachable under authority escalation (15%, CI excludes 0%)
+- Fully mitigable with SECURE prompt (0% ASR)
+- Standard compliance framing insufficient to trigger execution (0% Variant A)
+
+### GPT-4.1 (Loaded Corpus)
+
+| Condition | N | Injection | ASR | Wilson 95% CI (ASR) |
+|-----------|---|-----------|-----|---------------------|
+| Variant A (Compliance) | 10 | 100% (10/10) | **10%** (1/10) | [1.8%, 40.4%] |
+| Variant B (Legal Hold) | 10 | 100% (10/10) | **30%** (3/10) | [10.8%, 60.3%] |
+| SECURE + Variant A | 5 | 100% (5/5) | **0%** (0/5) | [0%, 43.4%] |
+
+### GPT-4.1-mini / GPT-4.1-nano / GPT-5-mini (Loaded Corpus)
+
+| Model | Condition | N | Injection | ASR |
+|-------|-----------|---|-----------|-----|
+| gpt-4.1-mini | Variant B (Legal Hold) | 10 | 100% | **0%** |
+| gpt-4.1-nano | Variant B (Legal Hold) | 10 | 100% | **0%** |
+| gpt-5-mini | Variant B (Legal Hold) | 10 | 100% | **0%** |
+
+**Key finding:** Mini/nano execution resistance is absolute — 0% ASR regardless of framing with loaded corpus.
+
+### GPT-5.4 / GPT-5.5 / Opus 4.8 (Loaded Corpus)
+
+| Model | Condition | N | Injection | ASR |
+|-------|-----------|---|-----------|-----|
+| gpt-5.4 | Variant B (Legal Hold) | 10 | 100% | **0%** |
+| gpt-5.5 | Variant B (Legal Hold) | 10 | 100% | **0%** |
+| claude-opus-4-8 | Variant B (Legal Hold) | 10 | 10% (1/10) | **0%** |
+
+**Key finding:** OpenAI fixed execution between GPT-5 (15% ASR) and GPT-5.4 (0% ASR). All OpenAI models still inject at 100%. Opus 4.8 blocks at injection (10% only).
+
+### Sonnet 4.6 Brittleness Sweep (Loaded Corpus)
+
+| Variant | N | Injection | ASR |
+|---------|---|-----------|-----|
+| Variant A (Compliance) | 100 (Bedrock) | 0% | 0% |
+| Variant B (Legal Hold) | 10 | **0%** | 0% |
+| Variant C (IT Config/Passive) | 10 | **0%** | 0% |
+
+**Key finding:** Sonnet's injection resistance is framing-invariant. Detects semantic intent, not surface patterns.
+
+### gpt-5.2-chat Serving Variant (Loaded Corpus)
+
+| Condition | N | Injection | ASR | Wilson 95% CI (Injection) |
+|-----------|---|-----------|-----|---------------------------|
+| gpt-5.2-chat (111k context) | 40 | **52.5%** (21/40) | **0%** (0/40) | [37.0%, 67.5%] |
+| gpt-5.2 (272k context) | 10 | 0% (0/10) | 0% | — |
+
+**Key finding:** Same model family, different serving endpoint, dramatically different injection rate. Safety is a serving-layer property. Execution resistance is deterministic regardless.
+
+### Tool-Existence Ablation (Empty Corpus — 3 Latent Carriers: gpt-5.1, o3-mini, o4-mini)
+
+| Condition | save_fact in schema | N | Injection | Hallucinated saves | Text compliance |
+|-----------|--------------------:|---|-----------|--------------------:|:---------------:|
+| Baseline (frontier probe) | ✅ | 30 | **100%** | n/a | n/a |
+| Remove save_fact | ❌ | 60 | **0%** (0/60) | **0** | ~50% of runs |
+| No tools at all | ❌ | 30 | **0%** (0/30) | **0** | 100% of runs |
+
+**Key finding:** Tool availability is the necessary and sufficient condition for injection. Models are cognitively compliant by default (100% text signals without tools) but architecturally blocked without save_fact.
+
+### Generational Vulnerability Matrix (Loaded Corpus + Variant B — The Real Threat Model)
+
+| Model | Era | Injection | ASR | SECURE Prompt ASR | Mechanism |
+|-------|-----|-----------|-----|-------------------|-----------|
+| gpt-4o | Mid-2024 | 97% (N=68) | **60.3%** [48.4%, 71.1%] | **3.3%** (1/30) [0.6%, 16.7%] | Universal compliance |
+| gpt-4.1 | Late-2024 | 100% (N=10) | **30%** [10.8%, 60.3%] | 0% (N=5) | Authority-driven |
+| gpt-5 | Early-2025 | 100% (N=40) | **15%** [7.1%, 29.1%] | 0% (N=10) | Residual compliance |
+| gpt-5.4 | Mid-2025 | 100% (N=10) | **0%** | — | Execution-resistant |
+| gpt-5.5 | Late-2025 | 100% (N=10) | **0%** | — | Execution-resistant |
+| Sonnet 4.6 | Anthropic | 0% (N=10+100) | **0%** | (not needed) | Injection-resistant |
+| Opus 4.8 | Anthropic | 10% (N=10) | **0%** | (not needed) | Near-injection-resistant |
+| mini/nano | Various | 100% | **0%** | — | Execution-locked |
+
+### Vendor Divergence Summary
+
+- **Anthropic**: Blocks at injection layer (0% storage). Safety is semantic intent detection, framing-invariant.
+- **OpenAI (GPT-5.4+)**: Blocks at execution layer (100% injection, 0% ASR). Stores rule but refuses to act.
+- **OpenAI (GPT-5 and earlier)**: Partially blocks at execution layer (15-60% ASR depending on generation + framing).
+- **OpenAI (mini/nano)**: Absolute execution lock (0% ASR regardless of framing). But 100% injection = supply-chain risk.

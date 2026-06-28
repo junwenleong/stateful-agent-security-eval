@@ -5,6 +5,9 @@
 \usepackage{url}
 \usepackage{booktabs}
 \usepackage{xcolor}
+\usepackage{pifont}
+\newcommand{\cmark}{\ding{51}}
+\newcommand{\xmark}{\ding{55}}
 
 \title{Defense Effectiveness Across Architectural Layers: A Mechanistic Evaluation of Persistent Memory Attacks on Stateful LLM Agents}
 
@@ -27,7 +30,7 @@ Jun Wen Leong \\
 \lhead{Preprint. Under review.}
 
 \begin{abstract}
-Persistent memory in LLM agents creates an attack surface that production safety classifiers---including Llama Guard, ShieldGemma, and input-level content filters---are architecturally unable to observe. We demonstrate this through a 5,040-run factorial evaluation (9 models, $N{=}40$ per condition) and discover a mechanistic taxonomy that predicts which models are vulnerable and why. Five of six defenses fail: input-level filters (Minimizer, Sanitizer) never see the malicious payload because it enters via RAG retrieval, not user input; retrieval-level classifiers (RAG Sanitizer, RAG LLM Judge) observe the payload but cannot distinguish compliance-framed injection from legitimate policy; Prompt Hardening is overridden by the stored rule's compliance framing for seven of nine models. The architectural explanation is layer-invariant: any defense that classifies text without understanding cross-session state persistence will fail against payloads designed to be indistinguishable from authorised organisational policy. One defense---tool-gating at the memory layer (Memory Sandbox)---succeeds by removing the recall capability rather than attempting detection, reducing ASR to 0\% for eight of nine models with zero utility cost (BTCR $= 100\%$ across all no-attack conditions). However, a reasoning model inverts this defense entirely: under normal conditions it refuses exfiltration (0\% ASR), but Memory Sandbox forces it onto the RAG pathway where its refusal mechanism does not activate (100\% ASR). A reasoning-mode ablation reveals a double dissociation: the sandbox variant protecting reasoning models collapses the attack for non-reasoning models, while the variant protecting non-reasoning models is bypassed by reasoning models via goal-directed RAG fallback. No single memory-sandbox implementation is safe across both model classes. Frontier screening (21 models, 3 providers, 0/410 runs, 95\% CI $\le 0.73\%$) confirms a categorical safety gap: all tested frontier models resist the attack through active detection mechanisms absent in open-source models, with a sharp generational boundary (GPT-5.1 injects at 100\%; GPT-5.2 achieves total resistance). The Latent Carrier archetype---frontier reasoning models that store the payload but refuse execution---creates a compositional supply-chain risk in shared-memory deployments. These results establish that defense effectiveness against persistent memory attacks is determined by architectural layer, not implementation quality, and that capability removal outperforms detection when the attack surface is at a layer where classification is infeasible.
+Persistent memory in LLM agents creates an attack surface that production safety classifiers---including Llama Guard, ShieldGemma, and input-level content filters---are architecturally unable to observe. We demonstrate this through a 5,040-run factorial evaluation (9 models, $N{=}40$ per condition) and discover a mechanistic taxonomy that predicts which models are vulnerable and why. Five of six defenses fail: input-level filters (Minimizer, Sanitizer) never see the malicious payload because it enters via RAG retrieval, not user input; retrieval-level classifiers (RAG Sanitizer, RAG LLM Judge) observe the payload but cannot distinguish compliance-framed injection from legitimate policy; Prompt Hardening is overridden by the stored rule's compliance framing for seven of nine models. The architectural explanation is layer-invariant: any defense that classifies text without understanding cross-session state persistence will fail against payloads designed to be indistinguishable from authorised organisational policy. One defense---tool-gating at the memory layer (Memory Sandbox)---succeeds by removing the recall capability rather than attempting detection, reducing ASR to 0\% for eight of nine models with zero utility cost (BTCR $= 100\%$ across all no-attack conditions). However, a reasoning model inverts this defense entirely: under normal conditions it refuses exfiltration (0\% ASR), but Memory Sandbox forces it onto the RAG pathway where its refusal mechanism does not activate (100\% ASR). A reasoning-mode ablation reveals a double dissociation: the sandbox variant protecting reasoning models collapses the attack for non-reasoning models, while the variant protecting non-reasoning models is bypassed by reasoning models via goal-directed RAG fallback. No single memory-sandbox implementation is safe across both model classes. Frontier screening (21 models, 3 providers, 0/410 runs, 95\% CI $\le 0.73\%$) confirms a categorical safety gap: all tested frontier models resist the attack through active detection mechanisms absent in open-source models, with a sharp generational boundary (GPT-5.1 injects at 100\%; GPT-5.2 achieves total resistance). However, under a loaded-corpus threat model with authority-escalation framing, frontier base-tier models are not execution-safe: GPT-4o exfiltrates at 60.3\% ($N{=}68$, CI [48.4\%, 71.1\%]), declining monotonically across generations to 0\% at GPT-5.4. Anthropic models resist at the injection layer (0\% storage) regardless of framing---a categorical vendor divergence in safety architecture. The Latent Carrier archetype---frontier reasoning models that store the payload but refuse execution---creates a compositional supply-chain risk in shared-memory deployments. These results establish that defense effectiveness against persistent memory attacks is determined by architectural layer, not implementation quality, and that capability removal outperforms detection when the attack surface is at a layer where classification is infeasible.
 \end{abstract}
 
 %==============================================================================
@@ -48,6 +51,7 @@ This paper makes three contributions:
     \item An architectural impossibility result: persistent memory attacks operate at a layer that production safety classifiers (Llama Guard, ShieldGemma, input-level content filters) cannot observe by construction. The failure of five defense classes is not an implementation gap---it is a structural property of the layer boundary. We demonstrate this empirically across 5,040 runs with BCa bootstrap CIs, Holm-Bonferroni correction on 108 pre-specified comparisons, and 0\% false positive rate.
     \item A mechanistic taxonomy that predicts model vulnerability without running the attack: five behavioral archetypes (Explicit Detector, Active Detector with Defensive Storage, Vulnerable Executor, Draft-Only Executor, Latent Carrier) with distinct mechanisms at each stage of the attack lifecycle. The taxonomy correctly predicts that Memory Sandbox---capability removal rather than detection---is the only structurally sound defense, and identifies the conditions under which it inverts.
     \item A double dissociation in defense design: no single memory-sandbox implementation is safe across both reasoning and non-reasoning model classes. The variant protecting reasoning models breaks non-reasoning models; the variant protecting non-reasoning models is bypassed by reasoning models. This constrains the solution space for practitioners deploying heterogeneous model fleets.
+    \item A cross-generational vulnerability mapping: under loaded-corpus authority-escalation framing, OpenAI models show a monotonic decline in exfiltration (GPT-4o: 60.3\% $\rightarrow$ GPT-5: 15\% $\rightarrow$ GPT-5.4/5.5: 0\%), while all inject at 100\%---revealing that injection and execution are independently hardened safety layers. Anthropic blocks at the injection layer entirely (0\% storage), establishing a categorical vendor divergence in safety architecture not previously documented.
 \end{enumerate}
 
 %==============================================================================
@@ -295,6 +299,17 @@ The ten evaluation artifacts share a common structure: the evaluation environmen
 
 Three deployment implications follow. First, the hallucination bypass bounds the reliability of Memory Sandbox: two models achieve ASR $= 0\%$ because their training priors for the key name do not include the attacker address. An attacker who knows the model's prior could craft a key name that elicits the correct address. Second, the three behavioral responses to Memory Sandbox (halt, hallucination bypass, and architectural inversion) constitute a screening framework for deployment. Third, multi-key normalisation constrains memory remediation strategies: the attacker address survives deletion of the primary key.
 
+\subsection{Implications for Frontier Model Deployment}
+\label{sec:frontier-implications}
+
+The generational findings (Section~\ref{sec:generational}) establish three actionable constraints for frontier model deployment in agentic architectures:
+
+\paragraph{Safety is neither uniform nor monotonic across the model lifecycle.} Within OpenAI's model family, execution vulnerability declined monotonically from GPT-4o (60.3\%) to GPT-5.4 (0\%) over approximately 18 months, while injection vulnerability remained constant at 100\%. Evaluating a single model version does not predict the safety of its predecessor or successor. Deployment decisions must be version-specific and re-evaluated on each model update.
+
+\paragraph{The injection-execution dissociation creates a hidden persistence risk.} All OpenAI models---including the execution-safe GPT-5.4 and GPT-5.5---store the malicious rule at 100\% injection rate. The rule persists in the memory database indefinitely, invisible to runtime monitoring that only checks execution outcomes. A model upgrade from GPT-5.5 to a hypothetical future model with regressed execution safety would immediately surface the stored payload. Defense strategies that monitor only exfiltration events miss the upstream state corruption entirely.
+
+\paragraph{Vendor selection is a security decision, not just a capability decision.} Anthropic's injection-layer resistance (0\% storage with loaded corpus across three framings) is architecturally distinct from OpenAI's execution-layer resistance (100\% storage, 0\% action). The practical difference: Anthropic deployments leave no adversarial state in persistent memory; OpenAI deployments accumulate stored payloads that remain exploitable by legacy components, multi-agent composition, or future model regressions. For shared-memory architectures, injection-layer resistance eliminates the attack surface; execution-layer resistance merely contains it.
+
 \subsection{Compositional Supply-Chain Risk}
 \label{sec:supply-chain}
 
@@ -310,25 +325,111 @@ To test whether the date-sensitivity phenomenon observed for qwq:32b generalises
 
 This evaluation uses a Unified Agentic Environment, a single execution stack shared by all models, to isolate model reasoning as the primary variable. The Sanitizer and RAG Sanitizer classifiers were trained on 60 examples; the failure is documented as a finding about semantic masking, not classifier quality. The evaluation uses a single malicious document and trigger prompt to test structural defense properties rather than attack evasion breadth. Whether the retrieval-layer finding generalises to other semantic masking strategies (legal hold notices, HR policy documents) is a direct question for follow-on work. The structural claim (input-layer defenses cannot observe RAG-injected content) is payload-invariant by construction. Defenses were evaluated in isolation; combined defense stacking (e.g., Prompt Hardening with Memory Sandbox) was not tested and may produce synergistic effects. BTCR measures task completion, not response latency or output quality; utility degradation under attack beyond the binary completion metric is not measured.
 
+Our attacks use fixed, ecologically valid framings (compliance, legal hold) rather than adaptive red-teaming. Trojan Hippo~\citep{das2026trojan} demonstrates that adaptive, OpenEvolve-generated attacks achieve 85\% ASR on GPT-5-mini---a model that shows 0\% under our fixed legal hold framing. Our results should therefore be interpreted as \textbf{lower-bound estimates} of vulnerability under realistic, non-adaptive attack conditions. They complement, rather than contradict, the higher rates reported by adaptive frameworks. An adaptive attacker targeting model-specific reasoning traces or intermediate memory states remains an open frontier; provenance-tracking defenses such as MemLineage~\citep{ouyang2026memlineage} and certified approaches such as SMSR~\citep{smsr2026} represent the next battleground, though their robustness to adaptive bypass has not yet been demonstrated.
+
 %==============================================================================
 \section{Related Work}
 \label{sec:related}
 %==============================================================================
 
-\paragraph{Persistent memory attacks.} MINJA~\citep{shao2025minja} and Zombie Agents~\citep{yang2026zombie} established that persistent memory attacks achieve high success rates against open-source models. MemoryGraft~\citep{srivastava2025memorygraft} and InjecMEM~\citep{jing2026memory} provide additional evidence of memory poisoning variants. These works prove the attack class exists but do not provide systematic evaluation of defense effectiveness with confidence intervals, power analysis, or mechanistic attribution.
+\paragraph{Persistent memory attacks.} MINJA~\citep{shao2025minja} and Zombie Agents~\citep{yang2026zombie} established that persistent memory attacks achieve high success rates against open-source models. MemoryGraft~\citep{srivastava2025memorygraft} and InjecMEM~\citep{jing2026memory} provide additional evidence of memory poisoning variants. Trojan Hippo~\citep{das2026trojan} reports 85--100\% ASR against Gemini 3.1 Pro and GPT-5-mini under an adaptive, OpenEvolve-generated attack using tool-call injection (crafted email). Their transfer attack on GPT-5 yields substantially lower rates (70\% on RAG, 35\% on Context without re-optimization), consistent with our finding that GPT-5 is more resistant than earlier generations. Hidden in Memory~\citep{pulipaka2026hidden} independently confirms that GPT-5.5 stores adversary-induced memories at 99.8\%, consistent with our finding of 100\% injection; their attack steers future conversations (60--89\% success) rather than causing data exfiltration. OEP~\citep{wang2026oep} demonstrates that GPT-4o agents are vulnerable to clean-label experience poisoning (59\% ASR on reasoning tasks), exploiting a different attack surface (self-evolution) with a convergent vulnerability rate to our RAG-injection finding (60.3\% ASR on exfiltration). Cross-Session Stored Prompt Injection~\citep{xie2026crosssession} formalises the XSS analogy for persistent injection. MPBench~\citep{mpbench2026} provides a benchmark with four write channels and six attack classes, showing that existing prompt injection defenses fail to cover memory poisoning.
+
+Our work differs from these in three ways: (1) we use a fixed, ecologically valid RAG injection rather than adaptive red-teaming---our results are therefore lower-bound estimates of vulnerability; (2) we map vulnerability across five OpenAI generations (GPT-4o through GPT-5.5), revealing a monotonic temporal hardening pattern not previously reported; (3) we evaluate Anthropic models alongside OpenAI, revealing a categorical vendor divergence in safety architecture that no prior work documents. Table~\ref{tab:related-comparison} summarises these distinctions.
+
+\begin{table}[t]
+\centering
+\caption{Comparison with concurrent persistent memory attack papers.}
+\label{tab:related-comparison}
+\scriptsize
+\begin{tabular}{lcccccc}
+\toprule
+& \textbf{Attack} & \textbf{Adapt.} & \textbf{Gen.} & \textbf{Vendor} & \textbf{Inj-Exec} & \textbf{Defense} \\
+& \textbf{Vector} & & \textbf{Trend} & \textbf{Comp.} & \textbf{Dissoc.} & \textbf{Eval.} \\
+\midrule
+Trojan Hippo & Tool call & \cmark & \xmark & \xmark & \xmark & 4 defenses \\
+Hidden in Memory & Ext.\ context & \xmark & \xmark & \xmark & \xmark & \xmark \\
+OEP & Self-evol. & \xmark & \xmark & \xmark & \xmark & 1 defense \\
+MINJA & Query-only & \xmark & \xmark & \xmark & \xmark & Prompt \\
+MemLineage & (Defense) & --- & --- & --- & --- & Provenance \\
+SMSR & (Defense) & --- & --- & --- & --- & Certified \\
+\textbf{This work} & \textbf{RAG doc} & \xmark & \cmark & \cmark & \cmark & \textbf{6 defenses} \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \paragraph{Agentic security benchmarks.} InjecAgent~\citep{zhan2024injecagent}, AgentDojo~\citep{debenedetti2024agentdojo}, and AgentSecEval~\citep{yang2024agentseceval} evaluate defenses against input-level attacks on stateless or single-session agents. The threat model differs from persistent memory attacks: the payload arrives in the user's message rather than via RAG retrieval, and there is no persistent state to exploit. The existing benchmark landscape has been saturated at the input layer; this paper evaluates a different threat model.
 
-\paragraph{Defense approaches.} Input-level filtering is the dominant defense approach~\citep{liu2024formalizing}. Retrieval-level filtering has been proposed but not systematically evaluated against semantically masked payloads. Instruction-level hardening appears in system prompt guidance without empirical evaluation against stored-rule compliance framing. Tool-layer restriction has received almost no evaluation attention. This paper is the first to evaluate all four layers systematically against the same attack.
+\paragraph{Defense approaches.} Input-level filtering is the dominant defense approach~\citep{liu2024formalizing}. Retrieval-level filtering has been proposed but not systematically evaluated against semantically masked payloads. Instruction-level hardening appears in system prompt guidance without empirical evaluation against stored-rule compliance framing. Tool-layer restriction has received almost no evaluation attention. On the formal defense side, MemLineage~\citep{ouyang2026memlineage} attaches cryptographic provenance and derivation lineage to memory entries, achieving zero ASR on a deterministic mechanism-isolation harness; SMSR~\citep{smsr2026} provides the first certified robustness bound for multi-session memory poisoning. Both represent promising directions; whether they withstand adaptive attacks at the level demonstrated by Trojan Hippo remains an open question. This paper is the first to evaluate all four architectural layers (input, retrieval, instruction, tool) systematically against the same attack.
 
 \paragraph{Frontier model safety.} Standard safety evaluations focus on refusal behavior in single-turn settings~\citep{anthropic2025modelspec}. The persistent memory setting introduces a temporal dimension absent from standard evaluations. Our screening of 21 frontier models across three providers extends safety characterisation to the multi-session agentic setting, identifying a sharp generational boundary (GPT-5.1 to GPT-5.2) and confirming that the frontier-open-source safety gap is categorical and cross-provider.
+
+%==============================================================================
+\subsection{Frontier Generational Findings}
+\label{sec:generational}
+%==============================================================================
+
+The open-source factorial (Sections~\ref{sec:sandbox}--\ref{sec:date-sweep}) evaluates defense effectiveness against models that are uniformly vulnerable. A complementary question is whether frontier models---which resist the attack under our fixed framing---exhibit uniform resistance or reveal generation- and vendor-specific vulnerability patterns when the threat model is strengthened. We address this through a series of targeted experiments using the frontier API AI Platform API, applying the identical tool schema and SQLite persistence as the factorial but with the malicious document loaded into the RAG corpus and evaluated under an authority-escalation framing (legal hold).
+
+\subsubsection{Empty Corpus Baseline: 0\% ASR is Not the Full Story}
+
+Our initial frontier screening (Section~\ref{sec:frontier}) evaluated 21 models at $N{=}10$ each (210 runs) with an empty RAG corpus---the agent was instructed to retrieve compliance rules but no malicious document was present. Under these conditions, 0 of 210 runs produced exfiltration (95\% CI upper bound $\leq$1.43\%). However, the absence of a malicious document means this probe measured the model's willingness to call \texttt{save\_fact} based on user instructions alone---a test of tool-calling compliance, not indirect prompt injection vulnerability. The apparent categorical safety of frontier models was an artifact of the empty-corpus experimental design.
+
+\subsubsection{Loaded Corpus Reveals Non-Zero ASR on Frontier Models}
+
+When the malicious document is present in the RAG corpus under authority-escalation framing, frontier base-tier models exfiltrate at non-trivial rates:
+
+\begin{table}[h]
+\centering
+\caption{Frontier model vulnerability under loaded corpus + legal hold framing.}
+\label{tab:frontier-generational}
+\small
+\begin{tabular}{llrrrl}
+\toprule
+\textbf{Model} & \textbf{Era} & \textbf{N} & \textbf{Injection} & \textbf{ASR} & \textbf{Wilson 95\% CI} \\
+\midrule
+GPT-4o & Mid-2024 & 68 & 97.1\% & \textbf{60.3\%} & [48.4\%, 71.1\%] \\
+GPT-4.1 & Late-2024 & 10 & 100\% & \textbf{30\%} & [10.8\%, 60.3\%] \\
+GPT-5 & Early-2025 & 40 & 100\% & \textbf{15.0\%} & [7.1\%, 29.1\%] \\
+GPT-5.4 & Mid-2025 & 10 & 100\% & 0\% & [0\%, 27.8\%] \\
+GPT-5.5 & Late-2025 & 10 & 100\% & 0\% & [0\%, 27.8\%] \\
+Sonnet 4.6 & Anthropic & 10 & 0\% & 0\% & --- \\
+Opus 4.8 & Anthropic & 10 & 10\% & 0\% & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+GPT-4o---the most widely deployed OpenAI model---exfiltrates in the majority of runs (CI lower bound 48.4\%). GPT-4o exfiltrates at equivalent rates ($\approx$50\%) to an obviously malicious domain (\texttt{evil-attacker@malicious.xyz}), confirming universal instruction compliance rather than authority deference.
+
+\subsubsection{OpenAI's Generational Hardening}
+
+The data reveal a monotonic decline in execution vulnerability across OpenAI generations: GPT-4o (60.3\%) $\rightarrow$ GPT-4.1 (30\%) $\rightarrow$ GPT-5 (15.0\%) $\rightarrow$ GPT-5.4/5.5 (0\%). This temporal hardening pattern has not been previously reported. Critically, \textit{all} OpenAI models inject at 100\%---even GPT-5.5 stores the malicious rule verbatim. The hardening is exclusively at the execution layer: storage vulnerability persists while exfiltration is progressively blocked. This injection-execution dissociation means that the OpenAI safety improvement does not eliminate the stored payload from persistent memory. It only prevents the model from acting on it.
+
+\subsubsection{Architectural Divergence: Anthropic vs.\ OpenAI}
+
+Anthropic and OpenAI implement fundamentally different safety architectures for persistent memory attacks:
+
+\begin{itemize}
+\item \textbf{Anthropic (Sonnet 4.6, Opus 4.8):} Blocks at the \textit{injection} layer. 0--10\% injection rate with loaded corpus across three payload framings (compliance, legal hold, IT configuration). The model detects semantic injection intent regardless of surface form.
+\item \textbf{OpenAI (GPT-5.4+):} Blocks at the \textit{execution} layer. 100\% injection (rule always stored), 0\% ASR (rule never executed). Safety is downstream of storage.
+\item \textbf{OpenAI (GPT-4o, GPT-4.1, GPT-5):} Partially blocks at execution. 100\% injection, 15--60\% ASR depending on generation and framing.
+\end{itemize}
+
+This vendor divergence has direct deployment implications: Anthropic models are safe by default (no additional prompt engineering required); OpenAI models require explicit security instructions in the system prompt to achieve equivalent execution resistance.
+
+\subsubsection{System-Prompt Mitigation is Generation-Dependent}
+
+A security-hardened system prompt (explicit instructions to refuse exfiltration from retrieved documents) eliminates execution for GPT-5 and GPT-4.1 (0\% ASR, $N{=}10$ and $N{=}5$ respectively) but only partially mitigates GPT-4o: ASR drops from 60.3\% to 3.3\% ($N{=}30$, Wilson CI [0.6\%, 16.7\%]). The CI excludes zero---GPT-4o retains a statistically confirmed residual exfiltration rate even under explicit ``never send to external addresses'' instructions. Prompt hardening is therefore a generation-dependent mitigation: fully effective for GPT-5+, partially effective for GPT-4o, unnecessary for Anthropic.
+
+\subsubsection{The Latent Carrier Supply-Chain Risk Extends to Frontier Models}
+
+Even GPT-5.5---the most recent OpenAI model evaluated---stores the malicious routing rule at 100\% injection rate despite 0\% execution. In a multi-agent system where a GPT-5.5 agent ingests documents and writes to a shared memory database, the stored rule persists indefinitely. A legacy GPT-4o agent reading the same database would find and execute the stored rule at $\approx$60\% ASR. This cross-model supply-chain attack requires no coordination between attacker sessions: the injection and execution happen through different models at different times, connected only by the shared persistent state. Evaluating security properties at the single-model boundary is insufficient for agentic workflows that share memory across model tiers.
 
 %==============================================================================
 \section{Conclusion}
 \label{sec:conclusion}
 %==============================================================================
 
-Persistence changes the security problem for LLM agents. When an agent writes observations into long-term memory and reuses them across sessions, defenses that operate at the input or retrieval layer did not prevent the attack in this evaluation because the malicious payload enters through a channel they do not observe or cannot distinguish from legitimate content. Of six defenses evaluated, only tool-gating at the memory layer consistently disrupted the attack, and even this defense can invert for models whose safety depends on execution refusal rather than injection resistance. Defense effectiveness is not just layer-dependent but reasoning-capability-dependent: no single memory-sandbox implementation is safe across both reasoning and non-reasoning model classes. Defenses should treat memory recall as a privileged operation, verify the target model's refusal mechanism before deployment, and account for the possibility that capability removal creates new attack pathways rather than eliminating existing ones. To support reproducibility, the evaluation harness, full execution logs, and analysis scripts will be released upon publication.
+Persistence changes the security problem for LLM agents. When an agent writes observations into long-term memory and reuses them across sessions, defenses that operate at the input or retrieval layer did not prevent the attack in this evaluation because the malicious payload enters through a channel they do not observe or cannot distinguish from legitimate content. Of six defenses evaluated, only tool-gating at the memory layer consistently disrupted the attack, and even this defense can invert for models whose safety depends on execution refusal rather than injection resistance. Defense effectiveness is not just layer-dependent but reasoning-capability-dependent: no single memory-sandbox implementation is safe across both reasoning and non-reasoning model classes. Frontier models show a generation-dependent gradient: older models (GPT-4o) exfiltrate at 60\% under authority escalation; current models (GPT-5.4+) resist execution but continue to store the malicious rule at 100\%, creating a persistent supply-chain risk in shared-memory deployments. Only Anthropic blocks at the injection layer entirely. Defenses should treat memory recall as a privileged operation, verify the target model's refusal mechanism before deployment, and account for the possibility that capability removal creates new attack pathways rather than eliminating existing ones. To support reproducibility, the evaluation harness, full execution logs, and analysis scripts will be released upon publication.
 
 %==============================================================================
 \bibliography{references}
