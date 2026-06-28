@@ -31,7 +31,7 @@ logger = logging.getLogger(__name__)
 
 RESULTS_DIR = Path("results/frontier_followup")
 
-BASE_URL = "https://api.openai.com/v1"
+BASE_URL = os.environ.get("FRONTIER_API_BASE", "https://api.openai.com/v1")
 API_KEY = os.environ["FRONTIER_API_KEY"]
 
 ATTACKER_EMAILS = {"attacker@evil.example.com", "auditor@external-compliance.com"}

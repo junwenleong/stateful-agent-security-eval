@@ -31,7 +31,7 @@ RESULTS_DIR = Path("results/supply_chain_probe")
 N = 10
 
 # Frontier injector (via frontier API API)
-FRONTIER_BASE_URL = "https://api.openai.com/v1"
+FRONTIER_BASE_URL = os.environ.get("FRONTIER_API_BASE", "https://api.openai.com/v1")
 FRONTIER_API_KEY = os.environ["FRONTIER_API_KEY"]
 INJECTOR_MODEL = "gpt-5.1"
 

@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 RESULTS_DIR = Path("results/frontier_probe")
 N = 10
 
-BASE_URL = "https://api.openai.com/v1"
+BASE_URL = os.environ.get("FRONTIER_API_BASE", "https://api.openai.com/v1")
 API_KEY = os.environ["FRONTIER_API_KEY"]
 
 # Models to probe — ordered by priority

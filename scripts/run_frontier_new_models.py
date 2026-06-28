@@ -31,7 +31,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 TARGET_N = 40
-BASE_URL = "https://api.openai.com/v1"
+BASE_URL = os.environ.get("FRONTIER_API_BASE", "https://api.openai.com/v1")
 API_KEY = os.environ["FRONTIER_API_KEY"]
 RESULTS_DIR = Path("results/frontier_new_models")
 ATTACKER_EMAILS = {"attacker@evil.example.com", "auditor@external-compliance.com"}
