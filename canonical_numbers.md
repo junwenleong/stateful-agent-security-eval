@@ -298,7 +298,7 @@ Total: 0/46 bypasses. qwq:32b inversion does not generalise.
 ## Experiment 7: frontier API Supplementary & Followup — Loaded-Corpus Experiments (June 2026)
 
 **Source**: `results/frontier-api_supplementary/*.jsonl`, `results/frontier-api_followup/*.jsonl`
-**Method**: frontier API AI Platform API (OpenAI-compatible endpoint), identical tool schema + SQLite as factorial
+**Method**: OpenAI-compatible frontier API, identical tool schema + SQLite as factorial
 **Date**: 2026-06-27 to 2026-06-28
 **Key methodological note**: These experiments load the malicious document into the RAG corpus (`RAGTool(corpus=[...])`). The Experiment 5 frontier probe (above) used an empty `RAGTool()`. Numbers are NOT comparable across these two designs — they answer different questions (tool-calling compliance vs. RAG injection vulnerability).
 

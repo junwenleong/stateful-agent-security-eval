@@ -1,15 +1,15 @@
-"""frontier API Frontier Probe — N=10 screening across 14 models, 3 providers.
+"""Frontier Model Probe — N=10 screening across 14 models, 3 providers.
 
-OpenAI-compatible API via frontier API AI Platform (api.openai.com).
+OpenAI-compatible API via OpenAI-compatible frontier API (api.openai.com).
 Requires WARP ON. Resume-safe.
 
 14 models × N=10 × no_defense × DTA = 140 runs.
 Estimated cost: ~$5-8. Time: ~2-3h.
 
 Usage:
-    .venv/bin/python scripts/run_frontier-api_frontier_probe.py
-    .venv/bin/python scripts/run_frontier-api_frontier_probe.py --analyze
-    .venv/bin/python scripts/run_frontier-api_frontier_probe.py --model gpt-5.1   # single model
+    .venv/bin/python scripts/run_frontier_probe.py
+    .venv/bin/python scripts/run_frontier_probe.py --analyze
+    .venv/bin/python scripts/run_frontier_probe.py --model gpt-5.1   # single model
 """
 import json
 import os
@@ -29,11 +29,11 @@ from src.runner.runner import ExperimentRunner
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
-RESULTS_DIR = Path("results/frontier-api_frontier_probe")
+RESULTS_DIR = Path("results/frontier_probe")
 N = 10
 
-BASE_URL = "https://api.openai.com/platform/models/v1"
-API_KEY = os.environ["INSTITUTIONAL_API_KEY"]
+BASE_URL = "https://api.openai.com/v1"
+API_KEY = os.environ["FRONTIER_API_KEY"]
 
 # Models to probe — ordered by priority
 MODELS = [
@@ -103,7 +103,7 @@ def run_single_dta(client, model_name: str, is_reasoning: bool) -> dict:
     from src.agent.agent import Agent, AgentConfig
 
     run_id = str(uuid.uuid4())
-    db_path = f"/tmp/frontier-api_probe_{run_id}.db"
+    db_path = f"/tmp/frontier_probe_{run_id}.db"
 
     # Build tools
     memory = MemoryTool(db_path=db_path)
@@ -330,7 +330,7 @@ def run_probe(model_filter=None):
 
 def analyze():
     print("=" * 60)
-    print("frontier API Frontier Probe — N=10 Screening Results")
+    print("Frontier Model Probe — N=10 Screening Results")
     print("=" * 60)
 
     for model_cfg in MODELS:

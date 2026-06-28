@@ -1,4 +1,4 @@
-"""frontier API Supplementary Experiments — 5 targeted probes.
+"""Frontier Supplementary Experiments — 5 targeted probes.
 
 1. Safety Scaling: gpt-4.1-mini, gpt-4.1-nano, gemini-2.5-flash-lite, gemini-3.1-flash-lite (N=10 each)
 2. Tool-Existence Ablation: gpt-5.1, o3-mini, o4-mini WITHOUT save_fact in schema (N=10 each)
@@ -10,13 +10,13 @@ Total: ~110 runs. Uses same DTA attack as the frontier probe.
 Resume-safe (checks existing JSONL before running).
 
 Usage:
-    .venv/bin/python scripts/run_frontier-api_supplementary.py
-    .venv/bin/python scripts/run_frontier-api_supplementary.py --experiment scaling
-    .venv/bin/python scripts/run_frontier-api_supplementary.py --experiment ablation
-    .venv/bin/python scripts/run_frontier-api_supplementary.py --experiment codex
-    .venv/bin/python scripts/run_frontier-api_supplementary.py --experiment legacy
-    .venv/bin/python scripts/run_frontier-api_supplementary.py --experiment context
-    .venv/bin/python scripts/run_frontier-api_supplementary.py --analyze
+    .venv/bin/python scripts/run_frontier_supplementary.py
+    .venv/bin/python scripts/run_frontier_supplementary.py --experiment scaling
+    .venv/bin/python scripts/run_frontier_supplementary.py --experiment ablation
+    .venv/bin/python scripts/run_frontier_supplementary.py --experiment codex
+    .venv/bin/python scripts/run_frontier_supplementary.py --experiment legacy
+    .venv/bin/python scripts/run_frontier_supplementary.py --experiment context
+    .venv/bin/python scripts/run_frontier_supplementary.py --analyze
 """
 import json
 import os
@@ -39,11 +39,11 @@ from src.tools.search_tool import SearchTool
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
-RESULTS_DIR = Path("results/frontier-api_supplementary")
+RESULTS_DIR = Path("results/frontier_supplementary")
 N = 10
 
-BASE_URL = "https://api.openai.com/platform/models/v1"
-API_KEY = os.environ["INSTITUTIONAL_API_KEY"]
+BASE_URL = "https://api.openai.com/v1"
+API_KEY = os.environ["FRONTIER_API_KEY"]
 
 # ─── Experiment Definitions ───────────────────────────────────────────────────
 
@@ -192,7 +192,7 @@ def execute_tool(tools_dict: dict, fn_name: str, args: dict) -> str:
 def run_single_dta(client, model_name: str, is_reasoning: bool, ablation: str | None) -> dict:
     """Run one full DTA (4 sessions). ablation='remove_save_fact' removes save_fact from schema."""
     run_id = str(uuid.uuid4())
-    db_path = f"/tmp/frontier-api_supp_{run_id}.db"
+    db_path = f"/tmp/frontier_supp_{run_id}.db"
 
     memory = MemoryTool(db_path=db_path)
     rag = RAGTool()
@@ -379,11 +379,11 @@ def run_experiment(experiment_name: str, client=None):
 def analyze():
     """Print results for all supplementary experiments."""
     print("=" * 70)
-    print("frontier API Supplementary Experiments — Results")
+    print("Frontier Supplementary Experiments — Results")
     print("=" * 70)
 
     # Also load baseline data from frontier probe for comparison
-    baseline_dir = Path("results/frontier-api_frontier_probe")
+    baseline_dir = Path("results/frontier_probe")
 
     for exp_name, exp in EXPERIMENTS.items():
         print(f"\n{'─'*70}")

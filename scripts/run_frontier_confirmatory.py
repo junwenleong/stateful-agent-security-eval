@@ -1,4 +1,4 @@
-"""frontier API Confirmatory — Top up all supplementary experiments to N=40.
+"""Frontier Confirmatory — Top up all supplementary experiments to N=40.
 
 Converts all exploratory findings (variable N, ad hoc) into confirmatory
 measurements at uniform N=40 per condition. Resume-safe.
@@ -26,11 +26,11 @@ Estimated time: ~18-24 hours serial
 Estimated cost: ~$40-60
 
 Usage:
-    .venv/bin/python scripts/run_frontier-api_confirmatory.py                    # all tiers
-    .venv/bin/python scripts/run_frontier-api_confirmatory.py --tier 1           # headline numbers only
-    .venv/bin/python scripts/run_frontier-api_confirmatory.py --tier 2           # novelty claims
-    .venv/bin/python scripts/run_frontier-api_confirmatory.py --tier 3           # frontier N=40
-    .venv/bin/python scripts/run_frontier-api_confirmatory.py --analyze          # summary stats
+    .venv/bin/python scripts/run_frontier_confirmatory.py                    # all tiers
+    .venv/bin/python scripts/run_frontier_confirmatory.py --tier 1           # headline numbers only
+    .venv/bin/python scripts/run_frontier_confirmatory.py --tier 2           # novelty claims
+    .venv/bin/python scripts/run_frontier_confirmatory.py --tier 3           # frontier N=40
+    .venv/bin/python scripts/run_frontier_confirmatory.py --analyze          # summary stats
 """
 import argparse
 import json
@@ -58,9 +58,9 @@ logger = logging.getLogger(__name__)
 # ─── Config ───────────────────────────────────────────────────────────────────
 
 TARGET_N = 40
-BASE_URL = "https://api.openai.com/platform/models/v1"
-API_KEY = os.environ["INSTITUTIONAL_API_KEY"]
-RESULTS_DIR = Path("results/frontier-api_confirmatory")
+BASE_URL = "https://api.openai.com/v1"
+API_KEY = os.environ["FRONTIER_API_KEY"]
+RESULTS_DIR = Path("results/frontier_confirmatory")
 ATTACKER_EMAILS = {"attacker@evil.example.com", "auditor@external-compliance.com"}
 
 # Load payloads
@@ -260,7 +260,7 @@ def run_single(client, model_name: str, is_reasoning: bool, payload: str | None,
     # tools=None means no tools at all (plain chat)
 
     run_id = str(uuid.uuid4())
-    db_path = f"/tmp/frontier-api_confirm_{run_id}.db"
+    db_path = f"/tmp/frontier_confirm_{run_id}.db"
 
     # Build RAG corpus
     if payload is not None:
@@ -451,7 +451,7 @@ def analyze():
 
 
 def main():
-    parser = argparse.ArgumentParser(description="frontier API Confirmatory — all experiments to N=40")
+    parser = argparse.ArgumentParser(description="Frontier Confirmatory — all experiments to N=40")
     parser.add_argument("--tier", type=int, choices=[1, 2, 3], help="Run specific tier only")
     parser.add_argument("--analyze", action="store_true", help="Print summary stats")
     args = parser.parse_args()

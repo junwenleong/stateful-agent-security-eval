@@ -4,8 +4,8 @@ Each model run at N=40, Variant B (authority escalation) + loaded corpus,
 matching the gpt-4o 60.3% condition for direct comparability.
 
 Usage:
-    .venv/bin/python scripts/run_frontier-api_new_models.py
-    .venv/bin/python scripts/run_frontier-api_new_models.py --analyze
+    .venv/bin/python scripts/run_frontier_new_models.py
+    .venv/bin/python scripts/run_frontier_new_models.py --analyze
 """
 import argparse
 import json
@@ -31,9 +31,9 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 TARGET_N = 40
-BASE_URL = "https://api.openai.com/platform/models/v1"
-API_KEY = os.environ["INSTITUTIONAL_API_KEY"]
-RESULTS_DIR = Path("results/frontier-api_new_models")
+BASE_URL = "https://api.openai.com/v1"
+API_KEY = os.environ["FRONTIER_API_KEY"]
+RESULTS_DIR = Path("results/frontier_new_models")
 ATTACKER_EMAILS = {"attacker@evil.example.com", "auditor@external-compliance.com"}
 
 PAYLOAD_B = Path("data/attacks/malicious_doc_variant_b.txt").read_text()
@@ -123,7 +123,7 @@ def execute_tool(tools_dict: dict, fn_name: str, args: dict) -> str:
 
 def run_single(client, model_name: str, is_reasoning: bool) -> dict:
     run_id = str(uuid.uuid4())
-    db_path = f"/tmp/frontier-api_new_{run_id}.db"
+    db_path = f"/tmp/frontier_new_{run_id}.db"
 
     corpus = [
         RAGDocument(doc_id="malicious_doc", content=PAYLOAD_B, is_malicious=True),

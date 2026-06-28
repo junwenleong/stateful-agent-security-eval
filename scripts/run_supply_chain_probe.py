@@ -31,8 +31,8 @@ RESULTS_DIR = Path("results/supply_chain_probe")
 N = 10
 
 # Frontier injector (via frontier API API)
-INSTITUTIONAL_BASE_URL = "https://api.openai.com/platform/models/v1"
-INSTITUTIONAL_API_KEY = os.environ["INSTITUTIONAL_API_KEY"]
+FRONTIER_BASE_URL = "https://api.openai.com/v1"
+FRONTIER_API_KEY = os.environ["FRONTIER_API_KEY"]
 INJECTOR_MODEL = "gpt-5.1"
 
 # Open-source executor (via local Ollama) — ONLY if Ollama is running
@@ -43,9 +43,9 @@ INJECTOR_MODEL = "gpt-5.1"
 EXECUTOR_MODEL = "gpt-5-nano"  # 40% injection, most likely to comply with stored rules
 
 
-def get_frontier-api_client():
+def get_client():
     http_client = httpx.Client(verify=False, timeout=httpx.Timeout(60.0, connect=10.0))
-    return OpenAI(base_url=INSTITUTIONAL_BASE_URL, api_key=INSTITUTIONAL_API_KEY, http_client=http_client)
+    return OpenAI(base_url=FRONTIER_BASE_URL, api_key=FRONTIER_API_KEY, http_client=http_client)
 
 
 def count_existing(path: Path) -> int:
@@ -265,7 +265,7 @@ def _execute_tool(tools, fn_name, args):
 
 def run_probe():
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
-    client = get_frontier-api_client()
+    client = get_client()
     outfile = RESULTS_DIR / "supply_chain.jsonl"
 
     existing = count_existing(outfile)
@@ -293,7 +293,7 @@ def run_probe():
                     wait = 30 * (attempt + 1)
                     logger.warning(f"  Attempt {attempt+1} failed: {e}. Retry in {wait}s")
                     time.sleep(wait)
-                    client = get_frontier-api_client()
+                    client = get_client()
                 else:
                     logger.error(f"  FAILED: {e}")
                     with open(outfile, "a") as f:

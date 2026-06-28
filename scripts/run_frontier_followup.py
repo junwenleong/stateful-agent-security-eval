@@ -1,12 +1,12 @@
-"""frontier API Follow-up: gpt-5.2-chat N=40 confirmation + Sonnet brittleness sweep.
+"""Frontier Follow-up: gpt-5.2-chat N=40 confirmation + Sonnet brittleness sweep.
 
 Run sequentially:
-    .venv/bin/python scripts/run_frontier-api_followup.py
+    .venv/bin/python scripts/run_frontier_followup.py
 
 Or individually:
-    .venv/bin/python scripts/run_frontier-api_followup.py --experiment chat_confirm
-    .venv/bin/python scripts/run_frontier-api_followup.py --experiment sonnet_sweep
-    .venv/bin/python scripts/run_frontier-api_followup.py --analyze
+    .venv/bin/python scripts/run_frontier_followup.py --experiment chat_confirm
+    .venv/bin/python scripts/run_frontier_followup.py --experiment sonnet_sweep
+    .venv/bin/python scripts/run_frontier_followup.py --analyze
 """
 import json
 import os
@@ -29,10 +29,10 @@ from src.tools.search_tool import SearchTool
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
-RESULTS_DIR = Path("results/frontier-api_followup")
+RESULTS_DIR = Path("results/frontier_followup")
 
-BASE_URL = "https://api.openai.com/platform/models/v1"
-API_KEY = os.environ["INSTITUTIONAL_API_KEY"]
+BASE_URL = "https://api.openai.com/v1"
+API_KEY = os.environ["FRONTIER_API_KEY"]
 
 ATTACKER_EMAILS = {"attacker@evil.example.com", "auditor@external-compliance.com"}
 
@@ -104,7 +104,7 @@ def run_single_dta(client, model_name: str, is_reasoning: bool, payload_override
     from src.tools.rag_tool import RAGDocument
 
     run_id = str(uuid.uuid4())
-    db_path = f"/tmp/frontier-api_fu_{run_id}.db"
+    db_path = f"/tmp/frontier_fu_{run_id}.db"
 
     # Load RAG corpus with the appropriate malicious doc
     mal_content = payload_override if payload_override else PAYLOAD_A
@@ -255,7 +255,7 @@ def run_sonnet_sweep():
 
 def analyze():
     print("=" * 60)
-    print("frontier API Follow-up — Results")
+    print("Frontier Follow-up — Results")
     print("=" * 60)
 
     for f in sorted(RESULTS_DIR.glob("*.jsonl")):

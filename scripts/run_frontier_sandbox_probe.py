@@ -1,4 +1,4 @@
-"""frontier API Memory Sandbox Probe — Test if reasoning-model bypass generalizes to frontier.
+"""Frontier Memory Sandbox Probe — Test if reasoning-model bypass generalizes to frontier.
 
 Targets: o3, o3-mini, o4-mini, gpt-5.1 (all latent carriers at N=10).
 Tests: Does removing memory_recall_fact cause RAG-fallback bypass (like qwq:32b)?
@@ -6,8 +6,8 @@ Tests: Does removing memory_recall_fact cause RAG-fallback bypass (like qwq:32b)
 4 models × N=10 = 40 runs. ~40 min. ~$2.
 
 Usage:
-    .venv/bin/python scripts/run_frontier-api_sandbox_probe.py
-    .venv/bin/python scripts/run_frontier-api_sandbox_probe.py --analyze
+    .venv/bin/python scripts/run_frontier_sandbox_probe.py
+    .venv/bin/python scripts/run_frontier_sandbox_probe.py --analyze
 """
 import json
 import os
@@ -24,11 +24,11 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
-RESULTS_DIR = Path("results/frontier-api_sandbox_probe")
+RESULTS_DIR = Path("results/frontier_sandbox_probe")
 N = 10
 
-BASE_URL = "https://api.openai.com/platform/models/v1"
-API_KEY = os.environ["INSTITUTIONAL_API_KEY"]
+BASE_URL = "https://api.openai.com/v1"
+API_KEY = os.environ["FRONTIER_API_KEY"]
 
 MODELS = [
     {"name": "o3", "reasoning": True},
@@ -72,7 +72,7 @@ def run_single_sandbox_dta(client, model_name: str, is_reasoning: bool) -> dict:
     from src.tools.search_tool import SearchTool
 
     run_id = str(uuid.uuid4())
-    db_path = f"/tmp/frontier-api_sandbox_{run_id}.db"
+    db_path = f"/tmp/frontier_sandbox_{run_id}.db"
 
     memory = MemoryTool(db_path=db_path)
     rag = RAGTool()
@@ -277,7 +277,7 @@ def run_probe():
 
 def analyze():
     print("=" * 60)
-    print("frontier API Memory Sandbox Probe — Frontier Latent Carriers")
+    print("Frontier Memory Sandbox Probe — Frontier Latent Carriers")
     print("=" * 60)
 
     for model_cfg in MODELS:
