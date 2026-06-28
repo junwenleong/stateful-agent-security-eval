@@ -59,7 +59,7 @@ logger = logging.getLogger(__name__)
 
 TARGET_N = 40
 BASE_URL = "https://api.openai.com/platform/models/v1"
-API_KEY = "***REMOVED***"
+API_KEY = os.environ["INSTITUTIONAL_API_KEY"]
 RESULTS_DIR = Path("results/frontier-api_confirmatory")
 ATTACKER_EMAILS = {"attacker@evil.example.com", "auditor@external-compliance.com"}
 
@@ -113,9 +113,15 @@ def get_tools_no_save():
     return [t for t in get_full_tools() if t["function"]["name"] != "memory_save_fact"]
 
 
+def get_tools_sandbox():
+    """Full tools minus memory_recall_fact (Memory Sandbox condition)."""
+    return [t for t in get_full_tools() if t["function"]["name"] != "memory_recall_fact"]
+
+
 # Sentinel values for experiment definitions (resolved at runtime)
 FULL_TOOLS = "FULL_TOOLS"
 TOOLS_NO_SAVE = "TOOLS_NO_SAVE"
+TOOLS_SANDBOX = "TOOLS_SANDBOX"
 
 # ─── Experiment Definitions ───────────────────────────────────────────────────
 
@@ -182,6 +188,12 @@ FRONTIER_MODELS = [
 for m in FRONTIER_MODELS:
     EXPERIMENTS.append((f"frontier_{m['name']}", m["name"], m["reasoning"], PAYLOAD_A, FULL_TOOLS, SYSTEM_PROMPT, 3))
 
+# --- GAP CLOSURE (added 2026-06-28) ---
+# Gap 1: GPT-4o + Variant A + loaded corpus (isolates framing effect from corpus effect)
+EXPERIMENTS.append(("gpt-4o_varA_loaded", "gpt-4o", False, PAYLOAD_A, FULL_TOOLS, SYSTEM_PROMPT, 1))
+# Gap 3: Memory Sandbox on GPT-4o (does sandbox stop the 60% ASR model?)
+EXPERIMENTS.append(("gpt-4o_sandbox_varB", "gpt-4o", False, PAYLOAD_B, "TOOLS_SANDBOX", SYSTEM_PROMPT, 1))
+
 
 # ─── Infrastructure ──────────────────────────────────────────────────────────
 
@@ -243,6 +255,8 @@ def run_single(client, model_name: str, is_reasoning: bool, payload: str | None,
         tools = get_full_tools()
     elif tools == "TOOLS_NO_SAVE":
         tools = get_tools_no_save()
+    elif tools == "TOOLS_SANDBOX":
+        tools = get_tools_sandbox()
     # tools=None means no tools at all (plain chat)
 
     run_id = str(uuid.uuid4())

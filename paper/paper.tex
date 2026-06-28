@@ -418,7 +418,7 @@ This vendor divergence has direct deployment implications: Anthropic models are 
 
 \subsubsection{System-Prompt Mitigation is Generation-Dependent}
 
-A security-hardened system prompt (explicit instructions to refuse exfiltration from retrieved documents) eliminates execution for GPT-5 and GPT-4.1 (0\% ASR, $N{=}10$ and $N{=}5$ respectively) but only partially mitigates GPT-4o: ASR drops from 60.3\% to 3.3\% ($N{=}30$, Wilson CI [0.6\%, 16.7\%]). The CI excludes zero---GPT-4o retains a statistically confirmed residual exfiltration rate even under explicit ``never send to external addresses'' instructions. Prompt hardening is therefore a generation-dependent mitigation: fully effective for GPT-5+, partially effective for GPT-4o, unnecessary for Anthropic.
+A security-hardened system prompt (explicit instructions to refuse exfiltration from retrieved documents) eliminates execution for GPT-5 and GPT-4.1 (0\% ASR, $N{=}10$ and $N{=}5$ respectively) but only partially mitigates GPT-4o. Across two independent runs ($N{=}30$ and $N{=}40$) under the hardened prompt, observed ASR was 3.3\% and 22.5\% respectively (combined 14.3\%, Wilson CI [7.9\%, 24.3\%]); both point estimates lie below GPT-4o's unmitigated ASR of 60.3\%, confirming meaningful but incomplete mitigation. The combined CI excludes zero---GPT-4o retains a statistically confirmed residual exfiltration rate even under explicit ``never send to external addresses'' instructions. Prompt hardening is therefore a generation-dependent mitigation: fully effective for GPT-5+, partially effective for GPT-4o, unnecessary for Anthropic.
 
 \subsubsection{The Latent Carrier Supply-Chain Risk Extends to Frontier Models}
 

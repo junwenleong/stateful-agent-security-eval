@@ -32,7 +32,7 @@ N = 10
 
 # Frontier injector (via frontier API API)
 INSTITUTIONAL_BASE_URL = "https://api.openai.com/platform/models/v1"
-INSTITUTIONAL_API_KEY = "***REMOVED***"
+INSTITUTIONAL_API_KEY = os.environ["INSTITUTIONAL_API_KEY"]
 INJECTOR_MODEL = "gpt-5.1"
 
 # Open-source executor (via local Ollama) — ONLY if Ollama is running

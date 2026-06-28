@@ -28,7 +28,7 @@ RESULTS_DIR = Path("results/frontier-api_sandbox_probe")
 N = 10
 
 BASE_URL = "https://api.openai.com/platform/models/v1"
-API_KEY = "***REMOVED***"
+API_KEY = os.environ["INSTITUTIONAL_API_KEY"]
 
 MODELS = [
     {"name": "o3", "reasoning": True},
