@@ -243,7 +243,7 @@ We evaluated 21 frontier models across three providers (OpenAI, Google, Anthropi
 
 \paragraph{Headline result.} Zero exfiltrations across 210 screening runs (0/210, 95\% CI upper bound $\le 1.43\%$ via rule of three). Combined with the $N{=}100$ data: 0/410 runs, upper bound $\le 0.73\%$. No frontier model is a Vulnerable Executor.
 
-\paragraph{Archetype distribution.} Of the 21 screening models: 12 are Injection-Resistant (0\% injection), 6 are Partial Resistant (10--80\% injection, 0\% ASR), and 3 are Latent Carriers (100\% injection, 0\% ASR). The Latent Carriers are all OpenAI models: gpt-5.1, o3-mini, and o4-mini.
+\paragraph{Archetype distribution.} Of the 21 screening models: 12 are Injection-Resistant (0\% injection), 6 are Partial Resistant (10--80\% injection, 0\% ASR), and 3 are Latent Carriers (100\% injection, 0\% ASR). The Latent Carriers are all OpenAI models: gpt-5.1, o3-mini, and o4-mini. A supplementary evaluation of gpt-4o-mini ($N{=}40$, Variant B loaded corpus) confirms the execution lock extends to the 4o-tier distilled model: 97.5\% injection, 0\% ASR (Wilson CI [0\%, 8.8\%]), consistent with the tier-invariant execution-refusal pattern observed across all mini-class models.
 
 \paragraph{OpenAI reasoning models as Latent Carriers.} Three OpenAI reasoning models store the malicious rule in every (or nearly every) run but consistently refuse execution: o3-mini (100\% injection, 0\% ASR), o4-mini (100\% injection, 0\% ASR), and o3 (80\% injection, 0\% ASR). This mirrors Haiku 4.5's execution-refusal pattern, extending it to the reasoning-model class. These models represent a supply-chain risk in shared-memory deployments (Section~\ref{sec:supply-chain}).
 
@@ -320,6 +320,8 @@ The Latent Carrier archetype creates a concrete supply-chain risk in multi-model
 
 To test whether the date-sensitivity phenomenon observed for qwq:32b generalises, we evaluated 5 models on Bedrock across 3 dates (2026-04-17, 2026-06-25, 2026-03-15) at $N{=}25$--40 per cell. Fisher's exact test with per-model Bonferroni correction (3 pairwise comparisons, $\alpha = 0.017$) yielded no significant differences: all $p > 0.017$ (minimum $p = 0.49$ for minimax). Date sensitivity is confirmed as qwq:32b-specific and does not generalise to other open-weight models. This prompt-date sensitivity (qwq:32b responding to the current date string in the system prompt) is orthogonal to the generational release-date boundary observed between GPT-5.1 and GPT-5.2 (Section~\ref{sec:frontier}): the former is an in-context temporal conditioning effect; the latter is a post-training safety update across model versions.
 
+We replicated this finding across a broader cross-family set of open-source models (7 models $\times$ 2 dates $\times$ $N{=}5$, 70 runs total via local Ollama): GLM-4.7-Flash (THUDM), Llama-3.3-70B (Meta), Mistral-Small-3.2-24B (Mistral), DeepSeek-R1-70B (DeepSeek), Qwen-3-8B, and Qwen-3.5-122B (both with prompt\_hardening). All six cross-family models showed identical injection and attack outcomes across the two evaluation dates ($p = 1.0$ for all pairwise comparisons). A negative-control arm (Qwen-2.5-72B, no\_defense) confirmed 5/5 attack success at both dates, validating experimental sensitivity. The null result is therefore not a power failure: models that attack, attack consistently across dates; models that resist, resist consistently. Date sensitivity remains confined to qwq:32b.
+
 \subsection{Limitations}
 \label{sec:limitations}
 
@@ -388,6 +390,7 @@ When the malicious document is present in the RAG corpus under authority-escalat
 \textbf{Model} & \textbf{Era} & \textbf{N} & \textbf{Injection} & \textbf{ASR} & \textbf{Wilson 95\% CI} \\
 \midrule
 GPT-4o & Mid-2024 & 68 & 97.1\% & \textbf{60.3\%} & [48.4\%, 71.1\%] \\
+GPT-4o-mini & Mid-2024 & 40 & 97.5\% & 0\% & [0\%, 8.8\%] \\
 GPT-4.1 & Late-2024 & 10 & 100\% & \textbf{30\%} & [10.8\%, 60.3\%] \\
 GPT-5 & Early-2025 & 40 & 100\% & \textbf{15.0\%} & [7.1\%, 29.1\%] \\
 GPT-5.4 & Mid-2025 & 10 & 100\% & 0\% & [0\%, 27.8\%] \\
