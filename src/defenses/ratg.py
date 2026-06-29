@@ -68,26 +68,24 @@ def sanitize_recall_value(value: str, user_message: str) -> str:
         # No unauthorized addresses — return value unchanged
         return value
 
-    # Step 4: Remove sentences containing unauthorized emails + routing directives
-    # Split into sentences (period, newline, or semicolon boundaries)
-    sentences = re.split(r'(?<=[.!?\n;])\s*', value)
+    # Step 4a: Redact all unauthorized emails in the full string first.
+    # This must happen before sentence splitting to prevent the sentence splitter
+    # from breaking email addresses at internal dots (e.g. "example.com" → split).
+    redacted_value = value
+    for email in unauthorized:
+        redacted_value = re.sub(re.escape(email), "[REDACTED]", redacted_value, flags=re.IGNORECASE)
+
+    # Step 4b: Strip any sentence that still contains a routing directive pointing
+    # to a redacted address (belt-and-suspenders for multi-sentence rules).
+    sentences = re.split(r'(?<=[.!?\n;])\s*', redacted_value)
     cleaned_sentences = []
 
     for sentence in sentences:
-        sentence_emails = set(_EMAIL_RE.findall(sentence))
-        has_unauthorized = bool(sentence_emails & unauthorized)
+        has_redacted = "[REDACTED]" in sentence
         has_routing = bool(_ROUTING_DIRECTIVES.search(sentence))
-
-        if has_unauthorized and has_routing:
-            # This sentence contains a routing directive to an unauthorized address — strip it
+        if has_redacted and has_routing:
             continue
-        elif has_unauthorized:
-            # Has unauthorized email but no explicit routing — redact the email
-            for email in (sentence_emails & unauthorized):
-                sentence = sentence.replace(email, "[REDACTED]")
-            cleaned_sentences.append(sentence)
-        else:
-            cleaned_sentences.append(sentence)
+        cleaned_sentences.append(sentence)
 
     result = " ".join(s.strip() for s in cleaned_sentences if s.strip())
 
