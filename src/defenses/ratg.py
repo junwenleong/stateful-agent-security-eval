@@ -12,9 +12,20 @@ bypass regex-based stripping via encoding (base64, homoglyphs, character
 splitting). Adversarial robustness is future work.
 """
 import re
+from src.defenses.base import Defense, DefenseLog
 
 
 # Email regex: standard RFC-5322-lite pattern
+class RATG(Defense):
+    """Marker class for RATG defense. The actual sanitization is applied
+    inside MemoryTool.recall_fact() via the ratg_filter hook set by the runner."""
+
+    def apply(self, user_input: str, context: dict | None = None) -> tuple[str, DefenseLog]:
+        log = DefenseLog(defense_name="ratg", original_input=user_input,
+                         modified_input=user_input, modifications=[])
+        return user_input, log
+
+
 _EMAIL_RE = re.compile(r'[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}', re.IGNORECASE)
 
 # Routing directive patterns (sentence-level)
