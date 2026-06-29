@@ -60,7 +60,7 @@ models:
     context_length: 16384
     rag_session_query_limit: 15
     rate_limit: {max_concurrent: 1, rpm_limit: 60}
-  - model_name: glm-4.7-flash:latest
+  - model_name: glm-4.7-flash:q8_0
     provider: ollama
     ollama_host: http://localhost:11434
     temperature: 0.0
@@ -74,7 +74,7 @@ models:
     context_length: 16384
     rag_session_query_limit: 15
     rate_limit: {max_concurrent: 1, rpm_limit: 60}
-  - model_name: qwen2.5:32b
+  - model_name: gpt-oss-safeguard:120b
     provider: ollama
     ollama_host: http://localhost:11434
     temperature: 0.0
