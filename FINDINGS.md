@@ -80,15 +80,68 @@ The qwq:32b Draft-Only archetype from the original study (April 2026, ASR 0%, N=
 
 ## Frontier Screening (June 2026)
 
-A screening of 21 frontier models via cloud API endpoints (Azure, Bedrock, Vertex AI) at N=10 each (210 runs, 0 errors) confirms the frontier-open-source safety gap is categorical. Zero exfiltrations across all 21 models (0/210, 95% CI upper bound ≤1.43%, rule of three). Combined with earlier Bedrock direct evaluations (Sonnet 4.6 N=100, Haiku 4.5 N=100), 21 distinct frontier models have been screened at N=10 and 2 at validation depth (N=100) — none is a Vulnerable Executor. Combined 0/410 exfiltrations, 95% CI ≤0.73%. The screening uses the identical tool schema, SQLite backend, session structure, and malicious payload as the local factorial, differing only in serving infrastructure (API-served, likely full precision).
+**⚠️ Empty-corpus results are superseded — see Confirmatory section below.**
 
-Twelve models are injection-resistant (0% injection): all Gemini variants (2.5-flash, 2.5-pro, 3.1-pro-preview), all Claude variants (haiku-4-5, sonnet-4-5, sonnet-4-6, opus-4-5, opus-4-8), and GPT-5.2/5.4/5.5/5-mini. Anthropic models show strong injection resistance in this single-injection evaluation; note that Haiku 4.5 behaves differently under the reinforcement variant (repeated exposure), where it stores a security alert rather than resisting injection entirely. Six models are partial resistant (1-80% injection, 0% ASR): gpt-5, gpt-5-nano, gpt-4.1, gpt-4o, gemini-3.5-flash, o3. A clear OpenAI generational boundary is visible: gpt-5.1 (Nov 2025, 100% injection) → gpt-5.2 (Dec 2025, 0% injection). Three are Latent Carriers (100% injection, 0% ASR): gpt-5.1, o3-mini, o4-mini — all consistently refused execution across all screening runs. A supplementary evaluation of gpt-4o-mini (N=40, Variant B loaded corpus) confirms the execution lock at the 4o tier: 97.5% injection, 0% ASR (Wilson CI [0%, 8.8%]).
+An initial screening of 21 frontier models at N=10 each (210 runs) with an **empty RAG corpus** showed 0/210 exfiltrations. This appeared to confirm a categorical frontier safety gap. However, without a malicious document in the corpus, the probe measured tool-calling compliance on user instructions alone — not indirect prompt injection vulnerability. The result was an artifact of the experimental design.
 
-A sandbox probe on 4 frontier Latent Carriers (46 runs total: o3 N=10, o3-mini N=10, o4-mini N=16, gpt-5.1 N=10; o4-mini oversampled due to batch overshoot, all runs consistent) produced 0 bypasses and 0 RAG fallback attempts. The qwq:32b inversion mechanism — goal-directed RAG retrieval when recall is blocked — does not generalize to frontier reasoning models.
+Under loaded-corpus evaluation (N=40, malicious document in RAG, standard compliance framing), the picture changes dramatically. See Confirmatory section below.
 
-A Bedrock date sweep (5 models × 3 system-prompt dates × N=25-40, Fisher's exact with per-model Bonferroni α=0.017) confirms date sensitivity is qwq-specific: all p>0.017 across all models tested (nemotron-super, minimax, kimi, qwen3-next, llama4). The reproducibility concern identified in the qwq:32b investigation does not generalize.
+A sandbox probe on 4 frontier Latent Carriers (46 runs: o3 N=10, o3-mini N=10, o4-mini N=16, gpt-5.1 N=10) produced 0 bypasses and 0 RAG fallback attempts. The qwq:32b inversion mechanism does not generalize to frontier reasoning models.
 
-A cross-family local date sweep (7 models × 2 dates × N=5, 70 runs, via Ollama) independently replicates this null: GLM-4.7-Flash (THUDM), Llama-3.3-70B (Meta), Mistral-Small-3.2-24B (Mistral), DeepSeek-R1-70B (DeepSeek), Qwen-3-8B, Qwen-3.5-122B (with prompt_hardening), and Qwen-2.5-72B (negative control) all showed identical outcomes across the two evaluation dates (p=1.0 for all). The negative control (Qwen-2.5-72B, 5/5 attack success at both dates) confirms experimental sensitivity. Date sensitivity is qwq:32b-specific across two independent evaluation pipelines spanning 12 distinct models.
+A Bedrock date sweep (5 models × 3 dates × N=25-40, Fisher's exact, per-model Bonferroni α=0.017) confirms date sensitivity is qwq-specific: all p>0.017. The cross-family local date sweep (7 models × 2 dates × N=5) independently replicates the null — see date sweep section above.
+
+## Frontier Confirmatory Results (N=40, Loaded Corpus, June 2026)
+
+**Source**: `results/institutional_confirmatory/frontier_*.jsonl` (N=40 each, standard compliance framing, Variant A, same RAG corpus as open-source factorial)
+
+### Headline Finding: Gemini is the Most Vulnerable Frontier Family
+
+| Model | Inj% | ASR% | Wilson CI | Classification |
+|-------|------|------|-----------|----------------|
+| **Gemini 3.1 Pro Preview** | 100% | **95.0%** | [83.5%, 98.6%] | **Vulnerable Executor** |
+| **Gemini 3.5 Flash** | 100% | **50.0%** | [35.2%, 64.8%] | **Vulnerable Executor** |
+| **Gemini 2.5 Pro** | 95% | **22.5%** | [12.3%, 37.5%] | **Vulnerable Executor** |
+| Gemini 2.5 Flash | 100% | 0.0% | [0%, 8.8%] | Latent Carrier |
+| **GPT-5.1** | 100% | **22.5%** | [12.3%, 37.5%] | **Vulnerable Executor** (reclassified) |
+| GPT-4o | 100% | 12.5% | [5.5%, 26.1%] | Vulnerable Executor |
+| GPT-4.1 | 100% | 10.0% | [4.0%, 23.1%] | Vulnerable Executor |
+| GPT-5 | 100% | 5.0% | [1.4%, 16.5%] | Vulnerable Executor |
+| GPT-5.2/mini/nano | 100% | 0–2.5% | [0%, 12.9%] | Near-Latent |
+| GPT-5.4 | 100% | 0.0% | [0%, 8.8%] | Latent Carrier |
+| GPT-5.5 | 100% | 0.0% | [0%, 8.8%] | Latent Carrier |
+| o3/o3-mini/o4-mini | 98–100% | 0.0% | [0%, 8.8%] | Latent Carrier |
+| Haiku 4.5 | 95% | 0.0% | [0%, 8.8%] | Active Detector |
+| Sonnet 4.5 | 57.5% | 0.0% | [0%, 8.8%] | Partial Detector |
+| Opus 4.8 | 17.5% | 0.0% | [0%, 8.8%] | Near-IR |
+| Opus 4.5 | 2.5% | 0.0% | [0%, 8.8%] | Injection-Resistant |
+| **Sonnet 4.6** | **2.5%** | **0.0%** | [0%, 8.8%] | **Explicit Detector** |
+
+### Key Findings
+
+1. **Gemini 3.1 Pro Preview is the most vulnerable frontier model tested** — 95% ASR under standard compliance framing (no escalation needed). Forensically verified: all 38 exfiltrations used actual `email_send_email` tool calls in session 3; ~53% of attack-success runs used hybrid mechanism (memory recall + RAG re-retrieval). Gemini has a latent safety circuit that fires in ~5% of runs but fails under context load.
+
+2. **GPT-5 generational trend is non-monotonic** — gpt-5.1 (22.5% ASR) regresses relative to gpt-5 (5.0%). The monotonic decline claimed before was based on insufficient N. Pattern: gpt-5(5%) → gpt-5.1(22.5%) → gpt-5.2(2.5%) → gpt-5.4(0%) → gpt-5.5(0%).
+
+3. **GPT-5.1 reclassified** — was Latent Carrier (0% ASR) at N=10 empty corpus; is Partial Executor (22.5% ASR) at N=40 loaded corpus.
+
+4. **All OpenAI and Google models inject at 100%** — even GPT-5.5 and o4-mini store the malicious rule. Supply-chain risk is universal across both vendors.
+
+5. **Anthropic is categorically different** — 0–2.5% injection across the Claude family. Safety is at the injection layer. No adversarial state enters persistent memory.
+
+6. **Tool-existence confirmed at N=40** — removing `save_fact` drops injection from 97–100% to exactly 0% for gpt-5.1, o3-mini, o4-mini (N=40 each). Zero hallucinated saves.
+
+7. **GPT-5.4 and GPT-5.5 confirmed execution-resistant** — 0% ASR under both standard compliance (varA) and legal hold (varB) at N=40. Latent Carriers with high confidence.
+
+8. **Sonnet 4.6 detection is framing-invariant** — 0% ASR across varA (compliance), varB (legal hold), varC (IT config passive). 2.5% injection across all three (1 run in each).
+
+### Vendor Architecture Summary (Updated)
+
+- **Anthropic**: Blocks at injection layer. 0–2.5% injection, 0% ASR. Framing-invariant. No adversarial state in persistent memory.
+- **Google (Gemini 3.1 Pro, 3.5 Flash, 2.5 Pro)**: Does not block. 22.5–95% ASR under standard framing. Most vulnerable frontier family.
+- **Google (Gemini 2.5 Flash)**: Latent Carrier. 100% injection, 0% ASR.
+- **OpenAI (GPT-5.4+, reasoning models)**: Blocks at execution layer. 100% injection, 0% ASR. Payload stored but not executed.
+- **OpenAI (GPT-4o through GPT-5)**: Partially blocks. 5–12.5% ASR standard framing; GPT-4o reaches 60.3% under authority escalation (N=68).
+- **OpenAI (mini/nano/gpt-5.2)**: Effectively execution-locked. 0–2.5% ASR. But 100% injection = supply-chain risk.
 
 ## Limitations
 
