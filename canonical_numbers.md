@@ -390,6 +390,7 @@ Total: 0/46 bypasses. qwq:32b inversion does not generalise.
 | Model | Era | Injection | ASR | SECURE Prompt ASR | Mechanism |
 |-------|-----|-----------|-----|-------------------|-----------|
 | gpt-4o | Mid-2024 | 97% (N=68) | **60.3%** [48.4%, 71.1%] | **3.3%** (1/30) [0.6%, 16.7%] | Universal compliance |
+| gpt-4o-mini | Mid-2024 | 97.5% (N=40) | **0%** [0%, 8.8%] | --- | Execution-locked (Latent Carrier) |
 | gpt-4.1 | Late-2024 | 100% (N=10) | **30%** [10.8%, 60.3%] | 0% (N=5) | Authority-driven |
 | gpt-5 | Early-2025 | 100% (N=40) | **15%** [7.1%, 29.1%] | 0% (N=10) | Residual compliance |
 | gpt-5.4 | Mid-2025 | 100% (N=10) | **0%** | — | Execution-resistant |
