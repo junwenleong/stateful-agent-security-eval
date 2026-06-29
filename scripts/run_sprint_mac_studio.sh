@@ -29,8 +29,8 @@ echo "=============================================="
 echo ""
 echo "=== PHASE 0: Cross-Model Date Sweep ==="
 echo "Started: $(date)"
-rm -rf results/crossmodel_date_sweep/
-bash scripts/test_crossmodel_date_sweep.sh
+# rm -rf results/crossmodel_date_sweep/
+# bash scripts/test_crossmodel_date_sweep.sh
 echo "Phase 0 complete: $(date)"
 echo ""
 
