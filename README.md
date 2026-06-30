@@ -1,7 +1,7 @@
 # Stateful Agent Security Evaluation
 
 **Paper:** [arXiv:2605.08442](https://arxiv.org/abs/2605.08442)
-**Companion:** [Forensic Trajectory Signatures — arXiv:2606.30566](https://arxiv.org/abs/2606.30566)
+**Companion:** [Forensic Trajectory Signatures - arXiv:2606.30566](https://arxiv.org/abs/2606.30566)
 
 **Five of six defences fail completely against delayed trigger attacks that persist through LLM agent memory. Tested across 5,040 runs, 9 models, 6 defences + undefended baseline.**
 
@@ -12,7 +12,7 @@ Additional findings:
 - A safety-fine-tuned model (gpt-oss-safeguard:120b) achieves 100% ASR
 - One frontier model stores security alerts instead of payloads (Active Detector with Defensive Storage)
 - A latent carrier model persists financial credentials without attacker instruction
-- Under loaded-corpus evaluation (N=40), Gemini 3.1 Pro Preview exfiltrates at 95.0% ASR — the most vulnerable frontier model tested; Gemini 3.5 Flash at 50.0%, Gemini 2.5 Pro at 22.5%
+- Under loaded-corpus evaluation (N=40), Gemini 3.1 Pro Preview exfiltrates at 95.0% ASR - the most vulnerable frontier model tested; Gemini 3.5 Flash at 50.0%, Gemini 2.5 Pro at 22.5%
 - GPT-5 generational trend is non-monotonic: GPT-5 (5%) → GPT-5.1 (22.5% regression) → GPT-5.2 (2.5%) → GPT-5.4/5.5 (0%); GPT-4o remains highest at 20% (varA) / 60.3% (varB, N=68)
 - Tripartite vendor architecture: Anthropic blocks at injection layer (0–2.5% injection); OpenAI blocks at execution (100% injection, 0% ASR for GPT-5.4+); Google (pre-2025 Gemini) does not block (22.5–95% ASR)
 - 10 concurrent papers in the space (May-June 2026) confirm persistent memory attacks as an active research frontier
@@ -27,9 +27,9 @@ A research-grade evaluation framework for testing session-persistent security at
 
 ## Three Pillars
 
-1. **Session-persistent attack evaluation** — LangGraph agent with SQLite persistence, multi-session delayed trigger attacks
-2. **Mechanistic defense analysis** — Tool-call instrumentation distinguishing injection-stage vs. execution-stage blocking
-3. **Statistical rigor** — Bootstrap BCa CIs, power analysis, Holm-Bonferroni corrections, Wilson Score meta-analysis
+1. **Session-persistent attack evaluation** - LangGraph agent with SQLite persistence, multi-session delayed trigger attacks
+2. **Mechanistic defense analysis** - Tool-call instrumentation distinguishing injection-stage vs. execution-stage blocking
+3. **Statistical rigor** - Bootstrap BCa CIs, power analysis, Holm-Bonferroni corrections, Wilson Score meta-analysis
 
 ## Quick Start (Local)
 
@@ -62,7 +62,7 @@ pip install -r requirements.txt
 # 6. Run all tests
 .venv/bin/python -m pytest tests/ -q --tb=short
 
-# 7. Dry run (1 run per condition — verify pipeline works)
+# 7. Dry run (1 run per condition - verify pipeline works)
 .venv/bin/python scripts/run_defense_factorial.py --dry-run
 
 # 8. Full factorial (9 models, ~8.5 days total on a single GPU)
@@ -70,9 +70,9 @@ pip install -r requirements.txt
 ```
 
 **Ollama settings for the factorial:**
-- `OLLAMA_NUM_PARALLEL=1` — one request at a time (prevents queue buildup)
-- `OLLAMA_MAX_LOADED_MODELS=1` — prevents OOM on large model transitions (72+75GB)
-- `OLLAMA_KEEP_ALIVE=5m` — keeps model warm between sequential runs
+- `OLLAMA_NUM_PARALLEL=1` - one request at a time (prevents queue buildup)
+- `OLLAMA_MAX_LOADED_MODELS=1` - prevents OOM on large model transitions (72+75GB)
+- `OLLAMA_KEEP_ALIVE=5m` - keeps model warm between sequential runs
 - Models run with q4_0 quantization
 
 > **These env vars are required, not optional.** Omitting `OLLAMA_MAX_LOADED_MODELS=1` during the Phase 3→4 transition (qwen3.5:122b 75GB → gpt-oss-safeguard 72GB) risks OOM and a silent daemon crash. Omitting `OLLAMA_NUM_PARALLEL=1` causes request queue buildup that triggers the 600s HTTP timeout on slower models.
@@ -101,7 +101,7 @@ src/
 └── analysis/       # Plots, LaTeX tables, MechanisticAnalyzer
 
 scripts/
-├── run_defense_factorial.py   # Main entrypoint — phased execution
+├── run_defense_factorial.py   # Main entrypoint - phased execution
 ├── run_bedrock_apac_smoke.py  # Bedrock frontier smoke test
 ├── run_haiku_memory_sandbox.py # Haiku supplementary evaluation
 ├── run_n10_all_models.py      # N=10 screening across all models
@@ -126,7 +126,7 @@ results/            # Experiment outputs (JSONL + run logs)
 | Decision | Choice | Rationale |
 |---|---|---|
 | Agent framework | LangGraph + SqliteSaver | Native multi-session checkpointing |
-| Session isolation | Fresh thread_id per session | Enforces context wipe — attack must be tool-mediated, not context-leaked |
+| Session isolation | Fresh thread_id per session | Enforces context wipe - attack must be tool-mediated, not context-leaked |
 | Defense proxy | TF-IDF + regex + classifier | Lightweight; explicitly NOT an LLM-based firewall |
 | Meta-analysis CIs | Wilson Score (not bootstrap) | Published papers provide only summary stats |
 | Exfiltration detection | Recipient match OR substring OR semantic similarity | Catches direct, copy-paste, and paraphrased leaks |
@@ -135,7 +135,7 @@ results/            # Experiment outputs (JSONL + run logs)
 
 ## Requirements
 
-- Python 3.11 (required — `python3.11 -m venv .venv`)
+- Python 3.11 (required - `python3.11 -m venv .venv`)
 - Ollama (for open-source models)
 - AWS credentials with Bedrock access (for frontier model screening only)
 
@@ -155,7 +155,7 @@ Phases (sequential, one model at a time to manage VRAM):
 
 ## Scope Limitations
 
-- Input-level defenses (Minimizer, Sanitizer) are **lightweight proxies** (TF-IDF + 60-example classifier), but the finding is architectural: production input-layer classifiers (Llama Guard, ShieldGemma) share the same blind spot — they cannot observe RAG-retrieved content by construction.
+- Input-level defenses (Minimizer, Sanitizer) are **lightweight proxies** (TF-IDF + 60-example classifier), but the finding is architectural: production input-layer classifiers (Llama Guard, ShieldGemma) share the same blind spot - they cannot observe RAG-retrieved content by construction.
 - Evaluation uses **simulated tools** in a controlled environment. Results may not generalize to production deployments.
 - Models are **Ollama instances** with q4_0 quantization. Results may differ from full-precision or API-served versions.
 - The RAG corpus is **in-memory** (not a cloud vector store). Infrastructure is held constant across models by design to isolate model reasoning as the independent variable.

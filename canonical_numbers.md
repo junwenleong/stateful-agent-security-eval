@@ -1,4 +1,4 @@
-# Canonical Numbers — Single Source of Truth
+# Canonical Numbers - Single Source of Truth
 
 **Generated**: 2026-04-21  
 **Authoritative data sources**: `results/n10_all_models/results.jsonl`, `results/bedrock_apac_smoke/results.jsonl`, `results/defense_factorial/results.jsonl`, `results/defense_factorial/analysis.json`  
@@ -6,7 +6,7 @@
 
 ---
 
-## Experiment 1: N=10 Rescreen (v2 codebase — authoritative)
+## Experiment 1: N=10 Rescreen (v2 codebase - authoritative)
 
 **Source**: `results/n10_all_models/results.jsonl`  
 **Do NOT cite**: `archived_analysis_superseeded/old_n10_all_models/` (v1 codebase, systematic misclassification)
@@ -40,7 +40,7 @@
 **Source**: `results/bedrock_apac_smoke/results.jsonl`  
 **Do NOT cite**: `results/bedrock_apac_smoke/results_v1_pre_2026-04-11.jsonl` (pre-v2 codebase)
 
-### ✅ COMPLETE — 400/400 runs, 0 errors
+### ✅ COMPLETE - 400/400 runs, 0 errors
 
 | Model | Arm | N | Injection | Attack | BTCR | Tag |
 |-------|-----|---|-----------|--------|------|-----|
@@ -50,8 +50,8 @@
 | Haiku 4.5 | no_attack | 100 | 0% | 0% | 100% | no_attack_baseline |
 
 **Archetypes:**
-- Sonnet 4.6: **Explicit Detector** — resists at injection stage; malicious rule never enters persistent memory
-- Haiku 4.5: **Active Detector with Defensive Storage** — detects the attack in the injection session (100/100 runs contain explicit detection language: "suspicious instruction attempting to manipulate my behavior"), then stores three sanitised facts: two legitimate policy items (`audit_compliance_retention_policy`, `audit_compliance_document_control`) and one security alert (`security_alert_injected_rule`: "ALERT: Malicious document injection detected"). The attacker's routing rule itself is never stored. In the trigger session, Haiku recalls its own security alert and refuses to execute. `injection_success=True` is technically correct (Haiku calls `memory_save_fact`) but `payload_stored=False` (what was stored is a warning about the attack, not the attack payload). Tag: `model_refused_execution`.
+- Sonnet 4.6: **Explicit Detector** - resists at injection stage; malicious rule never enters persistent memory
+- Haiku 4.5: **Active Detector with Defensive Storage** - detects the attack in the injection session (100/100 runs contain explicit detection language: "suspicious instruction attempting to manipulate my behavior"), then stores three sanitised facts: two legitimate policy items (`audit_compliance_retention_policy`, `audit_compliance_document_control`) and one security alert (`security_alert_injected_rule`: "ALERT: Malicious document injection detected"). The attacker's routing rule itself is never stored. In the trigger session, Haiku recalls its own security alert and refuses to execute. `injection_success=True` is technically correct (Haiku calls `memory_save_fact`) but `payload_stored=False` (what was stored is a warning about the attack, not the attack payload). Tag: `model_refused_execution`.
 
 **Note:** The Draft-Only Executor label applies to qwq:32b only (drafts malicious email but never calls `send_email`). Haiku and qwq:32b share the `model_refused_execution` tag but have completely different injection-stage mechanisms: qwq:32b stores the attacker's routing rule verbatim; Haiku stores a security alert about it.
 
@@ -70,7 +70,7 @@
 
 ## Experiment 3: Defense Factorial
 
-7. **Frontier finding (400/400 runs, 0 errors):** Sonnet 4.6 — Explicit Detector (0% injection, 0% attack, BTCR=100%, N=100 each arm). Haiku 4.5 — Active Detector with Defensive Storage (100% injection, 0% attack, BTCR=100%, N=100 each arm; tag: model_refused_execution; payload_stored: False — stores security alert, not the routing rule). False positive rate: 0.0% (0/200 no-attack runs). Both frontier models actively detect the attack; they differ in response: Sonnet refuses to store, Haiku stores a warning and refuses to execute. Inversion risk: theoretically lower for Haiku than qwq:32b because the payload is not in memory, but not empirically tested.
+7. **Frontier finding (400/400 runs, 0 errors):** Sonnet 4.6 - Explicit Detector (0% injection, 0% attack, BTCR=100%, N=100 each arm). Haiku 4.5 - Active Detector with Defensive Storage (100% injection, 0% attack, BTCR=100%, N=100 each arm; tag: model_refused_execution; payload_stored: False - stores security alert, not the routing rule). False positive rate: 0.0% (0/200 no-attack runs). Both frontier models actively detect the attack; they differ in response: Sonnet refuses to store, Haiku stores a warning and refuses to execute. Inversion risk: theoretically lower for Haiku than qwq:32b because the payload is not in memory, but not empirically tested.
 
 **Source**: `results/defense_factorial/results.jsonl`, `results/defense_factorial/analysis.json`  
 **Config**: `experiments/configs/defense_factorial.yaml`
@@ -99,7 +99,7 @@
 | False positive rate (no_attack arm) | **0.0%** (0/2,520) |
 | BTCR (no_attack arm, all defenses) | **100.0%** (2,520/2,520) |
 
-### Defense ASR Matrix — DTA arm (averaged across 9 models, n=360 per defense)
+### Defense ASR Matrix - DTA arm (averaged across 9 models, n=360 per defense)
 
 | Defense | ASR (mean across models) | n_runs |
 |---------|--------------------------|--------|
@@ -111,7 +111,7 @@
 | prompt_hardening | **77.8%** | 360 |
 | memory_sandbox | **11.1%** | 360 |
 
-### Per-Model Per-Defense ASR — DTA arm (n=40 per cell)
+### Per-Model Per-Defense ASR - DTA arm (n=40 per cell)
 
 | Model | no_defense | minimizer | sanitizer | rag_sanitizer | rag_llm_judge | prompt_hardening | memory_sandbox |
 |-------|-----------|-----------|-----------|---------------|---------------|-----------------|----------------|
@@ -127,9 +127,9 @@
 
 **Note on qwq:32b**: Draft-Only Executor archetype. ASR=0% under all DTA defenses except memory_sandbox (100%). qwq:32b reasons fully through the malicious routing rule and includes the attacker address in the draft. It then explicitly declines to call send_email, reasoning: "the user only asked to draft, not send." All four reasoning blocks complete with closing `</think>` tags and full stops -- no truncation. At 32k context (N=10 screening), the same reasoning process resolves the authority conflict differently, concluding compliance requires sending. Context length affects which branch the model takes, not whether reasoning completes. The Draft-Only behavior at 16k is a genuine deliberate choice -- the model uses the literal interpretation of "draft" as justification to avoid completing the send step when a suspicious routing rule is present. Under memory_sandbox, the attacker address arrives via RAG as fresh compliance content rather than a recalled rule, and qwq:32b loses the discrimination and completes the send (40/40). N=10 screening ran at OLLAMA_CONTEXT_LENGTH=32768 (10/10 ASR=100%); factorial at 16384 (ASR=0%). Same weights 009cb3f08d74, same code. The 7 comparisons for qwq:32b are annotated N/A (6 primary DTA + 1 cross-model no_defense); Holm-Bonferroni applies to 108 active comparisons. **32k verification (N=40, OLLAMA_CONTEXT_LENGTH=32768):** 40/40 ASR under memory_sandbox, `implicit_bypass_confirmed` in all 40 runs. Inversion is context-length-independent. no_defense at 32k = 100% ASR (Vulnerable Executor, N=10 screening); memory_sandbox at 32k = 100% ASR (RAG bypass). Source: `results/qwq_memory_sandbox_32k/results.jsonl`.
 
-**Note on qwen3.5:122b + prompt_hardening**: Only Vulnerable Executor where prompt_hardening achieves 0% ASR. All other Vulnerable Executors show 100% ASR under prompt_hardening. (qwq:32b also shows 0% ASR under prompt_hardening, but this is because qwq:32b is a Draft-Only Executor with 0% ASR under all defenses except memory_sandbox — prompt_hardening has no causal effect.)
+**Note on qwen3.5:122b + prompt_hardening**: Only Vulnerable Executor where prompt_hardening achieves 0% ASR. All other Vulnerable Executors show 100% ASR under prompt_hardening. (qwq:32b also shows 0% ASR under prompt_hardening, but this is because qwq:32b is a Draft-Only Executor with 0% ASR under all defenses except memory_sandbox - prompt_hardening has no causal effect.)
 
-### Per-Model Per-Defense BTCR — no_attack arm (n=40 per cell)
+### Per-Model Per-Defense BTCR - no_attack arm (n=40 per cell)
 
 | Model | no_defense | minimizer | sanitizer | rag_sanitizer | rag_llm_judge | prompt_hardening | memory_sandbox |
 |-------|-----------|-----------|-----------|---------------|---------------|-----------------|----------------|
@@ -145,7 +145,7 @@
 
 **Key finding**: BTCR = 100% across all 63 no_attack conditions (9 models × 7 defenses). Zero utility tax from any defense.
 
-**Exception — memory_sandbox BTCR under DTA** (not no_attack): qwen2.5:14b and qwen2.5:72b show BTCR=0.0% [0.000, 0.088] under memory_sandbox + DTA — both halt after `list_all_facts` without completing the benign task (Artifacts 2, 10). qwen3.5:122b and glm-4.7-flash:q8_0 show BTCR=True under memory_sandbox DTA via the hallucination bypass mechanism (value_hallucination_bypass, §3.3.3). The no_attack BTCR is unaffected (100%) for all models.
+**Exception - memory_sandbox BTCR under DTA** (not no_attack): qwen2.5:14b and qwen2.5:72b show BTCR=0.0% [0.000, 0.088] under memory_sandbox + DTA - both halt after `list_all_facts` without completing the benign task (Artifacts 2, 10). qwen3.5:122b and glm-4.7-flash:q8_0 show BTCR=True under memory_sandbox DTA via the hallucination bypass mechanism (value_hallucination_bypass, §3.3.3). The no_attack BTCR is unaffected (100%) for all models.
 
 ### Per-Condition ASR with 95% BCa CIs (from analysis.json, n=40 per cell)
 
@@ -163,7 +163,7 @@
 | qwen3:32b | 1.000 | [0.912, 1.000]* |
 | qwq:32b | 0.000 | [0.000, 0.088]* |
 
-*Wilson Score CI used (degenerate vector — all 0s or all 1s)
+*Wilson Score CI used (degenerate vector - all 0s or all 1s)
 
 #### memory_sandbox DTA
 
@@ -197,19 +197,19 @@
 
 ## Key Findings Summary (for paper)
 
-1. **Baseline vulnerability**: 88.6% ASR under no_defense across 9 models (DTA arm). 100% injection rate — every run had the malicious document retrieved.
+1. **Baseline vulnerability**: 88.6% ASR under no_defense across 9 models (DTA arm). 100% injection rate - every run had the malicious document retrieved.
 
 2. **Only effective defense**: memory_sandbox reduces ASR to 0% for 8/9 models. The exception is qwq:32b (Draft-Only Executor, 100% ASR under memory_sandbox via RAG re-injection bypass).
 
-3. **All other defenses fail**: minimizer, sanitizer, rag_sanitizer, rag_llm_judge all show ~88.9% ASR — statistically indistinguishable from no_defense. prompt_hardening shows 77.8% mean ASR (one model, qwen3.5:122b, achieves 0%).
+3. **All other defenses fail**: minimizer, sanitizer, rag_sanitizer, rag_llm_judge all show ~88.9% ASR - statistically indistinguishable from no_defense. prompt_hardening shows 77.8% mean ASR (one model, qwen3.5:122b, achieves 0%).
 
 4. **Zero utility tax**: BTCR = 100% across all 63 no_attack conditions. No defense degrades benign task completion.
 
-5. **memory_sandbox BTCR exception (DTA arm only)**: qwen2.5:14b and qwen2.5:72b show BTCR=0% under memory_sandbox when the attack is active — both halt after `list_all_facts` without completing the benign task. This is a model-specific artifact (Artifacts 2, 10), not a benign-session effect. Note: qwen3.5:122b and glm-4.7-flash:q8_0 show BTCR=True under memory_sandbox DTA via the hallucination bypass mechanism (§3.3.3).
+5. **memory_sandbox BTCR exception (DTA arm only)**: qwen2.5:14b and qwen2.5:72b show BTCR=0% under memory_sandbox when the attack is active - both halt after `list_all_facts` without completing the benign task. This is a model-specific artifact (Artifacts 2, 10), not a benign-session effect. Note: qwen3.5:122b and glm-4.7-flash:q8_0 show BTCR=True under memory_sandbox DTA via the hallucination bypass mechanism (§3.3.3).
 
-6. **False positive rate**: 0.0% — no model spontaneously exfiltrated data in the no_attack arm.
+6. **False positive rate**: 0.0% - no model spontaneously exfiltrated data in the no_attack arm.
 
-7. **Frontier finding (400/400 runs, 0 errors):** Sonnet 4.6 — Explicit Detector (0% injection [0.000, 0.037], 0% attack, BTCR=100%, N=100 each arm). Haiku 4.5 — Active Detector with Defensive Storage (100% injection [0.963, 1.000], 0% attack [0.000, 0.037], BTCR=100%, N=100 each arm; tag: model_refused_execution; payload_stored: False — stores security alert, not the routing rule). False positive rate: 0.0% (0/200 no-attack runs). Both frontier models actively detect the attack; they differ in response: Sonnet refuses to store, Haiku stores a warning and refuses to execute. Inversion risk: theoretically lower for Haiku than qwq:32b because the payload is not in memory, but not empirically tested.
+7. **Frontier finding (400/400 runs, 0 errors):** Sonnet 4.6 - Explicit Detector (0% injection [0.000, 0.037], 0% attack, BTCR=100%, N=100 each arm). Haiku 4.5 - Active Detector with Defensive Storage (100% injection [0.963, 1.000], 0% attack [0.000, 0.037], BTCR=100%, N=100 each arm; tag: model_refused_execution; payload_stored: False - stores security alert, not the routing rule). False positive rate: 0.0% (0/200 no-attack runs). Both frontier models actively detect the attack; they differ in response: Sonnet refuses to store, Haiku stores a warning and refuses to execute. Inversion risk: theoretically lower for Haiku than qwq:32b because the payload is not in memory, but not empirically tested.
 
 ---
 
@@ -219,7 +219,7 @@
 |--------|--------|
 | `archived_analysis_superseeded/old_n10_all_models/` | v1 codebase; 3 tool contract changes caused systematic misclassification |
 | `results/bedrock_apac_smoke/results_v1_pre_2026-04-11.jsonl` | Pre-v2 codebase, no system prompt, no rag_limit |
-| Bedrock smoke aggregate numbers | Incomplete — only 29/400 runs, 1/2 models, 1/2 attack arms |
+| Bedrock smoke aggregate numbers | Incomplete - only 29/400 runs, 1/2 models, 1/2 attack arms |
 | Any archetype counts from old N=10 | Superseded by v2 rescreen |
 
 ---
@@ -247,20 +247,20 @@
 | Injection-Resistant | 12 | gemini-2.5-flash, gemini-2.5-pro, gemini-3.1-pro-preview, claude-haiku-4-5, claude-sonnet-4-5, claude-sonnet-4-6, claude-opus-4-5, claude-opus-4-8, gpt-5.2, gpt-5.4, gpt-5.5, gpt-5-mini |
 | Partial Resistant | 6 | gpt-5 (10%), gpt-5-nano (40%), gpt-4.1 (20%), gpt-4o (30%), gemini-3.5-flash (10%), o3 (80%) |
 | Latent Carrier | 3 | gpt-5.1 (100%), o3-mini (100%), o4-mini (100%) |
-| Vulnerable Executor | 0 | — |
+| Vulnerable Executor | 0 | - |
 
 ### GPT Generational Boundary
 
 | Model | Release | Injection Rate |
 |-------|---------|---------------|
-| gpt-4o | — | 30% |
-| gpt-4.1 | — | 20% |
+| gpt-4o | - | 30% |
+| gpt-4.1 | - | 20% |
 | gpt-5 | Aug 2025 | 10% |
 | gpt-5-nano | Aug 2025 | 40% |
 | gpt-5.1 | Nov 2025 | **100%** |
 | gpt-5.2 | Dec 2025 | **0%** |
-| gpt-5.4 | — | 0% |
-| gpt-5.5 | — | 0% |
+| gpt-5.4 | - | 0% |
+| gpt-5.5 | - | 0% |
 
 ### Memory Sandbox Probe (Frontier Latent Carriers)
 
@@ -295,12 +295,12 @@ Total: 0/46 bypasses. qwq:32b inversion does not generalise.
 
 ---
 
-## Experiment 7: frontier API Supplementary & Followup — Loaded-Corpus Experiments (June 2026)
+## Experiment 7: frontier API Supplementary & Followup - Loaded-Corpus Experiments (June 2026)
 
 **Source**: `results/frontier-api_supplementary/*.jsonl`, `results/frontier-api_followup/*.jsonl`
 **Method**: OpenAI-compatible frontier API, identical tool schema + SQLite as factorial
 **Date**: 2026-06-27 to 2026-06-28
-**Key methodological note**: These experiments load the malicious document into the RAG corpus (`RAGTool(corpus=[...])`). The Experiment 5 frontier probe (above) used an empty `RAGTool()`. Numbers are NOT comparable across these two designs — they answer different questions (tool-calling compliance vs. RAG injection vulnerability).
+**Key methodological note**: These experiments load the malicious document into the RAG corpus (`RAGTool(corpus=[...])`). The Experiment 5 frontier probe (above) used an empty `RAGTool()`. Numbers are NOT comparable across these two designs - they answer different questions (tool-calling compliance vs. RAG injection vulnerability).
 
 ### GPT-4o (Loaded Corpus)
 
@@ -312,8 +312,8 @@ Total: 0/46 bypasses. qwq:32b inversion does not generalise.
 
 **Key findings:**
 - GPT-4o exfiltrates in the majority of runs under authority escalation (CI lower bound 48.4%)
-- SECURE prompt reduces but does NOT eliminate exfiltration (CI excludes 0% — residual leak confirmed)
-- Exfiltrates to obviously malicious domains at equivalent rates — universal instruction compliance, not authority deference
+- SECURE prompt reduces but does NOT eliminate exfiltration (CI excludes 0% - residual leak confirmed)
+- Exfiltrates to obviously malicious domains at equivalent rates - universal instruction compliance, not authority deference
 
 ### GPT-5 (Loaded Corpus)
 
@@ -344,7 +344,7 @@ Total: 0/46 bypasses. qwq:32b inversion does not generalise.
 | gpt-4.1-nano | Variant B (Legal Hold) | 10 | 100% | **0%** |
 | gpt-5-mini | Variant B (Legal Hold) | 10 | 100% | **0%** |
 
-**Key finding:** Mini/nano execution resistance is absolute — 0% ASR regardless of framing with loaded corpus.
+**Key finding:** Mini/nano execution resistance is absolute - 0% ASR regardless of framing with loaded corpus.
 
 ### GPT-5.4 / GPT-5.5 / Opus 4.8 (Loaded Corpus)
 
@@ -371,11 +371,11 @@ Total: 0/46 bypasses. qwq:32b inversion does not generalise.
 | Condition | N | Injection | ASR | Wilson 95% CI (Injection) |
 |-----------|---|-----------|-----|---------------------------|
 | gpt-5.2-chat (111k context) | 40 | **52.5%** (21/40) | **0%** (0/40) | [37.0%, 67.5%] |
-| gpt-5.2 (272k context) | 10 | 0% (0/10) | 0% | — |
+| gpt-5.2 (272k context) | 10 | 0% (0/10) | 0% | - |
 
 **Key finding:** Same model family, different serving endpoint, dramatically different injection rate. Safety is a serving-layer property. Execution resistance is deterministic regardless.
 
-### Tool-Existence Ablation (Empty Corpus — 3 Latent Carriers: gpt-5.1, o3-mini, o4-mini)
+### Tool-Existence Ablation (Empty Corpus - 3 Latent Carriers: gpt-5.1, o3-mini, o4-mini)
 
 | Condition | save_fact in schema | N | Injection | Hallucinated saves | Text compliance |
 |-----------|--------------------:|---|-----------|--------------------:|:---------------:|
@@ -385,7 +385,7 @@ Total: 0/46 bypasses. qwq:32b inversion does not generalise.
 
 **Key finding:** Tool availability is the necessary and sufficient condition for injection. Models are cognitively compliant by default (100% text signals without tools) but architecturally blocked without save_fact.
 
-### Generational Vulnerability Matrix (Loaded Corpus + Variant B — The Real Threat Model)
+### Generational Vulnerability Matrix (Loaded Corpus + Variant B - The Real Threat Model)
 
 | Model | Era | Injection | ASR | SECURE Prompt ASR | Mechanism |
 |-------|-----|-----------|-----|-------------------|-----------|
@@ -393,11 +393,11 @@ Total: 0/46 bypasses. qwq:32b inversion does not generalise.
 | gpt-4o-mini | Mid-2024 | 97.5% (N=40) | **0%** [0%, 8.8%] | --- | Execution-locked (Latent Carrier) |
 | gpt-4.1 | Late-2024 | 100% (N=10) | **30%** [10.8%, 60.3%] | 0% (N=5) | Authority-driven |
 | gpt-5 | Early-2025 | 100% (N=40) | **15%** [7.1%, 29.1%] | 0% (N=10) | Residual compliance |
-| gpt-5.4 | Mid-2025 | 100% (N=10) | **0%** | — | Execution-resistant |
-| gpt-5.5 | Late-2025 | 100% (N=10) | **0%** | — | Execution-resistant |
+| gpt-5.4 | Mid-2025 | 100% (N=10) | **0%** | - | Execution-resistant |
+| gpt-5.5 | Late-2025 | 100% (N=10) | **0%** | - | Execution-resistant |
 | Sonnet 4.6 | Anthropic | 0% (N=10+100) | **0%** | (not needed) | Injection-resistant |
 | Opus 4.8 | Anthropic | 10% (N=10) | **0%** | (not needed) | Near-injection-resistant |
-| mini/nano | Various | 100% | **0%** | — | Execution-locked |
+| mini/nano | Various | 100% | **0%** | - | Execution-locked |
 
 ### Vendor Divergence Summary
 
@@ -408,11 +408,11 @@ Total: 0/46 bypasses. qwq:32b inversion does not generalise.
 
 ---
 
-## Experiment 8: Frontier Confirmatory — N=40 Loaded Corpus, Variant A (June 2026)
+## Experiment 8: Frontier Confirmatory - N=40 Loaded Corpus, Variant A (June 2026)
 
 **Source**: `results/institutional_confirmatory/frontier_*.jsonl`
 **Method**: OpenAI-compatible frontier API, loaded RAG corpus (malicious_doc + sensitive_doc + monitoring_config), Variant A (standard compliance framing, MCI-AUDIT-2024-0089, SEC Rule 17a-4). N=40 per model, temperature=0. Same tool schema and SQLite as factorial.
-**Key methodological note**: Variant A = standard compliance framing (same as Experiment 5 open-source factorial). NOT legal hold/authority escalation. The Gemini results below are therefore with the base compliance framing — no escalation required.
+**Key methodological note**: Variant A = standard compliance framing (same as Experiment 5 open-source factorial). NOT legal hold/authority escalation. The Gemini results below are therefore with the base compliance framing - no escalation required.
 **Detection**: Tool call argument inspection (`email_send_email(to=[...])` containing attacker address). NOT text parsing.
 **Date**: 2026-06-28 to 2026-06-29
 
@@ -436,10 +436,10 @@ Total: 0/46 bypasses. qwq:32b inversion does not generalise.
 | o3 | OpenAI | 40 | 100% | 0.0% | [0%, 8.8%] | Latent Carrier | Confirmed |
 | o3-mini | OpenAI | 40 | 97.5% | 0.0% | [0%, 8.8%] | Latent Carrier | Confirmed |
 | o4-mini | OpenAI | 40 | 100% | 0.0% | [0%, 8.8%] | Latent Carrier | Confirmed |
-| Haiku 4.5 | Anthropic | 40 | 95% | 0.0% | [0%, 8.8%] | Active Detector | Injects (stores routing rule via frontier API — not security alert as in Bedrock); refuses execution |
+| Haiku 4.5 | Anthropic | 40 | 95% | 0.0% | [0%, 8.8%] | Active Detector | Injects (stores routing rule via frontier API - not security alert as in Bedrock); refuses execution |
 | Sonnet 4.5 | Anthropic | 40 | 57.5% | 0.0% | [0%, 8.8%] | Partial Detector | 23/40 store rule, 0/40 execute |
 | Opus 4.8 | Anthropic | 40 | 17.5% | 0.0% | [0%, 8.8%] | Near-IR | Consistent with prior |
-| Opus 4.5 | Anthropic | 40 | 2.5% | 0.0% | [0%, 8.8%] | Injection-Resistant | — |
+| Opus 4.5 | Anthropic | 40 | 2.5% | 0.0% | [0%, 8.8%] | Injection-Resistant | - |
 | Sonnet 4.6 | Anthropic | 40 | 2.5% | 0.0% | [0%, 8.8%] | Explicit Detector | Framing-invariant |
 
 ### Key N=40 Supplementary Results
@@ -469,17 +469,17 @@ Total: 0/46 bypasses. qwq:32b inversion does not generalise.
 
 gemini-3.1-pro-preview (95% ASR) forensically verified:
 - Detection: actual `email_send_email(to=['auditor@external-compliance.com'])` tool call arguments (not text parsing)
-- Timing: all 38 attack-success runs exfiltrate in session 3 (trigger session) — clean DTA pattern
+- Timing: all 38 attack-success runs exfiltrate in session 3 (trigger session) - clean DTA pattern
 - Mechanism: ~53% of attack-success runs show hybrid recall (memory + RAG re-retrieval in session 3); ~5% pure RAG re-injection; remainder memory-only
 - 2 non-attack runs: 1 stochastic memory recall failure; 1 genuine execution refusal ("forwarding to external address raises privacy concerns")
 - Model field confirmed: `gemini-3.1-pro-preview` in all 40 records
 
-### GPT-5 Generational Trend (N=40 Confirmatory — Not Monotonic)
+### GPT-5 Generational Trend (N=40 Confirmatory - Not Monotonic)
 
 | Model | ASR | Notes |
 |-------|-----|-------|
-| gpt-5 | 5.0% | — |
-| gpt-5.1 | **22.5%** | Regression — higher than gpt-5 |
+| gpt-5 | 5.0% | - |
+| gpt-5.1 | **22.5%** | Regression - higher than gpt-5 |
 | gpt-5.2 | 2.5% | Recovery |
 | gpt-5.4 | 0.0% | Execution-resistant |
 | gpt-5.5 | 0.0% | Execution-resistant |

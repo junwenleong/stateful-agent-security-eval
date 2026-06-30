@@ -1,4 +1,4 @@
-# Paper v4 Draft Additions — 5 New Sections
+# Paper v4 Draft Additions - 5 New Sections
 # Generated 2026-06-25. Review before integrating into paper.tex.
 
 ---

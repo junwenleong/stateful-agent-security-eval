@@ -80,15 +80,15 @@ The qwq:32b Draft-Only archetype from the original study (April 2026, ASR 0%, N=
 
 ## Frontier Screening (June 2026)
 
-**⚠️ Empty-corpus results are superseded — see Confirmatory section below.**
+**⚠️ Empty-corpus results are superseded - see Confirmatory section below.**
 
-An initial screening of 21 frontier models at N=10 each (210 runs) with an **empty RAG corpus** showed 0/210 exfiltrations. This appeared to confirm a categorical frontier safety gap. However, without a malicious document in the corpus, the probe measured tool-calling compliance on user instructions alone — not indirect prompt injection vulnerability. The result was an artifact of the experimental design.
+An initial screening of 21 frontier models at N=10 each (210 runs) with an **empty RAG corpus** showed 0/210 exfiltrations. This appeared to confirm a categorical frontier safety gap. However, without a malicious document in the corpus, the probe measured tool-calling compliance on user instructions alone - not indirect prompt injection vulnerability. The result was an artifact of the experimental design.
 
 Under loaded-corpus evaluation (N=40, malicious document in RAG, standard compliance framing), the picture changes dramatically. See Confirmatory section below.
 
 A sandbox probe on 4 frontier Latent Carriers (46 runs: o3 N=10, o3-mini N=10, o4-mini N=16, gpt-5.1 N=10) produced 0 bypasses and 0 RAG fallback attempts. The qwq:32b inversion mechanism does not generalize to frontier reasoning models.
 
-A Bedrock date sweep (5 models × 3 dates × N=25-40, Fisher's exact, per-model Bonferroni α=0.017) confirms date sensitivity is qwq-specific: all p>0.017. The cross-family local date sweep (7 models × 2 dates × N=5) independently replicates the null — see date sweep section above.
+A Bedrock date sweep (5 models × 3 dates × N=25-40, Fisher's exact, per-model Bonferroni α=0.017) confirms date sensitivity is qwq-specific: all p>0.017. The cross-family local date sweep (7 models × 2 dates × N=5) independently replicates the null - see date sweep section above.
 
 ## Frontier Confirmatory Results (N=40, Loaded Corpus, June 2026)
 
@@ -118,21 +118,21 @@ A Bedrock date sweep (5 models × 3 dates × N=25-40, Fisher's exact, per-model 
 
 ### Key Findings
 
-1. **Gemini 3.1 Pro Preview is the most vulnerable frontier model tested** — 95% ASR under standard compliance framing (no escalation needed). Forensically verified: all 38 exfiltrations used actual `email_send_email` tool calls in session 3; ~53% of attack-success runs used hybrid mechanism (memory recall + RAG re-retrieval). Gemini has a latent safety circuit that fires in ~5% of runs but fails under context load.
+1. **Gemini 3.1 Pro Preview is the most vulnerable frontier model tested** - 95% ASR under standard compliance framing (no escalation needed). Forensically verified: all 38 exfiltrations used actual `email_send_email` tool calls in session 3; ~53% of attack-success runs used hybrid mechanism (memory recall + RAG re-retrieval). Gemini has a latent safety circuit that fires in ~5% of runs but fails under context load.
 
-2. **GPT-5 generational trend is non-monotonic** — gpt-5.1 (22.5% ASR) regresses relative to gpt-5 (5.0%). The monotonic decline claimed before was based on insufficient N. Pattern: gpt-5(5%) → gpt-5.1(22.5%) → gpt-5.2(2.5%) → gpt-5.4(0%) → gpt-5.5(0%).
+2. **GPT-5 generational trend is non-monotonic** - gpt-5.1 (22.5% ASR) regresses relative to gpt-5 (5.0%). The monotonic decline claimed before was based on insufficient N. Pattern: gpt-5(5%) → gpt-5.1(22.5%) → gpt-5.2(2.5%) → gpt-5.4(0%) → gpt-5.5(0%).
 
-3. **GPT-5.1 reclassified** — was Latent Carrier (0% ASR) at N=10 empty corpus; is Partial Executor (22.5% ASR) at N=40 loaded corpus.
+3. **GPT-5.1 reclassified** - was Latent Carrier (0% ASR) at N=10 empty corpus; is Partial Executor (22.5% ASR) at N=40 loaded corpus.
 
-4. **All OpenAI and Google models inject at 100%** — even GPT-5.5 and o4-mini store the malicious rule. Supply-chain risk is universal across both vendors.
+4. **All OpenAI and Google models inject at 100%** - even GPT-5.5 and o4-mini store the malicious rule. Supply-chain risk is universal across both vendors.
 
-5. **Anthropic is categorically different** — 0–2.5% injection across the Claude family. Safety is at the injection layer. No adversarial state enters persistent memory.
+5. **Anthropic is categorically different** - 0–2.5% injection across the Claude family. Safety is at the injection layer. No adversarial state enters persistent memory.
 
-6. **Tool-existence confirmed at N=40** — removing `save_fact` drops injection from 97–100% to exactly 0% for gpt-5.1, o3-mini, o4-mini (N=40 each). Zero hallucinated saves.
+6. **Tool-existence confirmed at N=40** - removing `save_fact` drops injection from 97–100% to exactly 0% for gpt-5.1, o3-mini, o4-mini (N=40 each). Zero hallucinated saves.
 
-7. **GPT-5.4 and GPT-5.5 confirmed execution-resistant** — 0% ASR under both standard compliance (varA) and legal hold (varB) at N=40. Latent Carriers with high confidence.
+7. **GPT-5.4 and GPT-5.5 confirmed execution-resistant** - 0% ASR under both standard compliance (varA) and legal hold (varB) at N=40. Latent Carriers with high confidence.
 
-8. **Sonnet 4.6 detection is framing-invariant** — 0% ASR across varA (compliance), varB (legal hold), varC (IT config passive). 2.5% injection across all three (1 run in each).
+8. **Sonnet 4.6 detection is framing-invariant** - 0% ASR across varA (compliance), varB (legal hold), varC (IT config passive). 2.5% injection across all three (1 run in each).
 
 ### Vendor Architecture Summary (Updated)
 
@@ -164,20 +164,20 @@ A loaded-corpus evaluation via cloud API endpoints reveals that frontier base-ti
 | GPT-5 | Early-2025 | 40 | 100% | **15.0%** | [7.1%, 29.1%] |
 | GPT-5.4 | Mid-2025 | 10 | 100% | 0% | [0%, 27.8%] |
 | GPT-5.5 | Late-2025 | 10 | 100% | 0% | [0%, 27.8%] |
-| Sonnet 4.6 | Anthropic | 10 | 0% | 0% | — |
-| Opus 4.8 | Anthropic | 10 | 10% | 0% | — |
+| Sonnet 4.6 | Anthropic | 10 | 0% | 0% | - |
+| Opus 4.8 | Anthropic | 10 | 10% | 0% | - |
 
 ### Key Findings
 
 1. **Generational hardening (base-tier, authority escalation)**: GPT-4o (60.3%) → GPT-4.1 (30%) → GPT-5 (15%) → GPT-5.4/5.5 (0%). This series shows monotonic decline but excludes GPT-5.1, which regresses to 22.5% under standard framing (see Confirmatory section above). The overall trend is non-monotonic. OpenAI fixed execution resistance between GPT-5.1 and GPT-5.2.
 
-2. **Injection-execution dissociation**: ALL OpenAI models inject at 100% even when execution is blocked. GPT-5.5 is a Latent Carrier — stores the rule but never acts on it. The stored payload persists indefinitely in shared memory databases.
+2. **Injection-execution dissociation**: ALL OpenAI models inject at 100% even when execution is blocked. GPT-5.5 is a Latent Carrier - stores the rule but never acts on it. The stored payload persists indefinitely in shared memory databases.
 
 3. **Vendor divergence**: Anthropic blocks at the injection layer (0% storage regardless of framing). OpenAI blocks at the execution layer (stores but doesn't act for GPT-5.4+). Only injection-layer resistance eliminates the attack surface from persistent state.
 
-4. **GPT-4o is universally compliant**: Exfiltrates to `evil-attacker@malicious.xyz` at equivalent rates (~50%) as `auditor@external-compliance.com`. Not authority deference — pure instruction-following collapse.
+4. **GPT-4o is universally compliant**: Exfiltrates to `evil-attacker@malicious.xyz` at equivalent rates (~50%) as `auditor@external-compliance.com`. Not authority deference - pure instruction-following collapse.
 
-5. **System-prompt mitigation is generation-dependent**: Security-hardened prompts reduce GPT-4o from 60% to 3.3% (CI excludes 0% — residual leak confirmed). GPT-5 and GPT-4.1 are fully mitigable (0% with hardened prompt). Anthropic needs no hardening.
+5. **System-prompt mitigation is generation-dependent**: Security-hardened prompts reduce GPT-4o from 60% to 3.3% (CI excludes 0% - residual leak confirmed). GPT-5 and GPT-4.1 are fully mitigable (0% with hardened prompt). Anthropic needs no hardening.
 
 6. **Sonnet's detection is semantically deep**: 0% injection across 3 loaded-corpus payload variants (compliance, legal hold, IT configuration). Framing-invariant intent detection.
 
@@ -185,8 +185,8 @@ A loaded-corpus evaluation via cloud API endpoints reveals that frontier base-ti
 
 ### Relationship to Concurrent Work
 
-Trojan Hippo (arXiv:2605.01970) reports 85-100% ASR on Gemini 3.1 Pro and GPT-5-mini under adaptive, OpenEvolve-generated attacks. Our fixed-framing results are lower-bound estimates. The GPT-5-mini discrepancy (their 85% vs our 0%) reflects attack sophistication (adaptive vs. fixed), not a contradiction. Our novel contributions — generational trend, injection-execution dissociation, vendor divergence — are not reported in any prior work.
+Trojan Hippo (arXiv:2605.01970) reports 85-100% ASR on Gemini 3.1 Pro and GPT-5-mini under adaptive, OpenEvolve-generated attacks. Our fixed-framing results are lower-bound estimates. The GPT-5-mini discrepancy (their 85% vs our 0%) reflects attack sophistication (adaptive vs. fixed), not a contradiction. Our novel contributions - generational trend, injection-execution dissociation, vendor divergence - are not reported in any prior work.
 
 ### Companion Paper: Forensic Detection
 
-Post-hoc forensic detection achieves AUC = 0.990 from tool-call sequence patterns alone (no content inspection). The `recall_before_send` operation is a mechanistically forced invariant of memory-channel attacks — a single structural feature achieves near-perfect detection under all defences except Memory Sandbox (which blocks the attack itself). See [arXiv:2606.30566](https://arxiv.org/abs/2606.30566).
+Post-hoc forensic detection achieves AUC = 0.990 from tool-call sequence patterns alone (no content inspection). The `recall_before_send` operation is a mechanistically forced invariant of memory-channel attacks - a single structural feature achieves near-perfect detection under all defences except Memory Sandbox (which blocks the attack itself). See [arXiv:2606.30566](https://arxiv.org/abs/2606.30566).

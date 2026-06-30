@@ -84,7 +84,7 @@ A supplementary evaluation of Claude Sonnet 4.6 and Haiku 4.5 (N=100 each, 400 r
 
 Neither frontier model shows the injection-to-exfiltration pipeline that characterizes the open-source models. The N=10 screening across 18 open-source models found 11 Vulnerable Executors (100% injection, 100% attack), 4 Latent Carriers (inject but never execute), and 2 Injection-Resistant models.
 
-However, this Anthropic-specific safety does not generalize to all frontier models. Loaded-corpus confirmatory evaluation (N=40) reveals Gemini as the most vulnerable frontier family (up to 95% ASR) and a non-monotonic GPT-5 generational trend — see v4 update below.
+However, this Anthropic-specific safety does not generalize to all frontier models. Loaded-corpus confirmatory evaluation (N=40) reveals Gemini as the most vulnerable frontier family (up to 95% ASR) and a non-monotonic GPT-5 generational trend - see v4 update below.
 
 ---
 
@@ -135,7 +135,7 @@ A Bedrock validation (1,180 runs, full-precision serving) confirms the Memory Sa
 
 ## v4 update (June 2026)
 
-A frontier confirmatory evaluation (39 experiments × N=40, loaded corpus — malicious document present in RAG) reveals that an earlier empty-corpus screening (N=10, 0/210 exfiltrations) was a methodological artefact: without a malicious document in the corpus, that probe measured tool-calling compliance on user instructions alone, not indirect prompt injection vulnerability.
+A frontier confirmatory evaluation (39 experiments × N=40, loaded corpus - malicious document present in RAG) reveals that an earlier empty-corpus screening (N=10, 0/210 exfiltrations) was a methodological artefact: without a malicious document in the corpus, that probe measured tool-calling compliance on user instructions alone, not indirect prompt injection vulnerability.
 
 Under the correct threat model (loaded corpus, standard compliance framing), frontier models are not categorically safe.
 
@@ -148,7 +148,7 @@ Under the correct threat model (loaded corpus, standard compliance framing), fro
 | Gemini 2.5 Pro | 95% | 22.5% | [12.3%, 37.5%] |
 | Gemini 2.5 Flash | 100% | 0.0% | [0%, 8.8%] |
 
-Gemini 3.1 Pro Preview is a pre-release model — 95% ASR is pre-release safety posture. All 38 exfiltrations forensically verified as actual `email_send_email` tool calls in session 3.
+Gemini 3.1 Pro Preview is a pre-release model - 95% ASR is pre-release safety posture. All 38 exfiltrations forensically verified as actual `email_send_email` tool calls in session 3.
 
 ### GPT-5 generational trend is non-monotonic
 
@@ -166,14 +166,14 @@ GPT-4o remains the most vulnerable OpenAI model: 20% ASR (varA) / 60.3% (varB, N
 
 ### Additional confirmatory findings
 
-- **All OpenAI and Google models inject at 100%** — even GPT-5.5 stores the malicious rule. Only Anthropic prevents storage.
+- **All OpenAI and Google models inject at 100%** - even GPT-5.5 stores the malicious rule. Only Anthropic prevents storage.
 - **Tool-existence ablation confirmed at N=40**: removing `save_fact` drops injection from 97–100% to exactly 0% (gpt-5.1, o3-mini, o4-mini). Zero hallucinated saves.
 - **Memory Sandbox does not invert on frontier reasoning models.** Sandbox probe on 4 Latent Carriers (46 runs): 0 bypasses, 0 RAG-fallback attempts.
 - **Supply chain is compositionally proven.** Frontier Latent Carriers store at 100%; open-source Vulnerable Executors execute at 100%. Composes across model boundaries.
-- **System-prompt mitigation is generation-dependent**: GPT-5/4.1 fully mitigable (0% with SECURE prompt). GPT-4o partially mitigable (60% → 22.5%, residual leak — CI excludes 0%).
+- **System-prompt mitigation is generation-dependent**: GPT-5/4.1 fully mitigable (0% with SECURE prompt). GPT-4o partially mitigable (60% → 22.5%, residual leak - CI excludes 0%).
 - **Concurrent work**: Trojan Hippo (arXiv:2605.01970) reports 85–100% ASR under adaptive attacks on Gemini 3.1 Pro and GPT-5-mini. Our fixed-framing results are lower-bound estimates.
 
-The key architectural insight: the frontier safety gap is not between open-source and frontier — it is between *injection-layer resistance* (Anthropic) and *execution-layer resistance* (OpenAI). Google (pre-2025 Gemini) has neither.
+The key architectural insight: the frontier safety gap is not between open-source and frontier - it is between *injection-layer resistance* (Anthropic) and *execution-layer resistance* (OpenAI). Google (pre-2025 Gemini) has neither.
 
 Full details in [FINDINGS.md](https://github.com/junwenleong/stateful-agent-security-eval/blob/main/FINDINGS.md).
 
@@ -181,7 +181,7 @@ Full details in [FINDINGS.md](https://github.com/junwenleong/stateful-agent-secu
 
 ## Companion: Forensic Detection (June 2026)
 
-A companion paper demonstrates that memory-channel attacks leave a detectable forensic signature in tool-call logs. A classifier trained on the factorial data achieves AUC = 0.990 using only operation names and ordering (no content inspection). The key invariant: `recall_before_send` is mechanistically forced by the attack — no evasion possible without abandoning the memory channel. Details: [arXiv:2606.30566](https://arxiv.org/abs/2606.30566).
+A companion paper demonstrates that memory-channel attacks leave a detectable forensic signature in tool-call logs. A classifier trained on the factorial data achieves AUC = 0.990 using only operation names and ordering (no content inspection). The key invariant: `recall_before_send` is mechanistically forced by the attack - no evasion possible without abandoning the memory channel. Details: [arXiv:2606.30566](https://arxiv.org/abs/2606.30566).
 
 ## Links
 
