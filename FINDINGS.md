@@ -186,3 +186,7 @@ A loaded-corpus evaluation via cloud API endpoints reveals that frontier base-ti
 ### Relationship to Concurrent Work
 
 Trojan Hippo (arXiv:2605.01970) reports 85-100% ASR on Gemini 3.1 Pro and GPT-5-mini under adaptive, OpenEvolve-generated attacks. Our fixed-framing results are lower-bound estimates. The GPT-5-mini discrepancy (their 85% vs our 0%) reflects attack sophistication (adaptive vs. fixed), not a contradiction. Our novel contributions — generational trend, injection-execution dissociation, vendor divergence — are not reported in any prior work.
+
+### Companion Paper: Forensic Detection
+
+Post-hoc forensic detection achieves AUC = 0.990 from tool-call sequence patterns alone (no content inspection). The `recall_before_send` operation is a mechanistically forced invariant of memory-channel attacks — a single structural feature achieves near-perfect detection under all defences except Memory Sandbox (which blocks the attack itself). See [arXiv:2606.30566](https://arxiv.org/abs/2606.30566).

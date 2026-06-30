@@ -1,6 +1,7 @@
 # Stateful Agent Security Evaluation
 
 **Paper:** [arXiv:2605.08442](https://arxiv.org/abs/2605.08442)
+**Companion:** [Forensic Trajectory Signatures — arXiv:2606.30566](https://arxiv.org/abs/2606.30566)
 
 **Five of six defences fail completely against delayed trigger attacks that persist through LLM agent memory. Tested across 5,040 runs, 9 models, 6 defences + undefended baseline.**
 

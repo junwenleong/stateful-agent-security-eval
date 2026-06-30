@@ -167,6 +167,10 @@ Full details in [FINDINGS.md](https://github.com/junwenleong/stateful-agent-secu
 
 ---
 
+## Companion: Forensic Detection (June 2026)
+
+A companion paper demonstrates that memory-channel attacks leave a detectable forensic signature in tool-call logs. A classifier trained on the factorial data achieves AUC = 0.990 using only operation names and ordering (no content inspection). The key invariant: `recall_before_send` is mechanistically forced by the attack — no evasion possible without abandoning the memory channel. Details: [arXiv:2606.30566](https://arxiv.org/abs/2606.30566).
+
 ## Links
 
 [arXiv Paper](https://arxiv.org/abs/2605.08442) · [GitHub Repository](https://github.com/junwenleong/stateful-agent-security-eval) · [Full Results (FINDINGS.md)](https://github.com/junwenleong/stateful-agent-security-eval/blob/main/FINDINGS.md) · [Verification Script](https://github.com/junwenleong/stateful-agent-security-eval/blob/main/scripts/verify_canonical.py)
