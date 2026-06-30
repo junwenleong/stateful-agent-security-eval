@@ -169,7 +169,7 @@ A loaded-corpus evaluation via cloud API endpoints reveals that frontier base-ti
 
 ### Key Findings
 
-1. **Generational hardening is monotonic**: GPT-4o (60.3%) → GPT-4.1 (30%) → GPT-5 (15%) → GPT-5.4/5.5 (0%). OpenAI fixed execution resistance between GPT-5 and GPT-5.4.
+1. **Generational hardening (base-tier, authority escalation)**: GPT-4o (60.3%) → GPT-4.1 (30%) → GPT-5 (15%) → GPT-5.4/5.5 (0%). This series shows monotonic decline but excludes GPT-5.1, which regresses to 22.5% under standard framing (see Confirmatory section above). The overall trend is non-monotonic. OpenAI fixed execution resistance between GPT-5.1 and GPT-5.2.
 
 2. **Injection-execution dissociation**: ALL OpenAI models inject at 100% even when execution is blocked. GPT-5.5 is a Latent Carrier — stores the rule but never acts on it. The stored payload persists indefinitely in shared memory databases.
 

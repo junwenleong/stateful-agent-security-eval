@@ -12,9 +12,10 @@ Additional findings:
 - A safety-fine-tuned model (gpt-oss-safeguard:120b) achieves 100% ASR
 - One frontier model stores security alerts instead of payloads (Active Detector with Defensive Storage)
 - A latent carrier model persists financial credentials without attacker instruction
-- Under loaded-corpus authority-escalation framing, GPT-4o exfiltrates at 60.3% (N=68); generational hardening is monotonic (GPT-4o→4.1→5→5.4: 60%→30%→15%→0%)
-- Anthropic blocks at the injection layer (0% storage); OpenAI blocks at execution (100% injection, 0% ASR for GPT-5.4+) — a categorical vendor divergence in safety architecture
-- 21 frontier models across 3 providers (OpenAI, Google, Anthropic) show 0% attack success at N=10 (0/210, 95% CI ≤1.43%) — the frontier-open-source safety gap is categorical; 10 concurrent papers in the space (May-June 2026) confirm persistent memory attacks as an active research frontier
+- Under loaded-corpus evaluation (N=40), Gemini 3.1 Pro Preview exfiltrates at 95.0% ASR — the most vulnerable frontier model tested; Gemini 3.5 Flash at 50.0%, Gemini 2.5 Pro at 22.5%
+- GPT-5 generational trend is non-monotonic: GPT-5 (5%) → GPT-5.1 (22.5% regression) → GPT-5.2 (2.5%) → GPT-5.4/5.5 (0%); GPT-4o remains highest at 20% (varA) / 60.3% (varB, N=68)
+- Tripartite vendor architecture: Anthropic blocks at injection layer (0–2.5% injection); OpenAI blocks at execution (100% injection, 0% ASR for GPT-5.4+); Google (pre-2025 Gemini) does not block (22.5–95% ASR)
+- 10 concurrent papers in the space (May-June 2026) confirm persistent memory attacks as an active research frontier
 
 Full results and methodology in [FINDINGS.md](FINDINGS.md). Technical writeup at [junwenleong.github.io/stateful-agent-security-eval](https://junwenleong.github.io/stateful-agent-security-eval/).
 
