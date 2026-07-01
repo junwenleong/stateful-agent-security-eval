@@ -74,7 +74,7 @@ The defense that works for every other model is what creates the vulnerability f
 
 ---
 
-## Anthropic models are categorically different — but not all frontier models
+## Anthropic models are categorically different - but not all frontier models
 
 A supplementary evaluation of Claude Sonnet 4.6 and Haiku 4.5 (N=100 each, 400 runs total) reveals a gap between Anthropic and open-source behavior.
 
@@ -165,9 +165,9 @@ GPT-4o remains the most vulnerable OpenAI model: 20% ASR (varA) / 60.3% (varB, N
 
 ### A content-layer defense that works, and a reasoning-model evaluation caveat
 
-The reasoning-mode double dissociation shows no memory-*schema* sandbox variant is safe across both reasoning classes. A content-layer alternative resolves this: **Runtime Adaptive Tool-Gating (RATG)** leaves the recall tool in place but sanitizes the recalled value, stripping unauthorized addresses and routing directives before the model sees them. For the three mechanical instruction-following models (qwen2.5:14b, qwen2.5:72b, qwen3:32b), RATG reduces ASR from 100% to **0%** (N=40 per arm, injection stays 100% — the defense acts at the content layer, not by blocking storage). Reasoning-model RATG rows are being collected on fresh daemon loads and will follow.
+The reasoning-mode double dissociation shows no memory-*schema* sandbox variant is safe across both reasoning classes. A content-layer alternative resolves this: **Runtime Adaptive Tool-Gating (RATG)** leaves the recall tool in place but sanitizes the recalled value, stripping unauthorized addresses and routing directives before the model sees them. For the three mechanical instruction-following models (qwen2.5:14b, qwen2.5:72b, qwen3:32b), RATG reduces ASR from 100% to **0%** (N=40 per arm, injection stays 100% - the defense acts at the content layer, not by blocking storage). Reasoning-model RATG rows are being collected on fresh daemon loads and will follow.
 
-A methodology caveat surfaced while extending the factorial: long-running local inference daemons **silently degrade** reasoning-model trigger-session output (announce-then-no-emit, team-only sends, address confabulation — zero refusals across ~324 runs). This *under-reports* vulnerability: qwen3.5:122b re-run on fresh daemon loads exfiltrates 60/60 (100%). The fix is a fresh-daemon-per-model protocol; the cause (host-layer warm state) is unisolated. This is distinct from the qwq:32b Draft-Only refusal, which is a genuine deliberative choice, not degradation.
+A methodology caveat surfaced while extending the factorial: long-running local inference daemons **silently degrade** reasoning-model trigger-session output (announce-then-no-emit, team-only sends, address confabulation - zero refusals across ~324 runs). This *under-reports* vulnerability: qwen3.5:122b re-run on fresh daemon loads exfiltrates 60/60 (100%). The fix is a fresh-daemon-per-model protocol; the cause (host-layer warm state) is unisolated. This is distinct from the qwq:32b Draft-Only refusal, which is a genuine deliberative choice, not degradation.
 
 The key architectural insight: the frontier safety gap is not between open-source and frontier - it is between *injection-layer resistance* (Anthropic) and *execution-layer resistance* (OpenAI). Google (pre-2025 Gemini) has neither.
 
