@@ -36,6 +36,8 @@ If you deploy agents with persistent memory and communication tools, the standar
 | Tool | **Memory Sandbox** | **11.1%** |
 | - | No defense (baseline) | 88.6% |
 
+The 0.3pp gap between no_defense (319/360) and the four failing defenses (320/360) is one gpt-oss:20b stochastic non-exfiltration under no_defense (39/40 vs 40/40 under all other conditions); not statistically significant.
+
 Five defenses are statistically indistinguishable from having no defense at all. Memory Sandbox reduces ASR to 0% for 8 of 9 models. The 11.1% aggregate reflects one model (qwq:32b) that inverted to 100% under the sandbox in the April factorial; this behavior is environment-fragile (see below).
 
 ---

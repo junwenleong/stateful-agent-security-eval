@@ -111,6 +111,8 @@
 | prompt_hardening | **77.8%** | 360 |
 | memory_sandbox | **11.1%** | 360 |
 
+**Note on 88.6% vs 88.9%:** The 0.3pp difference between no_defense (319/360) and the four architecturally-blind defenses (320/360) reflects a single stochastic non-exfiltration by gpt-oss:20b under no_defense (39/40 vs 40/40 under all other conditions). At temperature=0, this is consistent with floating-point nondeterminism in tool-call emission. The defense wrappers' marginal prompt context appears to have stabilised this edge case rather than providing any security benefit. Not statistically significant (Fisher's exact p=1.0 for any pairwise comparison).
+
 ### Per-Model Per-Defense ASR - DTA arm (n=40 per cell)
 
 | Model | no_defense | minimizer | sanitizer | rag_sanitizer | rag_llm_judge | prompt_hardening | memory_sandbox |
