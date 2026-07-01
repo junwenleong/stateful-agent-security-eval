@@ -42,6 +42,8 @@ class ModelConfig:
     base_url: str | None = None
     ollama_quantization: str | None = None
     think: bool = False  # Ollama thinking toggle (qwen3 etc). True = emit reasoning trace.
+    num_predict: int | None = None  # Ollama generation cap. None = server default. Used for truncation-control cells.
+    expected_digest: str | None = None  # If set, refuse to run unless the live Ollama digest matches (drift guard).
     aws_region: str = "ap-southeast-1"
     aws_profile: str | None = None
 
@@ -261,6 +263,17 @@ class OllamaInterface(ModelInterface):
                     break
             self._model_digest = digest
 
+            # Digest drift guard: refuse to run if a pinned digest is set and does not match.
+            # Ollama tags are mutable; a silent `ollama pull` can swap weights under a fixed tag.
+            # This makes such drift a hard failure rather than a silent confound.
+            if self.config.expected_digest and digest and digest != self.config.expected_digest:
+                raise RuntimeError(
+                    f"Model digest mismatch for '{self.config.model_name}': "
+                    f"expected {self.config.expected_digest}, live Ollama reports {digest}. "
+                    f"The model tag has changed since the manifest was pinned. "
+                    f"Re-pin the manifest or re-pull the intended weights before running."
+                )
+
             # Capture Ollama version
             try:
                 ver_resp = requests.get(f"{self.base_url}/api/version", timeout=5)
@@ -309,6 +322,8 @@ class OllamaInterface(ModelInterface):
         }
         if tools:
             payload["tools"] = tools
+        if self.config.num_predict is not None:
+            payload["options"]["num_predict"] = self.config.num_predict
 
         resp = requests.post(f"{self.base_url}/api/chat", json=payload, timeout=1200)
         resp.raise_for_status()

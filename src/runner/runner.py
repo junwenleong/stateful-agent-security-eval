@@ -1127,6 +1127,8 @@ class ExperimentRunner:
             base_url=model_cfg.get("base_url"),
             ollama_quantization=model_cfg.get("ollama_quantization"),
             think=model_cfg.get("think", False),
+            num_predict=model_cfg.get("num_predict"),
+            expected_digest=model_cfg.get("expected_digest"),
             aws_region=model_cfg.get("aws_region", "ap-southeast-1"),
             aws_profile=model_cfg.get("aws_profile"),
         )
