@@ -74,9 +74,9 @@ The defense that works for every other model is what creates the vulnerability f
 
 ---
 
-## Frontier models are categorically different
+## Anthropic models are categorically different — but not all frontier models
 
-A supplementary evaluation of Claude Sonnet 4.6 and Haiku 4.5 (N=100 each, 400 runs total) reveals a gap between frontier and open-source behavior.
+A supplementary evaluation of Claude Sonnet 4.6 and Haiku 4.5 (N=100 each, 400 runs total) reveals a gap between Anthropic and open-source behavior.
 
 **Sonnet 4.6** resists at the injection stage. 0% injection rate across 100 runs. The model recognizes the document as an injection attempt and refuses to store it, producing an explicit security alert in every run.
 
@@ -84,7 +84,7 @@ A supplementary evaluation of Claude Sonnet 4.6 and Haiku 4.5 (N=100 each, 400 r
 
 Neither frontier model shows the injection-to-exfiltration pipeline that characterizes the open-source models. The N=10 screening across 18 open-source models found 11 Vulnerable Executors (100% injection, 100% attack), 4 Latent Carriers (inject but never execute), and 2 Injection-Resistant models.
 
-However, this Anthropic-specific safety does not generalize to all frontier models. Loaded-corpus confirmatory evaluation (N=40) reveals Gemini as the most vulnerable frontier family (up to 95% ASR) and a non-monotonic GPT-5 generational trend - see v4 update below.
+However, this Anthropic-specific safety does not generalize to all frontier models. Under loaded-corpus evaluation (N=40, malicious document present in RAG), Gemini is the most vulnerable frontier family (up to 95% ASR) and the GPT-5 generational trend is non-monotonic. The full frontier breakdown is in the frontier section below.
 
 ---
 
@@ -115,25 +115,15 @@ All models run against the same infrastructure (Unified Agentic Environment), so
 
 ---
 
-## Limitations
-
-The tools are simulated, not production deployments. The models are quantized open-source weights, not full-precision API-served versions. The defenses are lightweight proxies designed to test architectural categories rather than replicate commercial implementations. A production-grade classifier or a larger judge model might detect the specific compliance-formatted payload used here.
-
-But the architectural gap that the results expose (that input, retrieval, and instruction-level defenses cannot reach the layer where the attack persists) is not a property of the classifier's training set or the judge's parameter count. It is a property of where these defenses sit relative to where the attack lives, and that does not change with scale.
-
-The qwq:32b Draft-Only archetype and its associated Memory Sandbox inversion (0% → 100% ASR) were observed in the April 2026 factorial but do not reproduce in June 2026 under verified-identical weights, the same reported Ollama version (0.20.6), and the same application code. The flip traces to a single divergent reasoning token in S3 whose host-layer cause could not be isolated (April's OS/driver/binary build were not logged). This is reclassified as environment-fragile rather than a stable model property. The double dissociation finding (v2) uses a different experimental design (thinking toggle on qwen3:32b) and is not affected by this issue.
-
----
-
-## v2 update (June 2026)
+## Reasoning-mode double dissociation
 
 A reasoning-mode ablation using Qwen3-32B's thinking toggle reveals a double dissociation: the sandbox variant that protects reasoning models collapses the attack for non-reasoning models (S4 → S1), while the variant that protects non-reasoning models is bypassed by reasoning models via goal-directed RAG fallback. No single memory-sandbox implementation is safe across both model classes. The bypass requires three co-occurring conditions: recall removed, task requires resolved external routing, and reasoning capability. Full results in [FINDINGS.md](https://github.com/junwenleong/stateful-agent-security-eval/blob/main/FINDINGS.md).
 
-## v3 update (June 2026)
+## Cross-provider validation (Bedrock, full-precision)
 
 A Bedrock validation (1,180 runs, full-precision serving) confirms the Memory Sandbox RAG-fallback bypass generalizes across providers: mistral-large-3-675b (Mistral, 98% ASR under sandbox via goal-directed RAG fallback), glm-5 (Z.AI, 32%; all injected runs re-retrieve the document, non-exfiltrations are model refusal not defense), and gpt-oss-120b (OpenAI, 55% via S3 re-injection). The qwq:32b inversion is environment-fragile and did not reproduce, but the underlying bypass mechanism replicates across four providers and two serving stacks. Additionally, Llama 4 Maverick (Meta) is injection-resistant (0/20 injection), the first non-Anthropic model to resist injection entirely. Full details in [arXiv v3](https://arxiv.org/abs/2605.08442) Appendix B.
 
-## v4 update (June 2026)
+## Frontier models under loaded-corpus evaluation
 
 A frontier confirmatory evaluation (39 experiments × N=40, loaded corpus - malicious document present in RAG) reveals that an earlier empty-corpus screening (N=10, 0/210 exfiltrations) was a methodological artefact: without a malicious document in the corpus, that probe measured tool-calling compliance on user instructions alone, not indirect prompt injection vulnerability.
 
@@ -152,7 +142,7 @@ Gemini 3.1 Pro Preview is a pre-release model - 95% ASR is pre-release safety po
 
 ### GPT-5 generational trend is non-monotonic
 
-GPT-5 (5%) → GPT-5.1 (**22.5% regression**) → GPT-5.2 (2.5%) → GPT-5.4/5.5 (0%). The "monotonic hardening" previously claimed from insufficient N is wrong. GPT-5.1 is reclassified from Latent Carrier to Partial Executor.
+GPT-5 (5%) → GPT-5.1 (**22.5% regression**) → GPT-5.2 (2.5%) → GPT-5.4/5.5 (0%). The trend is non-monotonic, not a monotonic hardening. GPT-5.1 is a Partial Executor (it stores and partially executes the rule).
 
 GPT-4o remains the most vulnerable OpenAI model: 20% ASR (varA) / 60.3% (varB, N=68).
 
@@ -173,9 +163,25 @@ GPT-4o remains the most vulnerable OpenAI model: 20% ASR (varA) / 60.3% (varB, N
 - **System-prompt mitigation is generation-dependent**: GPT-5/4.1 fully mitigable (0% with SECURE prompt). GPT-4o partially mitigable (60% → 22.5%, residual leak - CI excludes 0%).
 - **Concurrent work**: Trojan Hippo (arXiv:2605.01970) reports 85–100% ASR under adaptive attacks on Gemini 3.1 Pro and GPT-5-mini. Our fixed-framing results are lower-bound estimates.
 
+### A content-layer defense that works, and a reasoning-model evaluation caveat
+
+The reasoning-mode double dissociation shows no memory-*schema* sandbox variant is safe across both reasoning classes. A content-layer alternative resolves this: **Runtime Adaptive Tool-Gating (RATG)** leaves the recall tool in place but sanitizes the recalled value, stripping unauthorized addresses and routing directives before the model sees them. For the three mechanical instruction-following models (qwen2.5:14b, qwen2.5:72b, qwen3:32b), RATG reduces ASR from 100% to **0%** (N=40 per arm, injection stays 100% — the defense acts at the content layer, not by blocking storage). Reasoning-model RATG rows are being collected on fresh daemon loads and will follow.
+
+A methodology caveat surfaced while extending the factorial: long-running local inference daemons **silently degrade** reasoning-model trigger-session output (announce-then-no-emit, team-only sends, address confabulation — zero refusals across ~324 runs). This *under-reports* vulnerability: qwen3.5:122b re-run on fresh daemon loads exfiltrates 60/60 (100%). The fix is a fresh-daemon-per-model protocol; the cause (host-layer warm state) is unisolated. This is distinct from the qwq:32b Draft-Only refusal, which is a genuine deliberative choice, not degradation.
+
 The key architectural insight: the frontier safety gap is not between open-source and frontier - it is between *injection-layer resistance* (Anthropic) and *execution-layer resistance* (OpenAI). Google (pre-2025 Gemini) has neither.
 
 Full details in [FINDINGS.md](https://github.com/junwenleong/stateful-agent-security-eval/blob/main/FINDINGS.md).
+
+---
+
+## Limitations
+
+The tools are simulated, not production deployments. The models are quantized open-source weights, not full-precision API-served versions. The defenses are lightweight proxies designed to test architectural categories rather than replicate commercial implementations. A production-grade classifier or a larger judge model might detect the specific compliance-formatted payload used here.
+
+But the architectural gap that the results expose (that input, retrieval, and instruction-level defenses cannot reach the layer where the attack persists) is not a property of the classifier's training set or the judge's parameter count. It is a property of where these defenses sit relative to where the attack lives, and that does not change with scale.
+
+The qwq:32b Draft-Only archetype and its associated Memory Sandbox inversion (0% → 100% ASR) were observed in the April 2026 factorial but do not reproduce in June 2026 under verified-identical weights, the same reported Ollama version (0.20.6), and the same application code. The flip traces to a single divergent reasoning token in S3 whose host-layer cause could not be isolated (April's OS/driver/binary build were not logged). This is reclassified as environment-fragile rather than a stable model property. The reasoning-mode double dissociation finding uses a different experimental design (thinking toggle on qwen3:32b) and is not affected by this issue.
 
 ---
 
