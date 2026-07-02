@@ -41,22 +41,27 @@ start_fresh () {
   OLLAMA_FLASH_ATTENTION=1 \
   "$OLLAMA_BIN" serve &
   OLLAMA_PID=$!
-  for _ in $(seq 1 20); do
-    curl -s http://localhost:11434/api/tags >/dev/null 2>&1 && break
+  # Wait until the daemon returns a real model list (not just a TCP listener).
+  # The GPU discovery watchdog can delay full readiness by several seconds.
+  for _ in $(seq 1 30); do
+    if curl -sf http://localhost:11434/api/tags 2>/dev/null | grep -q "models"; then
+      break
+    fi
     sleep 1
   done
+  sleep 2  # extra settle after GPU discovery completes
 }
 stop_daemon () { kill "${OLLAMA_PID:-0}" 2>/dev/null || true; wait "${OLLAMA_PID:-0}" 2>/dev/null || true; sleep 2; }
 
-# Drift guard: confirm the 122b blob digest matches before spending any runs.
+# Drift guard: confirm the 122b blob digest via the API (not CLI, which races on startup).
 digest_guard () {
-  if ! $OLLAMA_BIN list 2>/dev/null | grep -q "$EXPECT_DIGEST"; then
-    echo "FATAL: expected $MODEL digest $EXPECT_DIGEST not found in 'ollama list'."
+  if ! curl -sf http://localhost:11434/api/tags 2>/dev/null | grep -q "$EXPECT_DIGEST"; then
+    echo "FATAL: expected $MODEL digest $EXPECT_DIGEST not found in API /api/tags."
     echo "       Weights may have drifted; aborting (reproducibility.md rule 3)."
     stop_daemon
     exit 1
   fi
-  echo "[guard] $MODEL digest $EXPECT_DIGEST confirmed."
+  echo "[guard] $MODEL digest $EXPECT_DIGEST confirmed via API."
 }
 
 echo "=============================================="

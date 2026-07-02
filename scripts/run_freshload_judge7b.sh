@@ -47,10 +47,13 @@ start_fresh () {
   OLLAMA_FLASH_ATTENTION=1 \
   "$OLLAMA_BIN" serve &
   OLLAMA_PID=$!
-  for _ in $(seq 1 20); do
-    curl -s http://localhost:11434/api/tags >/dev/null 2>&1 && break
+  for _ in $(seq 1 30); do
+    if curl -sf http://localhost:11434/api/tags 2>/dev/null | grep -q "models"; then
+      break
+    fi
     sleep 1
   done
+  sleep 2  # extra settle after GPU discovery completes
 }
 stop_daemon () { kill "${OLLAMA_PID:-0}" 2>/dev/null || true; wait "${OLLAMA_PID:-0}" 2>/dev/null || true; sleep 2; }
 
