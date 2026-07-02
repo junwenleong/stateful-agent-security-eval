@@ -31,6 +31,9 @@ def main() -> None:
     ap.add_argument("--model", required=True)
     ap.add_argument("--n", type=int, default=20)
     ap.add_argument("--out", required=True)
+    ap.add_argument("--defense", default=None,
+                    help="Optional: keep only this single defense arm "
+                         "(by name or type). Used by the arm-order control.")
     args = ap.parse_args()
 
     config = load_config(args.config)
@@ -43,6 +46,14 @@ def main() -> None:
         raise SystemExit(f"Model '{args.model}' not found in {args.config}")
     # DTA only — the reduction/effect is measured on the attack arm; skip no_attack for speed.
     config.attacks = [a for a in config.attacks if a.get("type") == "delayed_trigger"]
+
+    if args.defense is not None:
+        config.defenses = [
+            d for d in config.defenses
+            if (d.get("name") == args.defense or d.get("type") == args.defense)
+        ]
+        if not config.defenses:
+            raise SystemExit(f"Defense '{args.defense}' not found in {args.config}")
 
     defenses = [d.get("name") or d.get("type") for d in config.defenses]
     print(f"[freshload] model={args.model} n={args.n} defenses={defenses}")
