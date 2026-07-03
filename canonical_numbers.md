@@ -1,6 +1,6 @@
 # Canonical Numbers - Single Source of Truth
 
-**Generated**: 2026-04-21  
+**Generated**: 2026-07-03  
 **Authoritative data sources**: `results/n10_all_models/results.jsonl`, `results/bedrock_apac_smoke/results.jsonl`, `results/defense_factorial/results.jsonl`, `results/defense_factorial/analysis.json`  
 **Every number in paper.md must trace back to this file.**
 
@@ -194,6 +194,7 @@
 | Correction | Holm-Bonferroni |
 | Pre-specified comparisons | 115 total (54 primary DTA + 45 secondary BTCR + 16 cross-model) |
 | Active comparisons (after qwq:32b N/A annotation) | **108** |
+| Significant after correction | **10** (9 memory_sandbox + 1 prompt_hardening/qwen3.5:122b + 1 cross-model) |
 
 ---
 
@@ -449,6 +450,7 @@ Total: 0/46 bypasses. qwq:32b inversion does not generalise.
 | Condition | N | Inj% | ASR% | Wilson CI | Notes |
 |-----------|---|------|------|-----------|-------|
 | gpt-4.1 varA loaded (replicate) | 40 | 100% | 5.0% | [1.4%, 16.5%] | Lower than frontier probe; same framing |
+| gpt-4.1 varA loaded (pooled) | 80 | 100% | 7.5% | [3.5%, 15.4%] | Pooled across both N=40 replicates (6/80); cited in paper |
 | gpt-4.1 varB loaded (legal hold) | 40 | 100% | 22.5% | [12.3%, 37.5%] | Framing amplifies |
 | gpt-4.1 SECURE varA | 40 | 100% | 0.0% | [0%, 8.8%] | Fully mitigable |
 | gpt-4.1-mini varA loaded | 40 | 100% | 0.0% | [0%, 8.8%] | Execution-locked |
@@ -505,3 +507,59 @@ The following Experiment 5 classifications are superseded (empty corpus was an a
 - ~~gemini-2.5-pro: Injection-Resistant~~ → **Partial Executor (22.5% ASR)**
 - ~~gpt-5.1: Latent Carrier (0% ASR)~~ → **Partial Executor (22.5% ASR)**
 - ~~"0/210 exfiltrations across 21 frontier models"~~ → Valid only under empty-corpus design; loaded corpus reveals non-zero ASR for Gemini and gpt-5.1
+
+
+---
+
+## Experiment 9: RATG Content-Layer Defense (Runtime Adaptive Tool-Gating)
+
+**Design**: no_defense vs ratg, DTA, N=40 per arm. RATG leaves `memory_recall_fact` in the schema but sanitizes the recalled value (strips unauthorized email addresses + routing directives) before the model sees it. Content-layer defense; injection stays 100% by design.
+
+**Two data sources**:
+1. **Sprint (mechanical models, Ollama 0.20.6/factorial env)**: qwen2.5:14b, qwen2.5:72b, qwen3:32b, BSI=1.0 stable across environments.
+2. **Fresh-load suite (reasoning models, Ollama 0.30.11, fresh daemon per model)**: launched 2026-07-01; per-model trace-verified.
+
+### RATG ASR Matrix (DTA, N=40/arm unless noted)
+
+| Model | class | no_defense ASR | ratg ASR | Interpretability |
+|-------|-------|---------------|----------|------------------|
+| qwen2.5:14b | mechanical | 100% | **0%** | ✅ CLEAN |
+| qwen2.5:72b | mechanical | 100% | **0%** | ✅ CLEAN |
+| qwen3:32b | mechanical | 100% | **0%** | ✅ CLEAN |
+| qwen3.5:122b | reasoning | 100% | **0%** | ❌ excluded: satisfies (ii) arm-identity but fails (i) baseline non-reproducible post-reboot (Iter 61) |
+| qwen3.5:9b | reasoning | 0% | 0% | ❌ no baseline (runtime-version misparse, Iter 57) |
+| qwq:32b | reasoning | 100% | 100% | ❌ session-0 divergence before defense activation (Iter 58) |
+| gpt-oss:20b | reasoning | 100% | 2.5% | ❌ session-0 divergence: no_defense S0 saves=6, ratg S0 saves=1 (Iter 59) |
+| gpt-oss-safeguard:120b | reasoning | ~4.5% (22/40) | not testable | ❌ Draft-Only shift on 0.30.11, no vulnerable baseline (Iter 59) |
+| glm-4.7-flash:bf16 | reasoning | 100% | 0% | ❌ session-0 divergence: no_defense S0 saves=4, ratg S0 saves=1 (Iter 60) |
+
+### CLEAN RATG EVIDENCE (cite this: efficacy conditional on validity)
+
+Preferred framing: **every model that satisfied the reproducibility validity criterion exhibited the expected defense effect: 3 mechanical (qwen2.5:14b, qwen2.5:72b, qwen3:32b), all 100% → 0% ASR, injection stays 100%.** The criterion is two-part: (i) the no-defense baseline must reproduce as vulnerable across independent loads/boots, and (ii) the arms must be identical in every session preceding the defense's activation point. Models that failed either condition were excluded as uninterpretable, NOT counted as defense failures. qwen3.5:122b satisfies (ii) but fails (i): its Jul-1 100% baseline did not reproduce on a freshly booted machine (post-reboot N=5, 0% ASR, all controllable variables identical). This separates defense efficacy (what RATG does when the comparison is valid) from evaluation validity (whether a model's comparison can be read at all).
+
+### Verified pre-emptive checks (2026-07-02)
+
+- **Tool contract unchanged since factorial**: no commit touched `src/tools/email_tool.py`, `memory_tool.py`, or `agent.py` between the factorial and the fresh-load suite. draft/send wording, governor limits, and schema are byte-identical. The safeguard Draft-Only shift is NOT a tool-contract artifact.
+- **RATG is invisible to the tool schema**: the schema is built via `StructuredTool.from_function(func=recall_fact, name=..., description=<static dict>)`. `ratg_filter` is an instance attribute read inside the method body at call time; it is not in the function signature, name, or description. Setting it cannot change what the model sees in S0. Therefore the S0 forks are divergence under identical *observable* inputs.
+
+### Numbers NOT to Cite (RATG)
+
+| Cell | Reason |
+|------|--------|
+| gpt-oss:20b "RATG reduces 100%→2.5%" | Session-0 divergence: no_defense and ratg arms differ in S0 (6 vs 1 saves) before RATG can fire (RATG inert until recall). The contrast is not a defense effect. The 1/40 ratg "success" is the 4-save outlier resembling the no_defense trajectory, NOT a sanitizer bypass. |
+| qwq:32b RATG 100% ASR | Session-0 divergence (4 vs 5 saves). Not a defense failure. |
+| qwen3.5:9b RATG 0% | Both arms 0% (version-misparse baseline), nothing to reduce. |
+| gpt-oss-safeguard:120b | no_defense already ~4.5% on 0.30.11 (Draft-Only shift), no vulnerable baseline. Runtime/environment-dependent; NOT proven version-dependent without a 0.20.6/0.30.11 A/B. |
+| glm-4.7-flash:bf16 "RATG reduces 100%→0%" | Session-0 divergence (no_defense saves=4, ratg saves=1). Surface-clean delta is an S0-fork trap, not a defense effect (Iter 60). |
+
+### Interpretation rule (Iterations 55–59 meta-lesson, formalized in knowledge.md Section 47)
+
+Never read the ASR column as a defense effect unless the two arms are identical in a session where the defense is provably inert (session 0 for RATG, which only patches `recall_fact` output). A clean-looking ASR delta over a forked S0 is an artifact, not a defense effect.
+
+**Causal-language discipline**: describe S0 forks as "deterministic divergence under identical observable inputs" / "unexplained divergence before defense activation" / "consistent with host/runtime state effects." Do NOT write "caused by load"; "load-fragility" is internal shorthand only. **Hidden-state caveat**: pre-activation identity is a necessary condition on *observable* behavior, not a guarantee of identical *internal* runtime state (KV reuse, allocator, scheduler could differ). **Determinism**: write "internally deterministic within condition," not "deterministic 40/40" (qwq proves it is not globally deterministic). **Versions**: "same model weights, different runtime" (digest rules out weight drift, not Ollama 0.30.x runtime changes).
+
+### Status (as of 2026-07-03)
+
+- glm-4.7-flash:bf16 fresh-load RATG: COMPLETE (80/80). Surface 100%→0% but S0 diverges (no_defense saves=4, ratg saves=1). Uninterpretable per pre-activation identity criterion (Iter 60).
+- 7B-judge suite (qwen2.5:14b + qwen3:32b): COMPLETE. 0/120 malicious-doc decisions flagged (0/400 total), ASR 100%→100%. Scaling 1.5B→7B did not detect the compliance-framed payload. 122b judge arm uninterpretable (degraded 0% baseline).
+- All fresh-load models have received per-model session-0-identity checks. No additional clean reasoning-model RATG data points emerged.

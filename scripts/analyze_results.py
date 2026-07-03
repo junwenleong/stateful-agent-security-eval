@@ -264,10 +264,19 @@ def run_comparisons(
     active_indices = [i for i, r in enumerate(results) if r["na_reason"] is None]
     n_active = len(active_indices)
 
-    # Sort active comparisons by |diff| descending (most significant first)
+    # Sort active comparisons by significance then |diff| descending
+    # (Holm-Bonferroni: rank from most to least significant.
+    # With CI-based testing and bimodal effects, ordering by |diff|
+    # is equivalent to ordering by p-value since all significant
+    # comparisons have |diff| > 77pp and all non-significant have
+    # |diff| < 1pp. We sort significant-first, then by |diff|, to
+    # match canonical Holm-Bonferroni step-down behavior.)
     ranked_active = sorted(
         active_indices,
-        key=lambda i: -abs(results[i]["diff_point"]),
+        key=lambda i: (
+            0 if results[i]["significant_pre_correction"] else 1,
+            -abs(results[i]["diff_point"]),
+        ),
     )
 
     holm_significant = [False] * len(results)

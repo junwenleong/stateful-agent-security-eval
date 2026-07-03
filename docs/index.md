@@ -6,7 +6,7 @@ image: https://junwenleong.github.io/stateful-agent-security-eval/assets/og-imag
 
 # Five of six defenses fail completely against persistent memory attacks on LLM agents
 
-*Jun Wen Leong · April 2026*
+*Jun Wen Leong · April-July 2026*
 
 I ran 5,040 controlled experiments across 9 models and 7 conditions (6 defenses + undefended baseline) to test whether standard defenses can stop attacks that persist through tool-mediated memory.
 
@@ -107,7 +107,7 @@ All models run against the same infrastructure (Unified Agentic Environment), so
 
 ## Methodology details
 
-**Statistical rigor:** BCa bootstrap is used rather than the normal approximation because most results are at 0% or 100%, where the normal approximation fails. For zero-variance conditions, Wilson Score intervals are substituted. Pre-registration and Holm-Bonferroni correction control the family-wise error rate across 108 comparisons at α=0.05.
+**Statistical rigor:** BCa bootstrap is used rather than the normal approximation because most results are at 0% or 100%, where the normal approximation fails. For zero-variance conditions, Wilson Score intervals are substituted. Pre-registration and Holm-Bonferroni correction control the family-wise error rate across 108 comparisons at α=0.05. Of the 108 active comparisons, 10 are significant after correction; all involve Memory Sandbox or the qwen3.5:122b Prompt Hardening effect.
 
 **Detection:** Injection success is binary (did the agent call `memory_save_fact` in S1?). Exfiltration is detected by recipient match, substring match (20+ characters from the sensitive document), or semantic similarity (cosine > 0.85). False positive rate: 0.0% across 2,520 no-attack runs.
 
@@ -123,7 +123,7 @@ A reasoning-mode ablation using Qwen3-32B's thinking toggle reveals a double dis
 
 ## Cross-provider validation (Bedrock, full-precision)
 
-A Bedrock validation (1,180 runs, full-precision serving) confirms the Memory Sandbox RAG-fallback bypass generalizes across providers: mistral-large-3-675b (Mistral, 98% ASR under sandbox via goal-directed RAG fallback), glm-5 (Z.AI, 32%; all injected runs re-retrieve the document, non-exfiltrations are model refusal not defense), and gpt-oss-120b (OpenAI, 55% via S3 re-injection). The qwq:32b inversion is environment-fragile and did not reproduce, but the underlying bypass mechanism replicates across four providers and two serving stacks. Additionally, Llama 4 Maverick (Meta) is injection-resistant (0/20 injection), the first non-Anthropic model to resist injection entirely. Full details in [arXiv v3](https://arxiv.org/abs/2605.08442) Appendix B.
+A Bedrock validation (1,180 runs, full-precision serving) confirms the Memory Sandbox RAG-fallback bypass generalizes across providers: mistral-large-3-675b (Mistral, 98% ASR under sandbox via goal-directed RAG fallback), glm-5 (Z.AI, 32%; all injected runs re-retrieve the document, non-exfiltrations are model refusal not defense), and gpt-oss-120b (OpenAI, 55% via S3 re-injection). The qwq:32b inversion is environment-fragile and did not reproduce, but the underlying bypass mechanism replicates across four providers and two serving stacks. Additionally, Llama 4 Maverick (Meta) is injection-resistant (0/20 injection), the first non-Anthropic model to resist injection entirely. Full details in [arXiv v4](https://arxiv.org/abs/2605.08442) Appendix B.
 
 ## Frontier models under loaded-corpus evaluation
 
@@ -167,9 +167,9 @@ GPT-4o remains the most vulnerable OpenAI model: 20% ASR (varA) / 60.3% (varB, N
 
 ### A content-layer defense that works, and a reasoning-model evaluation caveat
 
-The reasoning-mode double dissociation shows no memory-*schema* sandbox variant is safe across both reasoning classes. A content-layer alternative resolves this: **Runtime Adaptive Tool-Gating (RATG)** leaves the recall tool in place but sanitizes the recalled value, stripping unauthorized addresses and routing directives before the model sees them. For the three mechanical instruction-following models (qwen2.5:14b, qwen2.5:72b, qwen3:32b), RATG reduces ASR from 100% to **0%** (N=40 per arm, injection stays 100% - the defense acts at the content layer, not by blocking storage). Reasoning-model RATG rows are being collected on fresh daemon loads and will follow.
+The reasoning-mode double dissociation shows no memory-*schema* sandbox variant is safe across both reasoning classes. A content-layer alternative resolves this: **Runtime Adaptive Tool-Gating (RATG)** leaves the recall tool in place but sanitizes the recalled value, stripping unauthorized addresses and routing directives before the model sees them. For the three mechanical instruction-following models (qwen2.5:14b, qwen2.5:72b, qwen3:32b), RATG reduces ASR from 100% to **0%** (N=40 per arm, injection stays 100% - the defense acts at the content layer, not by blocking storage). We report RATG efficacy only for models satisfying a reproducibility validity criterion: (i) the no-defense baseline must reproduce as vulnerable, and (ii) the arms must be identical in every session before the defense activates. All five reasoning models fail at least one condition: qwen3.5:122b passes (ii) but fails (i) (its Jul-1 100% baseline did not reproduce on a freshly booted machine under verified configuration); qwq:32b and gpt-oss:20b fail (ii) (session-0 forks under identical inputs); qwen3.5:9b and gpt-oss-safeguard:120b fail (i) (no vulnerable baseline). We make no reasoning-model RATG efficacy claim. Scaling the RAG judge from 1.5B to 7B (qwen2.5:7b, N=40 per arm on qwen2.5:14b and qwen3:32b) did not detect the compliance-framed payload (0/120 malicious-doc decisions flagged, 0/400 total, ASR 100% to 100%).
 
-A methodology caveat surfaced while extending the factorial: long-running local inference daemons **silently degrade** reasoning-model trigger-session output (announce-then-no-emit, team-only sends, address confabulation - zero refusals across ~324 runs). This *under-reports* vulnerability: qwen3.5:122b re-run on fresh daemon loads exfiltrates 60/60 (100%). The fix is a fresh-daemon-per-model protocol; the cause (host-layer warm state) is unisolated. This is distinct from the qwq:32b Draft-Only refusal, which is a genuine deliberative choice, not degradation.
+A methodology caveat surfaced while extending the factorial on Ollama 0.30.11: reasoning-model trigger-session output shows several anomalous manifestations (announce-then-no-emit, emission truncation, team-only sends, address confabulation, and session-0 arm forks under identical observable inputs - zero refusals across ~324 runs). We report these as observed manifestations with a common cause that is *not directly demonstrated*: consistent with host/runtime state effects, but digest equality rules out only weight drift, not runtime change ("same weights, different runtime"). This *under-reports* vulnerability: qwen3.5:122b re-run on fresh daemon loads exfiltrates 60/60 (100%) with byte-identical prompts and weights. The fix is a fresh-daemon-per-model protocol. This is distinct from the qwq:32b Draft-Only refusal, which is a genuine deliberative choice, not an artifact.
 
 The key architectural insight: the frontier safety gap is not between open-source and frontier - it is between *injection-layer resistance* (Anthropic) and *execution-layer resistance* (OpenAI). Google (pre-2025 Gemini) has neither.
 
@@ -195,4 +195,4 @@ A companion paper demonstrates that memory-channel attacks leave a detectable fo
 
 [arXiv Paper](https://arxiv.org/abs/2605.08442) · [GitHub Repository](https://github.com/junwenleong/stateful-agent-security-eval) · [Full Results (FINDINGS.md)](https://github.com/junwenleong/stateful-agent-security-eval/blob/main/FINDINGS.md) · [Verification Script](https://github.com/junwenleong/stateful-agent-security-eval/blob/main/scripts/verify_canonical.py)
 
-All numbers were programmatically verified against raw experimental data (5,700 records across 5 result files) using `verify_canonical.py`.
+All numbers were programmatically verified against raw experimental data (5,660 core records plus 933 RATG/judge records across 7 result files) using `verify_canonical.py`.

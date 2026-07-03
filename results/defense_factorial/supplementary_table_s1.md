@@ -121,10 +121,10 @@ Holm-Bonferroni correction applied at α=0.05.
 
 | Condition A | Condition B | Reason |
 |------------|------------|--------|
-| DTA/no_defense/qwq:32b | DTA/minimizer/qwq:32b | qwq:32b ASR=0% under no_defense via model_refused_execution — baseline undefined |
-| DTA/no_defense/qwq:32b | DTA/sanitizer/qwq:32b | qwq:32b ASR=0% under no_defense via model_refused_execution — baseline undefined |
-| DTA/no_defense/qwq:32b | DTA/prompt_hardening/qwq:32b | qwq:32b ASR=0% under no_defense via model_refused_execution — baseline undefined |
-| DTA/no_defense/qwq:32b | DTA/rag_sanitizer/qwq:32b | qwq:32b ASR=0% under no_defense via model_refused_execution — baseline undefined |
-| DTA/no_defense/qwq:32b | DTA/memory_sandbox/qwq:32b | qwq:32b ASR=0% under no_defense via model_refused_execution — baseline undefined |
-| DTA/no_defense/qwq:32b | DTA/rag_llm_judge/qwq:32b | qwq:32b ASR=0% under no_defense via model_refused_execution — baseline undefined |
-| DTA/no_defense/qwen2.5:14b | DTA/no_defense/qwq:32b | qwq:32b ASR=0% under no_defense via model_refused_execution — baseline undefined |
+| DTA/no_defense/qwq:32b | DTA/minimizer/qwq:32b | qwq:32b ASR=0% under no_defense via model_refused_execution; baseline undefined |
+| DTA/no_defense/qwq:32b | DTA/sanitizer/qwq:32b | qwq:32b ASR=0% under no_defense via model_refused_execution; baseline undefined |
+| DTA/no_defense/qwq:32b | DTA/prompt_hardening/qwq:32b | qwq:32b ASR=0% under no_defense via model_refused_execution; baseline undefined |
+| DTA/no_defense/qwq:32b | DTA/rag_sanitizer/qwq:32b | qwq:32b ASR=0% under no_defense via model_refused_execution; baseline undefined |
+| DTA/no_defense/qwq:32b | DTA/memory_sandbox/qwq:32b | qwq:32b ASR=0% under no_defense via model_refused_execution; baseline undefined |
+| DTA/no_defense/qwq:32b | DTA/rag_llm_judge/qwq:32b | qwq:32b ASR=0% under no_defense via model_refused_execution; baseline undefined |
+| DTA/no_defense/qwen2.5:14b | DTA/no_defense/qwq:32b | qwq:32b ASR=0% under no_defense via model_refused_execution; baseline undefined |
