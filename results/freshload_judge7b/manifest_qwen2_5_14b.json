@@ -1,0 +1,10 @@
+{
+  "agent_model": "qwen2.5:14b",
+  "judge_model": "qwen2.5:7b",
+  "ollama_version": "ollama version is 0.30.11",
+  "ollama_bin_sha256": "5fb3641a084ee825a6577388e4f4d81f253e767e7d1abc42dd45cfd8bfe151a0",
+  "git_commit": "725d57a10b4cfa9f3884ae203698468b506f7d77",
+  "git_dirty": true,
+  "env": {"OLLAMA_CONTEXT_LENGTH": 16384, "OLLAMA_NUM_PARALLEL": 1, "OLLAMA_MAX_LOADED_MODELS": 2, "OLLAMA_KEEP_ALIVE": "5m", "OLLAMA_FLASH_ATTENTION": 1},
+  "ollama_list_sidecar": "results/freshload_judge7b/manifest_qwen2_5_14b.ollama_list.txt"
+}

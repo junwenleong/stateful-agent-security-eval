@@ -1,0 +1,17 @@
+NAME                      ID              SIZE      MODIFIED       
+qwen2.5:7b                845dbda0ea48    4.7 GB    43 minutes ago    
+glm-4.7-flash:bf16        b0f42cc1a612    59 GB     2 days ago        
+gpt-oss-safeguard:120b    45be44f7918a    65 GB     3 days ago        
+gpt-oss:20b               17052f91a42e    13 GB     3 days ago        
+glm-4.7-flash:q8_0        4420340fd319    31 GB     3 days ago        
+qwen3.5:9b                6488c96fa5fa    6.6 GB    3 days ago        
+glm-4.7-flash:latest      4475827791a2    19 GB     10 days ago       
+qwen2.5:72b               424bad2cc13f    47 GB     10 days ago       
+llama3.3:70b              a6eb4748fd29    42 GB     2 weeks ago       
+mistral-small3.2:24b      5a408ab55df5    15 GB     2 weeks ago       
+qwen3:32b                 030ee887880f    20 GB     2 weeks ago       
+qwq:32b                   009cb3f08d74    19 GB     2 weeks ago       
+qwen2.5:14b               7cdf5a0187d5    9.0 GB    2 weeks ago       
+qwen3.5:122b              8b9d11d807c5    81 GB     2 months ago      
+deepseek-r1:70b           d37b54d01a76    42 GB     2 months ago      
+qwen3.6:35b               07d35212591f    23 GB     2 months ago      
