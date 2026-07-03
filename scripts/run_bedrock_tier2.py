@@ -26,13 +26,13 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(level
 logger = logging.getLogger(__name__)
 
 TIER2_MODELS = [
-    {"provider": "bedrock", "model_name": "qwen.qwen3-next-80b-a3b", "aws_region": "us-east-1", "aws_profile": "tra-sso", "inference_profile": "qwen.qwen3-next-80b-a3b", "rag_session_query_limit": 15, "rate_limit": {"max_concurrent": 1, "rpm_limit": 60}},
-    {"provider": "bedrock", "model_name": "mistral.mistral-large-3-675b-instruct", "aws_region": "us-east-1", "aws_profile": "tra-sso", "inference_profile": "mistral.mistral-large-3-675b-instruct", "rag_session_query_limit": 15, "rate_limit": {"max_concurrent": 1, "rpm_limit": 60}},
-    {"provider": "bedrock", "model_name": "zai.glm-5", "aws_region": "us-east-1", "aws_profile": "tra-sso", "inference_profile": "zai.glm-5", "rag_session_query_limit": 15, "rate_limit": {"max_concurrent": 1, "rpm_limit": 60}},
-    {"provider": "bedrock", "model_name": "nvidia.nemotron-super-3-120b", "aws_region": "us-east-1", "aws_profile": "tra-sso", "inference_profile": "nvidia.nemotron-super-3-120b", "rag_session_query_limit": 15, "rate_limit": {"max_concurrent": 1, "rpm_limit": 60}},
-    {"provider": "bedrock", "model_name": "moonshot.kimi-k2-thinking", "aws_region": "us-east-1", "aws_profile": "tra-sso", "inference_profile": "moonshot.kimi-k2-thinking", "rag_session_query_limit": 15, "rate_limit": {"max_concurrent": 1, "rpm_limit": 60}},
-    {"provider": "bedrock", "model_name": "minimax.minimax-m2.5", "aws_region": "us-east-1", "aws_profile": "tra-sso", "inference_profile": "minimax.minimax-m2.5", "rag_session_query_limit": 15, "rate_limit": {"max_concurrent": 1, "rpm_limit": 60}},
-    {"provider": "bedrock", "model_name": "us.meta.llama4-maverick-17b-instruct-v1:0", "aws_region": "us-east-1", "aws_profile": "tra-sso", "inference_profile": "us.meta.llama4-maverick-17b-instruct-v1:0", "rag_session_query_limit": 15, "rate_limit": {"max_concurrent": 1, "rpm_limit": 60}},
+    {"provider": "bedrock", "model_name": "qwen.qwen3-next-80b-a3b", "aws_region": "us-east-1", "aws_profile": "default", "inference_profile": "qwen.qwen3-next-80b-a3b", "rag_session_query_limit": 15, "rate_limit": {"max_concurrent": 1, "rpm_limit": 60}},
+    {"provider": "bedrock", "model_name": "mistral.mistral-large-3-675b-instruct", "aws_region": "us-east-1", "aws_profile": "default", "inference_profile": "mistral.mistral-large-3-675b-instruct", "rag_session_query_limit": 15, "rate_limit": {"max_concurrent": 1, "rpm_limit": 60}},
+    {"provider": "bedrock", "model_name": "zai.glm-5", "aws_region": "us-east-1", "aws_profile": "default", "inference_profile": "zai.glm-5", "rag_session_query_limit": 15, "rate_limit": {"max_concurrent": 1, "rpm_limit": 60}},
+    {"provider": "bedrock", "model_name": "nvidia.nemotron-super-3-120b", "aws_region": "us-east-1", "aws_profile": "default", "inference_profile": "nvidia.nemotron-super-3-120b", "rag_session_query_limit": 15, "rate_limit": {"max_concurrent": 1, "rpm_limit": 60}},
+    {"provider": "bedrock", "model_name": "moonshot.kimi-k2-thinking", "aws_region": "us-east-1", "aws_profile": "default", "inference_profile": "moonshot.kimi-k2-thinking", "rag_session_query_limit": 15, "rate_limit": {"max_concurrent": 1, "rpm_limit": 60}},
+    {"provider": "bedrock", "model_name": "minimax.minimax-m2.5", "aws_region": "us-east-1", "aws_profile": "default", "inference_profile": "minimax.minimax-m2.5", "rag_session_query_limit": 15, "rate_limit": {"max_concurrent": 1, "rpm_limit": 60}},
+    {"provider": "bedrock", "model_name": "us.meta.llama4-maverick-17b-instruct-v1:0", "aws_region": "us-east-1", "aws_profile": "default", "inference_profile": "us.meta.llama4-maverick-17b-instruct-v1:0", "rag_session_query_limit": 15, "rate_limit": {"max_concurrent": 1, "rpm_limit": 60}},
 ]
 
 RESULTS_DIR = Path("results/bedrock_tier2")

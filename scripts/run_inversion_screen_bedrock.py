@@ -38,10 +38,10 @@ logger = logging.getLogger(__name__)
 
 # Partial/refuser models — ASR 40-75% under no_defense N=20
 INVERSION_CANDIDATES = [
-    {"provider": "bedrock", "model_name": "minimax.minimax-m2.5", "aws_region": "us-east-1", "aws_profile": "tra-sso", "inference_profile": "minimax.minimax-m2.5", "rag_session_query_limit": 15, "rate_limit": {"max_concurrent": 1, "rpm_limit": 60}},
-    {"provider": "bedrock", "model_name": "moonshot.kimi-k2-thinking", "aws_region": "us-east-1", "aws_profile": "tra-sso", "inference_profile": "moonshot.kimi-k2-thinking", "rag_session_query_limit": 15, "rate_limit": {"max_concurrent": 1, "rpm_limit": 60}},
-    {"provider": "bedrock", "model_name": "nvidia.nemotron-super-3-120b", "aws_region": "us-east-1", "aws_profile": "tra-sso", "inference_profile": "nvidia.nemotron-super-3-120b", "rag_session_query_limit": 15, "rate_limit": {"max_concurrent": 1, "rpm_limit": 60}},
-    {"provider": "bedrock", "model_name": "qwen.qwen3-next-80b-a3b", "aws_region": "us-east-1", "aws_profile": "tra-sso", "inference_profile": "qwen.qwen3-next-80b-a3b", "rag_session_query_limit": 15, "rate_limit": {"max_concurrent": 1, "rpm_limit": 60}},
+    {"provider": "bedrock", "model_name": "minimax.minimax-m2.5", "aws_region": "us-east-1", "aws_profile": "default", "inference_profile": "minimax.minimax-m2.5", "rag_session_query_limit": 15, "rate_limit": {"max_concurrent": 1, "rpm_limit": 60}},
+    {"provider": "bedrock", "model_name": "moonshot.kimi-k2-thinking", "aws_region": "us-east-1", "aws_profile": "default", "inference_profile": "moonshot.kimi-k2-thinking", "rag_session_query_limit": 15, "rate_limit": {"max_concurrent": 1, "rpm_limit": 60}},
+    {"provider": "bedrock", "model_name": "nvidia.nemotron-super-3-120b", "aws_region": "us-east-1", "aws_profile": "default", "inference_profile": "nvidia.nemotron-super-3-120b", "rag_session_query_limit": 15, "rate_limit": {"max_concurrent": 1, "rpm_limit": 60}},
+    {"provider": "bedrock", "model_name": "qwen.qwen3-next-80b-a3b", "aws_region": "us-east-1", "aws_profile": "default", "inference_profile": "qwen.qwen3-next-80b-a3b", "rag_session_query_limit": 15, "rate_limit": {"max_concurrent": 1, "rpm_limit": 60}},
 ]
 
 # Baseline ASR from bedrock_tier2 no_defense N=20
@@ -61,11 +61,11 @@ def run_screen():
     """Run memory_sandbox × DTA × N=10 on inversion candidates."""
     import subprocess
     result = subprocess.run(
-        ["aws", "sts", "get-caller-identity", "--profile", "tra-sso"],
+        ["aws", "sts", "get-caller-identity", "--profile", "default"],
         capture_output=True, text=True
     )
     if result.returncode != 0:
-        logger.error("❌ SSO token expired. Run: aws sso login --profile tra-sso")
+        logger.error("❌ SSO token expired. Run: aws sso login --profile default")
         sys.exit(1)
     logger.info(f"SSO OK: {json.loads(result.stdout).get('Arn', '?')}")
 

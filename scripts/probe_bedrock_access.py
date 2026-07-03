@@ -4,14 +4,14 @@ Sends a 1-token Converse request with a minimal toolConfig to each candidate mod
 Reports: invokable (200 vs 403/error) and tool-support (did it accept toolConfig without error).
 
 Usage:
-    aws sso login --profile tra-sso
+    aws sso login --profile default
     .venv/bin/python scripts/probe_bedrock_access.py
 """
 import boto3
 import json
 from botocore.exceptions import ClientError
 
-PROFILE = "tra-sso"
+PROFILE = "default"
 REGION = "us-east-1"
 
 # All Tier 1 + Tier 2 candidates

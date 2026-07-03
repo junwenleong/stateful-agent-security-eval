@@ -15,7 +15,7 @@ config.models = [{
     "provider": "bedrock",
     "model_name": "openai.gpt-oss-20b-1:0",
     "aws_region": "us-east-1",
-    "aws_profile": "tra-sso",
+    "aws_profile": "default",
     "inference_profile": "openai.gpt-oss-20b-1:0",
     "rag_session_query_limit": 15,
     "rate_limit": {"max_concurrent": 1, "rpm_limit": 999},

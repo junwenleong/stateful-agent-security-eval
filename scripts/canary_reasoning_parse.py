@@ -12,7 +12,7 @@ Usage:
 import boto3
 import json
 
-PROFILE = "tra-sso"
+PROFILE = "default"
 REGION = "us-east-1"
 MODEL_ID = "moonshot.kimi-k2-thinking"
 MAX_TOKENS = 16384  # High enough for reasoning + tool call

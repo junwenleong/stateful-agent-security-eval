@@ -104,7 +104,7 @@ A Bedrock date sweep (5 models × 3 dates × N=25-40, Fisher's exact, per-model 
 
 ## Frontier Confirmatory Results (N=40, Loaded Corpus, June 2026)
 
-**Source**: `results/institutional_confirmatory/frontier_*.jsonl` (N=40 each, standard compliance framing, Variant A, same RAG corpus as open-source factorial)
+**Source**: `results/frontier_confirmatory/frontier_*.jsonl` (N=40 each, standard compliance framing, Variant A, same RAG corpus as open-source factorial)
 
 ### Headline Finding: Gemini is the Most Vulnerable Frontier Family
 

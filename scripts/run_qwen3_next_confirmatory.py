@@ -16,7 +16,7 @@ from src.runner.runner import ExperimentRunner
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
-MODEL = {"provider": "bedrock", "model_name": "qwen.qwen3-next-80b-a3b", "aws_region": "us-east-1", "aws_profile": "tra-sso", "inference_profile": "qwen.qwen3-next-80b-a3b", "rag_session_query_limit": 15, "rate_limit": {"max_concurrent": 1, "rpm_limit": 60}}
+MODEL = {"provider": "bedrock", "model_name": "qwen.qwen3-next-80b-a3b", "aws_region": "us-east-1", "aws_profile": "default", "inference_profile": "qwen.qwen3-next-80b-a3b", "rag_session_query_limit": 15, "rate_limit": {"max_concurrent": 1, "rpm_limit": 60}}
 
 RESULTS_DIR = Path("results/qwen3_next_n40_confirmatory")
 RESULTS_PATH = RESULTS_DIR / "results.jsonl"
@@ -24,9 +24,9 @@ RESULTS_PATH = RESULTS_DIR / "results.jsonl"
 
 def main():
     import subprocess
-    result = subprocess.run(["aws", "sts", "get-caller-identity", "--profile", "tra-sso"], capture_output=True, text=True)
+    result = subprocess.run(["aws", "sts", "get-caller-identity", "--profile", "default"], capture_output=True, text=True)
     if result.returncode != 0:
-        logger.error("SSO expired. Run: aws sso login --profile tra-sso")
+        logger.error("SSO expired. Run: aws sso login --profile default")
         sys.exit(1)
 
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)

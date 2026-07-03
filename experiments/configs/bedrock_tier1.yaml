@@ -13,7 +13,7 @@
 #
 # Design: 6 models × 2 defenses × 2 attacks × N=40 = 960 runs
 # Region: us-east-1 (direct invoke, not cross-region)
-# Profile: tra-sso
+# Profile: default
 # Temperature: 0.0 (all models accept this)
 # maxTokens: 16384 (set in BedrockInterface; headroom for gpt-oss reasoning)
 #
@@ -38,7 +38,7 @@ models:
   - provider: bedrock
     model_name: openai.gpt-oss-120b-1:0
     aws_region: us-east-1
-    aws_profile: tra-sso
+    aws_profile: default
     inference_profile: openai.gpt-oss-120b-1:0
     rag_session_query_limit: 15
     rate_limit: {max_concurrent: 1, rpm_limit: 60}
@@ -46,7 +46,7 @@ models:
   - provider: bedrock
     model_name: openai.gpt-oss-20b-1:0
     aws_region: us-east-1
-    aws_profile: tra-sso
+    aws_profile: default
     inference_profile: openai.gpt-oss-20b-1:0
     rag_session_query_limit: 15
     rate_limit: {max_concurrent: 1, rpm_limit: 60}
@@ -54,7 +54,7 @@ models:
   - provider: bedrock
     model_name: openai.gpt-oss-safeguard-120b
     aws_region: us-east-1
-    aws_profile: tra-sso
+    aws_profile: default
     inference_profile: openai.gpt-oss-safeguard-120b
     rag_session_query_limit: 15
     rate_limit: {max_concurrent: 1, rpm_limit: 60}
@@ -62,7 +62,7 @@ models:
   - provider: bedrock
     model_name: openai.gpt-oss-safeguard-20b
     aws_region: us-east-1
-    aws_profile: tra-sso
+    aws_profile: default
     inference_profile: openai.gpt-oss-safeguard-20b
     rag_session_query_limit: 15
     rate_limit: {max_concurrent: 1, rpm_limit: 60}
@@ -70,7 +70,7 @@ models:
   - provider: bedrock
     model_name: qwen.qwen3-32b-v1:0
     aws_region: us-east-1
-    aws_profile: tra-sso
+    aws_profile: default
     inference_profile: qwen.qwen3-32b-v1:0
     rag_session_query_limit: 15
     rate_limit: {max_concurrent: 1, rpm_limit: 60}
@@ -78,7 +78,7 @@ models:
   - provider: bedrock
     model_name: zai.glm-4.7-flash
     aws_region: us-east-1
-    aws_profile: tra-sso
+    aws_profile: default
     inference_profile: zai.glm-4.7-flash
     rag_session_query_limit: 15
     rate_limit: {max_concurrent: 1, rpm_limit: 60}

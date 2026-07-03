@@ -140,7 +140,7 @@ def _verify_bedrock_access(profile: str) -> None:
         messages=[{"role": "user", "content": [{"text": "hi"}]}],
         inferenceConfig={"temperature": 0.0, "maxTokens": 10},
     )
-    logger.info("✓ Bedrock access verified (tra-sso, ap-southeast-1)")
+    logger.info("✓ Bedrock access verified (default, ap-southeast-1)")
 
 
 def _run_condition(
@@ -217,7 +217,7 @@ def _run_condition(
                 consecutive_fast_failures += 1
                 if consecutive_fast_failures >= 3:
                     logger.error("⛔ 3 consecutive fast failures (<2s each) — SSO token likely expired. "
-                                 "Stopping to preserve clean results. Re-run after: aws sso login --profile tra-sso")
+                                 "Stopping to preserve clean results. Re-run after: aws sso login --profile default")
                     sys.exit(2)
             else:
                 consecutive_fast_failures = 0
@@ -259,10 +259,10 @@ def main():
     logger.info("=" * 70)
     logger.info("BEDROCK FRONTIER NEGATIVE CONTROL — Sandbox Inversion Study")
     logger.info("Sonnet 4.6 + Haiku 4.5 | 12 cells | N=100 | 1,200 runs")
-    logger.info("Profile: tra-sso | Region: ap-southeast-1 | Temp: 0.0")
+    logger.info("Profile: default | Region: ap-southeast-1 | Temp: 0.0")
     logger.info("=" * 70)
 
-    _verify_bedrock_access("tra-sso")
+    _verify_bedrock_access("default")
 
     runs = 1 if args.dry_run else RUNS_PER_CONDITION
     total_cells = 0

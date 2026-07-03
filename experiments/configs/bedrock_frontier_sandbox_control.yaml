@@ -24,7 +24,7 @@
 # The frontier reasoning question is carried by the qwen3 same-weights toggle
 # (T1-T4) where temperature IS held fixed. See §4.7 limitations note.
 #
-# Profile: tra-sso (confirmed working 2026-06-16, account REDACTED)
+# Profile: default (confirmed working 2026-06-16, account REDACTED)
 # N=100 per condition (matches Project 1 bedrock_apac_smoke.yaml)
 #
 # Condition matrix (explicit, 12 cells):
@@ -62,7 +62,7 @@ models:
     model_name: global.anthropic.claude-sonnet-4-6
     temperature: 0.0
     aws_region: ap-southeast-1
-    aws_profile: tra-sso
+    aws_profile: default
     rag_session_query_limit: 15
     group: frontier
     role: negative_control
@@ -72,7 +72,7 @@ models:
     model_name: global.anthropic.claude-haiku-4-5-20251001-v1:0
     temperature: 0.0
     aws_region: ap-southeast-1
-    aws_profile: tra-sso
+    aws_profile: default
     rag_session_query_limit: 15
     group: frontier
     role: negative_control

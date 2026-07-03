@@ -27,8 +27,8 @@ logger = logging.getLogger(__name__)
 
 # Models confirmed as VE (≥95% ASR) in Tier 2 no_defense N=20
 ESCALATION_MODELS = [
-    {"provider": "bedrock", "model_name": "mistral.mistral-large-3-675b-instruct", "aws_region": "us-east-1", "aws_profile": "tra-sso", "inference_profile": "mistral.mistral-large-3-675b-instruct", "rag_session_query_limit": 15, "rate_limit": {"max_concurrent": 1, "rpm_limit": 60}},
-    {"provider": "bedrock", "model_name": "zai.glm-5", "aws_region": "us-east-1", "aws_profile": "tra-sso", "inference_profile": "zai.glm-5", "rag_session_query_limit": 15, "rate_limit": {"max_concurrent": 1, "rpm_limit": 60}},
+    {"provider": "bedrock", "model_name": "mistral.mistral-large-3-675b-instruct", "aws_region": "us-east-1", "aws_profile": "default", "inference_profile": "mistral.mistral-large-3-675b-instruct", "rag_session_query_limit": 15, "rate_limit": {"max_concurrent": 1, "rpm_limit": 60}},
+    {"provider": "bedrock", "model_name": "zai.glm-5", "aws_region": "us-east-1", "aws_profile": "default", "inference_profile": "zai.glm-5", "rag_session_query_limit": 15, "rate_limit": {"max_concurrent": 1, "rpm_limit": 60}},
 ]
 
 RESULTS_DIR = Path("results/bedrock_tier2_sandbox")
@@ -40,11 +40,11 @@ def run_escalation():
     """Run memory_sandbox × DTA × N=40 on confirmed VEs."""
     import subprocess
     result = subprocess.run(
-        ["aws", "sts", "get-caller-identity", "--profile", "tra-sso"],
+        ["aws", "sts", "get-caller-identity", "--profile", "default"],
         capture_output=True, text=True
     )
     if result.returncode != 0:
-        logger.error("❌ SSO token expired or invalid. Run: aws sso login --profile tra-sso")
+        logger.error("❌ SSO token expired or invalid. Run: aws sso login --profile default")
         sys.exit(1)
     logger.info(f"SSO OK: {json.loads(result.stdout).get('Arn', '?')}")
 
