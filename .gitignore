@@ -55,3 +55,7 @@ POST_RUN_CHECKLIST.md
 sprint.log
 results/sandbox_inversion/
 results/ca8_proper.log
+
+# AI IDE files
+CLAUDE.md
+AGENTS.md
