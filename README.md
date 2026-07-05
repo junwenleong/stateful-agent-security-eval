@@ -2,24 +2,11 @@
 
 **Paper:** [arXiv:2605.08442](https://arxiv.org/abs/2605.08442)
 **Companion:** [Forensic Trajectory Signatures - arXiv:2606.30566](https://arxiv.org/abs/2606.30566)
+**Live site:** [junwenleong.github.io/stateful-agent-security-eval](https://junwenleong.github.io/stateful-agent-security-eval/)
 
-**Five of six defences fail completely against delayed trigger attacks that persist through LLM agent memory. Tested across 5,040 runs, 9 models, 6 defences + undefended baseline.**
+Reproducible evaluation framework for persistent memory attacks on LLM agents. Tests whether standard defenses can stop attacks that persist across session boundaries through tool-mediated state (SQLite-backed memory).
 
-Additional findings:
-- The only effective defence (Memory Sandbox) inverts to 100% ASR on one reasoning model; the Draft-Only archetype was later shown to be environment-fragile (cause unisolated)
-- A reasoning-mode ablation reveals a double dissociation: no single sandbox implementation is safe across both reasoning and non-reasoning model classes
-- A content-layer defense (RATG: regex-based recall sanitization) reduces ASR from 100% to 0% on 3 mechanical models (N=40/arm); reasoning models could not be evaluated due to runtime instability (session-0 forks, baseline non-reproducibility)
-- Scaling the RAG judge from 1.5B to 7B did not detect the compliance-framed payload (0/120 malicious-doc decisions flagged, ASR 100% unchanged)
-- Prompt hardening can accelerate attacks via RAG re-injection
-- A safety-fine-tuned model (gpt-oss-safeguard:120b) achieves 100% ASR
-- One frontier model stores security alerts instead of payloads (Active Detector with Defensive Storage)
-- A latent carrier model persists financial credentials without attacker instruction
-- Under loaded-corpus evaluation (N=40), Gemini 3.1 Pro Preview exfiltrates at 95.0% ASR, the most vulnerable frontier model tested; Gemini 3.5 Flash at 50.0%, Gemini 2.5 Pro at 22.5%
-- GPT-5 generational trend is non-monotonic: GPT-5 (5%) to GPT-5.1 (22.5% regression) to GPT-5.2 (2.5%) to GPT-5.4/5.5 (0%); GPT-4o remains highest at 20% (varA) / 60.3% (varB, N=68)
-- Tripartite vendor architecture: Anthropic blocks at injection layer (0 to 2.5% injection); OpenAI blocks at execution (100% injection, 0% ASR for GPT-5.4+); Google (pre-2025 Gemini) does not block (22.5 to 95% ASR)
-- 10 concurrent papers in the space (May-June 2026) confirm persistent memory attacks as an active research frontier
-
-Full results and methodology in [FINDINGS.md](FINDINGS.md). Technical writeup at [junwenleong.github.io/stateful-agent-security-eval](https://junwenleong.github.io/stateful-agent-security-eval/).
+**Core result:** Five of six defenses fail to reduce attack success below the undefended baseline (88.6% ASR). Only Memory Sandbox (tool-level isolation) works, dropping ASR to 0% for 8/9 models. Frontier evaluation finds Gemini 3.1 Pro Preview at 95% ASR and a non-monotonic GPT-5 generational trend. Full results in [FINDINGS.md](FINDINGS.md), technical writeup at the [live site](https://junwenleong.github.io/stateful-agent-security-eval/).
 
 ---
 
@@ -161,3 +148,40 @@ Phases (sequential, one model at a time to manage VRAM):
 - Evaluation uses **simulated tools** in a controlled environment. Results may not generalize to production deployments.
 - Models are **Ollama instances** with q4_0 quantization. Results may differ from full-precision or API-served versions.
 - The RAG corpus is **in-memory** (not a cloud vector store). Infrastructure is held constant across models by design to isolate model reasoning as the independent variable.
+
+## Ethics and Responsible Disclosure
+
+This research evaluates defense effectiveness against a known class of attacks (persistent memory injection) using **simulated tools in a sandboxed environment**. No attacks were executed against production systems, real users, or live vendor APIs beyond standard model inference calls.
+
+**Scope of published materials:**
+- Attack payloads use fictional compliance frameworks (SEC Rule 17a-4 / FSCF-2024 framing) and fictional email addresses
+- All tools are simulated (no real emails sent, no real databases accessed)
+- The evaluation framework is designed for controlled research, not weaponization
+
+**Vendor disclosure:** Frontier model results were obtained through standard API access. The findings document behavioral properties observable through normal inference, not exploitation of undisclosed vulnerabilities. The attack vector (RAG corpus poisoning into persistent memory) is a known threat class documented in concurrent literature.
+
+**Intended use:** This repository is intended for security researchers evaluating defense mechanisms against persistent memory attacks. If you identify a vulnerability in a production system using these techniques, please follow responsible disclosure practices with the affected vendor.
+
+## Citation
+
+If you use this work in your research, please cite:
+
+```bibtex
+@article{leong2026defense,
+  title={Defense Effectiveness Across Architectural Layers: A Mechanistic Evaluation of Persistent Memory Attacks on Stateful LLM Agents},
+  author={Leong, Jun Wen},
+  journal={arXiv preprint arXiv:2605.08442},
+  year={2026}
+}
+```
+
+Companion forensic detection paper:
+
+```bibtex
+@article{leong2026trajectory,
+  title={Forensic Trajectory Signatures for Memory-Channel Attacks on LLM Agents},
+  author={Leong, Jun Wen},
+  journal={arXiv preprint arXiv:2606.30566},
+  year={2026}
+}
+```

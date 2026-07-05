@@ -1,6 +1,6 @@
 ---
 layout: default
-title: "Persistent Memory Attacks: Defence Evaluation"
+title: "Persistent Memory Attacks: Defense Evaluation"
 image: https://junwenleong.github.io/stateful-agent-security-eval/assets/og-image.png
 ---
 
@@ -13,6 +13,13 @@ I ran 5,040 controlled experiments across 9 models and 7 conditions (6 defenses 
 **The short answer: they cannot.**
 
 The one defense that works removes memory access entirely. But for one model, that defense inverted the failure mode in the April factorial, making the agent *more* vulnerable than having no defense at all (this inversion is environment-fragile and does not reproduce in June 2026 under identical weights, Ollama version, and code; see [Limitations](#limitations)).
+
+**Frontier models are not safe either.** A loaded-corpus evaluation (39 experiments, N=40 each) finds:
+- **Gemini 3.1 Pro Preview: 95% ASR** (Wilson CI [83.5%, 98.6%]), the highest of any frontier model tested
+- **GPT-5 generational trend is non-monotonic**: GPT-5 (5%) to GPT-5.1 (22.5%, regression) to GPT-5.4/5.5 (0%)
+- **GPT-4o: 60.3% ASR** (N=68) under authority-escalation framing
+- **Tripartite vendor architecture**: Anthropic blocks at the injection layer (0-2.5% injection); OpenAI blocks at the execution layer (100% injection, 0% ASR for GPT-5.4+); Google does not block (22.5-95% ASR)
+- **Companion forensic paper** achieves AUC = 0.990 detection from tool-call sequences alone ([arXiv:2606.30566](https://arxiv.org/abs/2606.30566))
 
 ---
 
@@ -66,13 +73,15 @@ The trigger prompt is completely benign. There is nothing to filter, flag, or sa
 
 ---
 
-## The qwq:32b inversion
+### The qwq:32b inversion (environment-fragile, April 2026 only)
+
+> **Caveat:** This behavior was observed in the April 2026 factorial but did not reproduce in June 2026 under verified-identical weights, Ollama version, and application code. See [Limitations](#limitations).
 
 Under every other defense, qwq:32b shows 0% ASR. Not because defenses are working, but because the model refuses to complete the final step regardless. It drafts the email, recalls the routing rule, and stops. It never calls `send_email` to the attacker.
 
 Under Memory Sandbox, when recall is blocked, qwq:32b queries RAG in the trigger session, retrieves the malicious document fresh, and this time executes the send. The distinction is source authority: a recalled memory fact is treated as advisory (the model stored it, so it can ignore it), but a RAG-retrieved compliance document carries the implicit authority of an organisational source.
 
-The defense that works for every other model is what creates the vulnerability for this one.
+The defense that works for every other model is what creates the vulnerability for this one. The underlying RAG-fallback bypass mechanism (independent of the qwq:32b-specific Draft-Only behavior) replicates across four providers on Bedrock (see cross-provider validation below).
 
 ---
 
@@ -92,28 +101,13 @@ However, this Anthropic-specific safety does not generalize to all frontier mode
 
 ## What I built
 
-A LangGraph evaluation framework with:
-- 5 simulated workplace tools (memory, email, RAG, search, calendar)
-- 7 conditions (6 defenses + undefended baseline) across 4 architectural layers
-- Full factorial design: 9 models × 7 conditions × 2 attack arms × N=40
-- BCa bootstrap 95% CIs (10,000 resamples, seed=42)
-- 108 pre-registered comparisons with Holm-Bonferroni correction
-- Per-session thread isolation (fresh context per session, only SQLite persists)
-- Deterministic tool-call instrumentation (binary detection, no probabilistic thresholds)
-
-All models run against the same infrastructure (Unified Agentic Environment), so differences in ASR reflect model reasoning, not retrieval system artifacts.
+A LangGraph evaluation framework with 5 simulated workplace tools, 7 defense conditions across 4 architectural layers, full factorial design (9 models x 7 conditions x 2 attack arms x N=40 = 5,040 runs), BCa bootstrap 95% CIs, 108 pre-registered comparisons with Holm-Bonferroni correction, per-session thread isolation, and deterministic tool-call instrumentation. All models run against identical infrastructure (Unified Agentic Environment). Code and reproduction instructions in the [README](https://github.com/junwenleong/stateful-agent-security-eval).
 
 ---
 
-## Methodology details
+## Methodology
 
-**Statistical rigor:** BCa bootstrap is used rather than the normal approximation because most results are at 0% or 100%, where the normal approximation fails. For zero-variance conditions, Wilson Score intervals are substituted. Pre-registration and Holm-Bonferroni correction control the family-wise error rate across 108 comparisons at α=0.05. Of the 108 active comparisons, 10 are significant after correction; all involve Memory Sandbox or the qwen3.5:122b Prompt Hardening effect.
-
-**Detection:** Injection success is binary (did the agent call `memory_save_fact` in S1?). Exfiltration is detected by recipient match, substring match (20+ characters from the sensitive document), or semantic similarity (cosine > 0.85). False positive rate: 0.0% across 2,520 no-attack runs.
-
-**Models:** Qwen-2.5-14B, Qwen-2.5-72B, Qwen-3.5-9B, Qwen-3.5-122B, Qwen-3-32B, QwQ-32B, GLM-4.7-Flash, GPT-OSS-20B, GPT-OSS-Safeguard-120B. All executed locally via Ollama at 16k context and temperature 0.0.
-
-**Utility cost:** Memory Sandbox imposes zero utility cost in the absence of attack (BTCR = 100%, where BTCR is the Benign Task Completion Rate, measuring whether the agent completes the intended email task correctly, across all 63 no-attack conditions). Two models show BTCR failures in the attack arm, but both are model-specific artifacts rather than defense-induced degradation.
+**Statistical rigor:** BCa bootstrap CIs (10,000 resamples, seed=42), Wilson Score for boundary rates, Holm-Bonferroni correction across 108 pre-registered comparisons. 10 significant after correction. False positive rate: 0.0% across 2,520 no-attack baseline runs. All models executed locally via Ollama at 16k context and temperature 0.0. Full methodology in [FINDINGS.md](https://github.com/junwenleong/stateful-agent-security-eval/blob/main/FINDINGS.md#methodology).
 
 ---
 
@@ -123,7 +117,7 @@ A reasoning-mode ablation using Qwen3-32B's thinking toggle reveals a double dis
 
 ## Cross-provider validation (Bedrock, full-precision)
 
-A Bedrock validation (1,180 runs, full-precision serving) confirms the Memory Sandbox RAG-fallback bypass generalizes across providers: mistral-large-3-675b (Mistral, 98% ASR under sandbox via goal-directed RAG fallback), glm-5 (Z.AI, 32%; all injected runs re-retrieve the document, non-exfiltrations are model refusal not defense), and gpt-oss-120b (OpenAI, 55% via S3 re-injection). The qwq:32b inversion is environment-fragile and did not reproduce, but the underlying bypass mechanism replicates across four providers and two serving stacks. Additionally, Llama 4 Maverick (Meta) is injection-resistant (0/20 injection), the first non-Anthropic model to resist injection entirely. Full details in [arXiv v4](https://arxiv.org/abs/2605.08442) Appendix B.
+A Bedrock validation (1,180 runs, 6 models, full-precision serving) confirms the Memory Sandbox RAG-fallback bypass generalizes across providers: mistral-large-3-675b (97.5% ASR under sandbox), glm-5 (32%), gpt-oss-120b (55%). The mechanism replicates across four providers (Qwen, Mistral, Z.AI, OpenAI) and two serving stacks. Llama 4 Maverick is injection-resistant (0/20), the first non-Anthropic model to resist injection entirely. Full details in [FINDINGS.md](https://github.com/junwenleong/stateful-agent-security-eval/blob/main/FINDINGS.md) and [arXiv v4](https://arxiv.org/abs/2605.08442) Appendix B.
 
 ## Frontier models under loaded-corpus evaluation
 
