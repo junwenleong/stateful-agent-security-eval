@@ -1,0 +1,170 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\citation{packer2023memgpt,shinn2023reflexion,zhong2024memorybank}
+\citation{greshake2023indirect}
+\citation{shao2025minja,yang2026zombie,srivastava2025memorygraft}
+\citation{zhan2024injecagent,debenedetti2024agentdojo,yang2024agentseceval}
+\citation{owasp2025llm}
+\@writefile{toc}{\contentsline {section}{\numberline {I}Introduction}{1}{section.1}\protected@file@percent }
+\newlabel{sec:intro}{{I}{1}{Introduction}{section.1}{}}
+\citation{das2026trojan}
+\@writefile{toc}{\contentsline {section}{\numberline {II}Background and Threat Model}{2}{section.2}\protected@file@percent }
+\newlabel{sec:threat}{{II}{2}{Background and Threat Model}{section.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-A}}Stateful LLM Agent Architecture}{2}{subsection.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-B}}Threat Model}{2}{subsection.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {\mbox  {II-B}0a}Attacker goal.}{2}{paragraph.2.2.0.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {\mbox  {II-B}0b}Attacker capabilities.}{2}{paragraph.2.2.0.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {\mbox  {II-B}0c}Attack mechanism: Delayed Trigger Attack (DTA).}{2}{paragraph.2.2.0.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {\mbox  {II-B}0d}Key properties.}{2}{paragraph.2.2.0.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {\mbox  {II-B}0e}Assumptions.}{2}{paragraph.2.2.0.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {\mbox  {II-B}0f}Scope.}{2}{paragraph.2.2.0.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-C}}Defense Taxonomy}{2}{subsection.2.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {III}Evaluation Framework}{3}{section.3}\protected@file@percent }
+\newlabel{sec:system}{{III}{3}{Evaluation Framework}{section.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-A}}Agent Implementation}{3}{subsection.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-B}}Detection Methodology}{3}{subsection.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-C}}Statistical Methodology}{3}{subsection.3.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-D}}Experimental Design}{3}{subsection.3.4}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {I}{\ignorespaces Behavioral archetypes from $N{=}10$ screening (18 open-source models) and $N{=}100$ frontier screening (2 models).}}{3}{table.1}\protected@file@percent }
+\newlabel{tab:archetypes}{{I}{3}{Behavioral archetypes from $N{=}10$ screening (18 open-source models) and $N{=}100$ frontier screening (2 models)}{table.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-E}}Model Selection}{3}{subsection.3.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-F}}Reproducibility Protocol}{3}{subsection.3.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {IV}Defense Evaluation Results}{3}{section.4}\protected@file@percent }
+\newlabel{sec:results}{{IV}{3}{Defense Evaluation Results}{section.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-A}}Attack Characterization}{3}{subsection.4.1}\protected@file@percent }
+\citation{inan2023llamaguard}
+\citation{zeng2024shieldgemma}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces The persistent-memory attack pathway and where each defense class operates. Input filters never observe the RAG-injected payload. Retrieval filters observe it but cannot distinguish compliance-framed injection from legitimate policy. Only defenses that mediate the memory-to-action step (Memory Sandbox, RATG) disrupt the attack.}}{4}{figure.1}\protected@file@percent }
+\newlabel{fig:pipeline}{{1}{4}{The persistent-memory attack pathway and where each defense class operates. Input filters never observe the RAG-injected payload. Retrieval filters observe it but cannot distinguish compliance-framed injection from legitimate policy. Only defenses that mediate the memory-to-action step (Memory Sandbox, RATG) disrupt the attack}{figure.1}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {II}{\ignorespaces Attack success rate by defense across 9 models ($N{=}40$/cell, 360 runs/defense). BTCR = 100\% across all 63 no-attack conditions.}}{4}{table.2}\protected@file@percent }
+\newlabel{tab:main-results}{{II}{4}{Attack success rate by defense across 9 models ($N{=}40$/cell, 360 runs/defense). BTCR = 100\% across all 63 no-attack conditions}{table.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-B}}Five Defenses That Fail}{4}{subsection.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {\mbox  {IV-B}0a}Input-layer defenses (Minimizer, Sanitizer).}{4}{paragraph.4.2.0.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {\mbox  {IV-B}0b}Retrieval-layer defenses (RAG Sanitizer, RAG LLM Judge).}{4}{paragraph.4.2.0.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {III}{\ignorespaces Why architectural placement determines the outcome. Only interventions that observe provenance or mediate the memory-to-action step disrupt the attack.}}{4}{table.3}\protected@file@percent }
+\newlabel{tab:layer-structural}{{III}{4}{Why architectural placement determines the outcome. Only interventions that observe provenance or mediate the memory-to-action step disrupt the attack}{table.3}{}}
+\@writefile{toc}{\contentsline {paragraph}{\numberline {\mbox  {IV-B}0c}Prompt Hardening (instruction-level).}{4}{paragraph.4.2.0.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {\mbox  {IV-B}0d}Structural interpretation.}{4}{paragraph.4.2.0.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-C}}Memory Sandbox: Effective but Brittle}{4}{subsection.4.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {\mbox  {IV-C}0a}The qwq:32b inversion.}{4}{paragraph.4.3.0.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {\mbox  {IV-C}0b}Cross-family bypass replication.}{5}{paragraph.4.3.0.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {\mbox  {IV-C}0c}Frontier Latent Carriers do not invert.}{5}{paragraph.4.3.0.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {\mbox  {IV-C}0d}Hallucination bypass.}{5}{paragraph.4.3.0.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {\mbox  {IV-C}0e}Utility cost.}{5}{paragraph.4.3.0.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {V}Reasoning-Defense Interaction}{5}{section.5}\protected@file@percent }
+\newlabel{sec:reasoning}{{V}{5}{Reasoning-Defense Interaction}{section.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-A}}Double Dissociation}{5}{subsection.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {\mbox  {V-A}0a}think=OFF $\times $ sandbox\_full/blind (100\% ASR, S1).}{5}{paragraph.5.1.0.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {IV}{\ignorespaces Double dissociation in Qwen-3-32B. All cells 40/40 or 0/40 (zero variance). S1/S4 indicate the session where exfiltration occurs.}}{5}{table.4}\protected@file@percent }
+\newlabel{tab:dissociation}{{IV}{5}{Double dissociation in Qwen-3-32B. All cells 40/40 or 0/40 (zero variance). S1/S4 indicate the session where exfiltration occurs}{table.4}{}}
+\@writefile{toc}{\contentsline {paragraph}{\numberline {\mbox  {V-A}0b}think=OFF $\times $ sandbox\_null\_recall (0\% ASR).}{5}{paragraph.5.1.0.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {\mbox  {V-A}0c}think=ON $\times $ sandbox\_full/blind (0\% ASR).}{5}{paragraph.5.1.0.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {\mbox  {V-A}0d}think=ON $\times $ sandbox\_null\_recall (100\% ASR, S4).}{5}{paragraph.5.1.0.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-B}}Trigger Contingency}{5}{subsection.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-C}}Content-Layer Resolution (RATG)}{5}{subsection.5.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-D}}Deployment Implication}{6}{subsection.5.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {\mbox  {V-D}0a}Limitations of the dissociation finding.}{6}{paragraph.5.4.0.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {VI}Frontier Vendor Security}{6}{section.6}\protected@file@percent }
+\newlabel{sec:frontier}{{VI}{6}{Frontier Vendor Security}{section.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-A}}Evaluation Methodology}{6}{subsection.6.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {V}{\ignorespaces Frontier model vulnerability under loaded-corpus evaluation ($N{=}40$ each, standard compliance framing). VE=Vulnerable Executor, LC=Latent Carrier, IR=Injection-Resistant.}}{6}{table.5}\protected@file@percent }
+\newlabel{tab:frontier}{{V}{6}{Frontier model vulnerability under loaded-corpus evaluation ($N{=}40$ each, standard compliance framing). VE=Vulnerable Executor, LC=Latent Carrier, IR=Injection-Resistant}{table.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-B}}Tripartite Vendor Divergence}{6}{subsection.6.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {\mbox  {VI-B}0a}Anthropic: Injection-layer blocking.}{6}{paragraph.6.2.0.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {\mbox  {VI-B}0b}OpenAI: Execution-layer blocking.}{6}{paragraph.6.2.0.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {\mbox  {VI-B}0c}Google: Neither layer blocks.}{7}{paragraph.6.2.0.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-C}}Non-Monotonic Generational Hardening}{7}{subsection.6.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-D}}Injection-Execution Dissociation}{7}{subsection.6.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-E}}Compositional Supply-Chain Risk}{7}{subsection.6.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VI-F}}System-Prompt Mitigation}{7}{subsection.6.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {VII}Discussion}{7}{section.7}\protected@file@percent }
+\newlabel{sec:discussion}{{VII}{7}{Discussion}{section.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-A}}Architectural Implications}{7}{subsection.7.1}\protected@file@percent }
+\citation{inan2023llamaguard}
+\citation{zeng2024shieldgemma}
+\citation{anon2026forensic}
+\citation{smsr2026}
+\citation{ouyang2026memlineage}
+\citation{das2026trojan}
+\citation{smsr2026}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-B}}Defense Non-Transferability}{8}{subsection.7.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-C}}Supply-Chain Security}{8}{subsection.7.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-D}}The Evaluation Environment as a Behavioral Variable}{8}{subsection.7.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-E}}Recommendations}{8}{subsection.7.5}\protected@file@percent }
+\citation{das2026trojan}
+\citation{shao2025minja}
+\citation{yang2026zombie}
+\citation{srivastava2025memorygraft}
+\citation{das2026trojan}
+\citation{pulipaka2026hidden}
+\citation{wang2026oep}
+\citation{xie2026crosssession}
+\citation{mpbench2026}
+\citation{smsr2026}
+\citation{ouyang2026memlineage}
+\citation{liu2024formalizing}
+\citation{zhan2024injecagent}
+\citation{debenedetti2024agentdojo}
+\citation{yang2024agentseceval}
+\citation{zou2025poisonedrag}
+\citation{anthropic2025modelspec}
+\citation{hubinger2024sleeper}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-F}}Reproducibility Validity}{9}{subsection.7.6}\protected@file@percent }
+\newlabel{sec:repro-validity}{{\mbox  {VII-F}}{9}{Reproducibility Validity}{subsection.7.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-G}}Limitations}{9}{subsection.7.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {VIII}Related Work}{9}{section.8}\protected@file@percent }
+\newlabel{sec:related}{{VIII}{9}{Related Work}{section.8}{}}
+\@writefile{toc}{\contentsline {paragraph}{\numberline {\mbox  {VIII-}0a}Persistent memory attacks.}{9}{paragraph.8.0.0.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {\mbox  {VIII-}0b}Defense approaches and impossibility results.}{9}{paragraph.8.0.0.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {\mbox  {VIII-}0c}Agentic security benchmarks.}{9}{paragraph.8.0.0.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {\mbox  {VIII-}0d}Frontier model safety.}{9}{paragraph.8.0.0.4}\protected@file@percent }
+\bibstyle{IEEEtranS}
+\bibdata{references}
+\bibcite{anon2026forensic}{1}
+\bibcite{anthropic2025modelspec}{2}
+\bibcite{das2026trojan}{3}
+\bibcite{debenedetti2024agentdojo}{4}
+\bibcite{greshake2023indirect}{5}
+\bibcite{hubinger2024sleeper}{6}
+\bibcite{inan2023llamaguard}{7}
+\bibcite{liu2024formalizing}{8}
+\bibcite{mpbench2026}{9}
+\bibcite{ouyang2026memlineage}{10}
+\bibcite{owasp2025llm}{11}
+\bibcite{packer2023memgpt}{12}
+\bibcite{pulipaka2026hidden}{13}
+\@writefile{toc}{\contentsline {section}{\numberline {IX}Conclusion}{10}{section.9}\protected@file@percent }
+\newlabel{sec:conclusion}{{IX}{10}{Conclusion}{section.9}{}}
+\@writefile{toc}{\contentsline {paragraph}{\numberline {\mbox  {IX-}0a}Responsible disclosure.}{10}{paragraph.9.0.0.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {\mbox  {IX-}0b}Dual-use consideration.}{10}{paragraph.9.0.0.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {\mbox  {IX-}0c}Benign evaluation methodology.}{10}{paragraph.9.0.0.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{References}{10}{section*.2}\protected@file@percent }
+\bibcite{shao2025minja}{14}
+\bibcite{shinn2023reflexion}{15}
+\bibcite{smsr2026}{16}
+\bibcite{srivastava2025memorygraft}{17}
+\bibcite{wang2026oep}{18}
+\bibcite{xie2026crosssession}{19}
+\bibcite{yang2024agentseceval}{20}
+\bibcite{yang2026zombie}{21}
+\bibcite{zeng2024shieldgemma}{22}
+\bibcite{zhan2024injecagent}{23}
+\bibcite{zhong2024memorybank}{24}
+\bibcite{zou2025poisonedrag}{25}
+\@writefile{toc}{\contentsline {section}{Appendix}{11}{section*.3}\protected@file@percent }
+\newlabel{app:artifact}{{A}{11}{\appendixname }{section*.3}{}}
+\newlabel{app:repro}{{A}{11}{\appendixname }{section*.3}{}}
+\@writefile{toc}{\contentsline {paragraph}{\numberline {0a}Daemon-state degradation.}{11}{paragraph.Appendix.A.0.0.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {0b}Port-ownership verification.}{11}{paragraph.Appendix.A.0.0.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {0c}Temporal stability.}{11}{paragraph.Appendix.A.0.0.3}\protected@file@percent }
+\newlabel{app:stats}{{0c}{11}{Temporal stability}{paragraph.Appendix.A.0.0.3}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {VI}{\ignorespaces Significant comparisons after Holm-Bonferroni correction ($\alpha = 0.05$, 108 active comparisons). All involve Memory Sandbox or the Qwen-3.5-122B Prompt Hardening effect.}}{11}{table.6}\protected@file@percent }
+\newlabel{tab:significant}{{VI}{11}{Significant comparisons after Holm-Bonferroni correction ($\alpha = 0.05$, 108 active comparisons). All involve Memory Sandbox or the Qwen-3.5-122B Prompt Hardening effect}{table.6}{}}
+\newlabel{app:frontier-ext}{{0c}{11}{Temporal stability}{table.6}{}}
+\@writefile{toc}{\contentsline {paragraph}{\numberline {0d}Anthropic $N{=}100$ characterization.}{11}{paragraph.Appendix.A.0.0.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {0e}Bedrock cross-family validation.}{12}{paragraph.Appendix.A.0.0.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {0f}Tool-existence ablation.}{12}{paragraph.Appendix.A.0.0.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\numberline {0g}50-session persistence.}{12}{paragraph.Appendix.A.0.0.7}\protected@file@percent }
+\gdef \@abspage@last{12}

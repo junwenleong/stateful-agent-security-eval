@@ -1,3 +1,54 @@
+
+---
+
+## NDSS 2027 Fall Cycle Submission
+
+> **Target deadline**: Aug 19, 2026. Notification: Nov 4, 2026. Seoul, March 22-26 2027.
+> **Track**: Security and privacy of systems based on ML/AI/LLMs
+> **Paper**: `paper/ndss/paper.tex` (IEEEtran two-column, 12 pages body)
+
+### Status (updated 2026-07-11)
+
+- [x] Paper skeleton and section structure
+- [x] Full paper written (544 lines, 12 pages, compiling clean)
+- [x] Abstract compressed to ~200 words
+- [x] Threat Model section (new for NDSS)
+- [x] All key numbers from claims_ledger_ndss.md present
+- [x] verify_canonical.py: ALL CHECKS PASSED
+- [x] Double-blind: author anonymized, no GitHub URLs, no self-identifying references
+- [x] PersistBench artifact built (22 files, smoke test offline <1s)
+- [x] Claims ledger locked (384 lines, 10 claims, 9-paper prior-art matrix)
+- [ ] Artifact packaging (PersistBench + raw data + reproduce scripts)
+- [ ] Internal adversarial red-team review
+- [ ] Final anonymization audit (PDF metadata, git history, package names)
+- [ ] Submit
+
+### Build
+
+```bash
+cd paper/ndss/
+pdflatex -interaction=nonstopmode paper.tex
+bibtex paper
+pdflatex -interaction=nonstopmode paper.tex
+pdflatex -interaction=nonstopmode paper.tex
+```
+
+### Artifact (targeting all 3 badges: Available, Functional, Reproduced)
+
+- PersistBench v1.0.0 at `persistbench/`
+- Smoke test: `persistbench run --profile smoke` (offline, <1s)
+- Core test: `persistbench run --profile core` (representative subset, API keys needed)
+- Full: `persistbench run --profile full` (all 5,040 runs)
+- Reproduce paper figures: `make -C persistbench figures`
+
+### Key numbers (must match paper)
+
+- 5,040 pre-registered factorial runs, zero errors
+- 88.9% overall ASR on failing defenses (320/360)
+- Memory Sandbox: 0% ASR on 8/9 models
+- qwq:32b reasoning bypass: inverts Memory Sandbox to 100%
+- Tripartite vendor: Anthropic 0% injection, OpenAI generational hardening, Google 95% ASR
+- 9 open-source + 21 frontier models, 3 vendors
 # arXiv Submission Checklist
 
 > **Last updated**: 2026-07-08. Source: `paper/paper.tex`
