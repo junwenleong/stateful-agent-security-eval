@@ -26,6 +26,8 @@ __pycache__/
 # Claude Code
 .claude/
 CLAUDE.md
+.opencode/
+opencode.json
 # Environment variables
 .env
 # macOS
@@ -58,4 +60,6 @@ results/ca8_proper.log
 
 # AI IDE files
 CLAUDE.md
+.opencode/
+opencode.json
 AGENTS.md

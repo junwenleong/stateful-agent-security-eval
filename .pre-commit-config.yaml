@@ -1,0 +1,15 @@
+# Minimal pre-commit config for Agentic Attack Evaluation (research repo — deliberately lightweight)
+# Install: pre-commit install
+# Run manually: pre-commit run --all-files
+#
+# Only ai-doctor runs on commit. No lint/typecheck — see AGENTS.md
+# ("no dev server, build step, or lint script for this research repo").
+
+repos:
+  - repo: local
+    hooks:
+      - id: ai-doctor
+        name: ai-doctor (AI IDE config consistency)
+        entry: ai-doctor
+        language: system
+        pass_filenames: false
