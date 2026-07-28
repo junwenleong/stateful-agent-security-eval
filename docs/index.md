@@ -18,7 +18,7 @@ The one defense that works removes memory access entirely. But for one model, th
 - **Gemini 3.1 Pro Preview: 95% ASR** (Wilson CI [83.5%, 98.6%]), the highest of any frontier model tested
 - **GPT-5 generational trend is non-monotonic**: GPT-5 (5%) to GPT-5.1 (22.5%, regression) to GPT-5.4/5.5 (0%)
 - **GPT-4o: 60.3% ASR** (N=68) under authority-escalation framing
-- **Tripartite vendor architecture**: Anthropic blocks at the injection layer (0-2.5% injection); OpenAI blocks at the execution layer (100% injection, 0% ASR for GPT-5.4+); Google does not block (22.5-95% ASR)
+- **Tripartite vendor architecture**: Anthropic is execution-immune across the whole Claude family (0% ASR) but injection-heterogeneous (2.5% for Opus/Sonnet-4.6, up to 95% for Haiku 4.5, which stores a security alert rather than the payload); OpenAI blocks at the execution layer (100% injection, 0% ASR for GPT-5.4+); Google does not block (22.5-95% ASR)
 - **Companion forensic paper** achieves AUC = 0.990 detection from tool-call sequences alone ([arXiv:2606.30566](https://arxiv.org/abs/2606.30566))
 
 ---

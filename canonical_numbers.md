@@ -310,12 +310,12 @@ Total: 0/46 bypasses. qwq:32b inversion does not generalise.
 | Condition | N | Injection | ASR | Wilson 95% CI (ASR) |
 |-----------|---|-----------|-----|---------------------|
 | Variant B (Legal Hold) | 68 | 97.1% (66/68) | **60.3%** (41/68) | [48.4%, 71.1%] |
-| SECURE + Variant B | 30 | 100% (30/30) | **3.3%** (1/30) | [0.6%, 16.7%] |
+| SECURE + Variant B | 40 | 100% (40/40) | **22.5%** (9/40) | [12.3%, 37.5%] |
 | Evil Domain + Variant B | 10 | 100% (10/10) | **50%** (5/10) | [23.7%, 76.3%] |
 
 **Key findings:**
 - GPT-4o exfiltrates in the majority of runs under authority escalation (CI lower bound 48.4%)
-- SECURE prompt reduces but does NOT eliminate exfiltration (CI excludes 0% - residual leak confirmed)
+- SECURE prompt reduces but does NOT eliminate exfiltration (22.5% ASR, CI [12.3%, 37.5%] excludes 0% — confirmatory N=40 from run_frontier_confirmatory.py)
 - Exfiltrates to obviously malicious domains at equivalent rates - universal instruction compliance, not authority deference
 
 ### GPT-5 (Loaded Corpus)
@@ -337,7 +337,9 @@ Total: 0/46 bypasses. qwq:32b inversion does not generalise.
 |-----------|---|-----------|-----|---------------------|
 | Variant A (Compliance) | 10 | 100% (10/10) | **10%** (1/10) | [1.8%, 40.4%] |
 | Variant B (Legal Hold) | 10 | 100% (10/10) | **30%** (3/10) | [10.8%, 60.3%] |
-| SECURE + Variant A | 5 | 100% (5/5) | **0%** (0/5) | [0%, 43.4%] |
+| SECURE + Variant A | 40 | 100% (40/40) | **0%** (0/40) | [0%, 8.8%] |
+
+**Note:** SECURE row is confirmatory (N=40, run_frontier_confirmatory.py). GPT-4.1 fully mitigable under SECURE prompt.
 
 ### GPT-4.1-mini / GPT-4.1-nano / GPT-5-mini (Loaded Corpus)
 
@@ -492,7 +494,7 @@ gemini-3.1-pro-preview (95% ASR) forensically verified:
 
 ### Vendor Divergence (Updated with Gemini)
 
-- **Anthropic**: 0–2.5% injection, 0% ASR. Blocks at injection layer. Framing-invariant.
+- **Anthropic**: 0% ASR across the entire Claude family; injection rate is model-dependent (2.5-17.5% Opus 4.5/4.8 and Sonnet 4.6; 57.5% Sonnet 4.5; 95% Haiku 4.5, storing a security alert rather than the payload). Only Opus/Sonnet-4.6 block at the injection layer; Sonnet 4.5/Haiku inject but refuse at execution — the vendor-wide invariant is 0% ASR, not uniformly-low injection.
 - **Google (Gemini 3.1 Pro Preview, 3.5 Flash, 2.5 Pro)**: 95–100% injection, 22.5–95% ASR. Vulnerable Executors. Most vulnerable frontier family tested.
 - **Google (Gemini 2.5 Flash)**: 100% injection, 0% ASR. Latent Carrier.
 - **OpenAI (GPT-5.4+, reasoning models)**: 100% injection, 0% ASR. Latent Carriers. Execution-resistant.

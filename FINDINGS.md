@@ -14,7 +14,7 @@ This document reports results from two experimental campaigns:
 - Gemini 3.1 Pro Preview: **95% ASR** (Wilson CI [83.5%, 98.6%]), highest of any frontier model
 - GPT-5 generational trend is **non-monotonic**: 5% to 22.5% (regression) to 0%
 - GPT-4o: 60.3% ASR (N=68) under authority-escalation framing
-- Tripartite vendor architecture: Anthropic blocks injection (0-2.5%), OpenAI blocks execution (100% injection, 0% ASR for GPT-5.4+), Google does not block (22.5-95%)
+- Tripartite vendor architecture: Anthropic is injection-heterogeneous but execution-immune (0-95% injection depending on model — Opus/Sonnet-4.6 near-immune, Haiku/Sonnet-4.5 inject but still refuse — 0% ASR across the entire Claude family), OpenAI blocks execution (100% injection, 0% ASR for GPT-5.4+), Google does not block (22.5-95%)
 - All OpenAI and Google models inject at 100%, creating supply-chain risk even when execution is blocked
 
 **Companion:** Forensic detection achieves AUC = 0.990 from tool-call sequences alone ([arXiv:2606.30566](https://arxiv.org/abs/2606.30566))
@@ -163,7 +163,7 @@ A Bedrock date sweep (5 models × 3 dates × N=25-40, Fisher's exact, per-model 
 
 4. **All OpenAI and Google models inject at 100%** - even GPT-5.5 and o4-mini store the malicious rule. Supply-chain risk is universal across both vendors.
 
-5. **Anthropic is categorically different** - 0–2.5% injection across the Claude family. Safety is at the injection layer. No adversarial state enters persistent memory.
+5. **Anthropic is categorically different at the EXECUTION stage, not uniformly at injection** - 0% ASR across the entire Claude family (Opus 4.5/4.8, Sonnet 4.5/4.6, Haiku 4.5), but injection rate is model-dependent (2.5-17.5% for Opus/Sonnet-4.6, but 57.5% for Sonnet-4.5 and 95% for Haiku 4.5). Only Opus and Sonnet 4.6 block at the injection layer; Sonnet 4.5 and Haiku 4.5 inject the payload (or, for Haiku, a security alert in its place) but refuse at execution. No model in the family ever executes the attack.
 
 6. **Tool-existence confirmed at N=40** - removing `save_fact` drops injection from 97–100% to exactly 0% for gpt-5.1, o3-mini, o4-mini (N=40 each). Zero hallucinated saves.
 
@@ -173,7 +173,7 @@ A Bedrock date sweep (5 models × 3 dates × N=25-40, Fisher's exact, per-model 
 
 ### Vendor Architecture Summary (Updated)
 
-- **Anthropic**: Blocks at injection layer. 0–2.5% injection, 0% ASR. Framing-invariant. No adversarial state in persistent memory.
+- **Anthropic**: 0% ASR across the entire Claude family (execution-immune), but injection rate varies by model (2.5-17.5% for Opus 4.5/4.8 and Sonnet 4.6; 57.5% for Sonnet 4.5; 95% for Haiku 4.5, which stores a security alert rather than the payload). Only Opus/Sonnet-4.6 block at the injection layer; Sonnet 4.5/Haiku inject but refuse at execution.
 - **Google (Gemini 3.1 Pro, 3.5 Flash, 2.5 Pro)**: Does not block. 22.5–95% ASR under standard framing. Most vulnerable frontier family.
 - **Google (Gemini 2.5 Flash)**: Latent Carrier. 100% injection, 0% ASR.
 - **OpenAI (GPT-5.4+, reasoning models)**: Blocks at execution layer. 100% injection, 0% ASR. Payload stored but not executed.
