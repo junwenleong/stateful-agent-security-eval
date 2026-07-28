@@ -1,0 +1,117 @@
+% NDSS Related Work Additions — Security-Tailored
+% These are the NEW citations to add during NDSS conversion.
+% Organized by where they fit in the existing structure.
+
+%==============================================================================
+% 1. FORMAL IMPOSSIBILITY AND SEPARATION RESULTS
+%==============================================================================
+% Add as new paragraph in Related Work:
+
+\paragraph{Formal defenses and impossibility results.}
+Pant et al.~\citep{pant2026inseparability} prove that in-pipeline prompt injection defense is formally impossible without architectural separation---the model cannot distinguish data from instructions within a single token stream. This impossibility result motivates our focus on tool-layer and content-layer defenses that operate \emph{outside} the model's token stream rather than asking the model to self-police. ASIDE~\citep{aside2026} proposes architectural instruction-data separation as a response to this impossibility; our Memory Sandbox is functionally equivalent at the tool layer (removing the pathway rather than asking the model to distinguish payload from instruction). Chen et al.~\citep{chen2026formalizing} provide a formal framework for LLM agent security that decomposes trust boundaries similarly to our layer taxonomy; their threat model is compatible with our evaluation design. PACT~\citep{pact2026} implements argument-level provenance tracking for tool calls, addressing a different point in the attack chain (tool \emph{arguments} rather than memory \emph{values}). VectorPin~\citep{vectorpin2026} attaches Ed25519 provenance to embedding vectors, complementing MemLineage's per-entry approach.
+
+%==============================================================================
+% 2. ATTACK VARIANTS AND POISONING BENCHMARKS
+%==============================================================================
+% Extend the existing "Persistent memory attacks" paragraph:
+
+% ADD to existing paragraph:
+eTAMP~\citep{etamp2026} demonstrates environment-injected cross-session memory poisoning, confirming that the attack surface extends beyond user-facing RAG to include ambient environmental signals. AgentLAB~\citep{agentlab2026} evaluates long-horizon attacks including memory poisoning in multi-tool settings. Sleeper Memory Poisoning~\citep{sleeper2026} introduces a time-delayed trigger variant where the stored payload activates only after a specific number of sessions---a more sophisticated variant of our fixed-delay DTA. TMA-NM~\citep{tma2026} shows that agent summaries can launder provenance, removing markers that retrieval-layer defenses use to identify injected content.
+
+%==============================================================================
+% 3. DEFENSE FAILURE MECHANISMS
+%==============================================================================
+% Add as extension to "Defense approaches" paragraph:
+
+% ADD:
+Li et al.~\citep{li2026surface} demonstrate that trained safety classifiers (fine-tuned for injection detection) learn surface heuristics rather than intent---a finding consistent with our RAG Sanitizer and RAG LLM Judge failures, where compliance-framed injection is textually indistinguishable from legitimate policy. Ye et al.~\citep{ye2026role} show that models infer source authority from style and content rather than provenance metadata, explaining why our compliance-framed payload achieves high injection rates: the document's formatting signals organisational authority. Carlini et al.~\citep{carlini2026adaptive} establish that adaptive attacks defeat static defenses across modalities; our fixed-framing attack achieving 95\% ASR on Gemini without adaptation suggests that frontier models are vulnerable even below the adaptive-attack ceiling.
+
+%==============================================================================
+% BibTeX entries to add to references.bib:
+%==============================================================================
+
+% @article{pant2026inseparability,
+%   title={On the Inseparability of Instructions and Data in Language Model Inputs},
+%   author={Pant, Ayush and others},
+%   journal={arXiv:2606.27567},
+%   year={2026}
+% }
+%
+% @article{aside2026,
+%   title={{ASIDE}: Architectural Separation of Instructions and Data for LLM Security},
+%   author={Anonymous},
+%   journal={arXiv:2503.10566},
+%   year={2025}
+% }
+%
+% @article{chen2026formalizing,
+%   title={Formalizing {LLM} Agent Security},
+%   author={Chen, X. and others},
+%   journal={arXiv:2603.19469},
+%   year={2026}
+% }
+%
+% @article{pact2026,
+%   title={{PACT}: Argument-Level Provenance for Tool Calls},
+%   author={Anonymous},
+%   journal={arXiv:2605.11039},
+%   year={2026}
+% }
+%
+% @article{vectorpin2026,
+%   title={{VectorPin}: Ed25519 Provenance for Embedding Vectors},
+%   author={Anonymous},
+%   journal={arXiv:2605.13764},
+%   year={2026}
+% }
+%
+% @article{etamp2026,
+%   title={Environment-Injected Cross-Session Memory Poisoning},
+%   author={Anonymous},
+%   journal={arXiv:2604.02623},
+%   year={2026}
+% }
+%
+% @article{agentlab2026,
+%   title={{AgentLAB}: Long-Horizon Attacks Including Memory Poisoning},
+%   author={Anonymous},
+%   journal={arXiv:2602.16901},
+%   year={2026}
+% }
+%
+% @article{sleeper2026,
+%   title={Sleeper Memory Poisoning},
+%   author={Anonymous},
+%   journal={arXiv:2605.15338},
+%   year={2026}
+% }
+%
+% @article{tma2026,
+%   title={Laundering Through Agent Summaries},
+%   author={Anonymous},
+%   journal={arXiv:2606.24322},
+%   year={2026}
+% }
+%
+% @article{li2026surface,
+%   title={Surface Heuristics in Trained Safety Classifiers},
+%   author={Li, X. and others},
+%   journal={Proceedings of ACL 2026},
+%   note={arXiv:2601.07185},
+%   year={2026}
+% }
+%
+% @article{ye2026role,
+%   title={Role Confusion: Models Infer Source from Style and Content},
+%   author={Ye, S. and others},
+%   journal={Proceedings of ICML 2026},
+%   note={arXiv:2603.12277},
+%   year={2026}
+% }
+%
+% @article{carlini2026adaptive,
+%   title={Adaptive Attacks Break Defenses},
+%   author={Carlini, Nicholas and others},
+%   journal={arXiv:2503.00061},
+%   year={2025}
+% }

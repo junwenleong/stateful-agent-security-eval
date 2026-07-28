@@ -1,0 +1,75 @@
+% NDSS 2027 — Paired Submission Abstracts
+% Paper 1: Defense Evaluation (P1)
+% Paper 2: Monitoring & Canary (P2)
+% Both target: "Security and privacy of systems based on ML/AI/LLMs"
+
+%==============================================================================
+% PAPER 1: Persistent Memory Attacks on Stateful LLM Agents
+%==============================================================================
+
+% NDSS Abstract (248 words)
+\begin{abstract}
+LLM agents with persistent memory create a new attack surface: adversarial instructions embedded in retrieved documents survive across sessions and execute when triggered by benign user input. This \emph{delayed trigger attack} evades existing defenses because the payload traverses the memory-to-tool pathway—a transition that production safety classifiers deployed at input or output boundaries cannot observe.
+
+We conduct a 5,040-run factorial evaluation (9~models $\times$ 7~defense conditions $\times$ $N{=}40$) and find that defense effectiveness is governed by \emph{architectural layer alignment}: five of six defenses fail structurally because they operate at layers that never observe the malicious payload. Only Memory Sandbox—capability removal at the tool layer—achieves 0\% attack success across eight of nine models. However, a within-model reasoning ablation (Qwen-3-32B's inference-time think toggle) reveals a double dissociation: the sandbox variant protecting reasoning models breaks non-reasoning models, and vice versa, so no single schema-layer intervention is safe across model classes. The bypass mechanism replicates cross-family on Amazon Bedrock (Mistral, Z.AI, OpenAI).
+
+A confirmatory frontier evaluation (21~models, 3~providers, $N{=}40$) establishes vendor-level behavioral divergence: Anthropic models block at injection, OpenAI blocks at execution but stores payloads universally, and a pre-release Google endpoint exfiltrates in 95\% of runs. We introduce two reusable evaluation-validity criteria—Retrieval-Fidelity and Defense-Attribution—that detected four methodological artifacts in our own evaluation. SleeperBench, our open-source evaluation framework, enables reproduction of all results.
+\end{abstract}
+
+
+%==============================================================================
+% PAPER 2: Online Monitoring and Adversarial Robustness of Safety Classifiers
+%==============================================================================
+
+% NDSS Abstract (237 words)
+\begin{abstract}
+Deployed safety classifiers fail silently under distributional shift: accuracy degrades with no error signal until ground-truth labels arrive. We present an online monitoring framework that detects shift via a sliding-window KS statistic and provides a formal security characterization against adaptive adversaries.
+
+In a pre-registered factorial evaluation (4~classifiers $\times$ 5~shift conditions $\times$ 20~seeds; 800~cells), the monitor achieves 86.6\% valid detection at mean latency 39.5~steps. A calibration-free scan martingale eliminates per-model threshold tuning while maintaining false-alarm rate $\leq 1\%$ across all classifiers. Attempting post-detection coverage recovery via weighted conformal prediction exposes a fundamental failure: density-ratio estimation collapses in generative classifier embeddings due to perfect linear separability in 3584–4096 dimensions.
+
+We extend the framework to adversarial evasion detection, characterizing score-disagreement monitoring across four threat tiers. We falsify three commonly assumed properties: that architectural diversity drives detection ($\eta^2 = 0.011$), that the signal is generic OOD detection (false; GCG-specific, $p < 10^{-12}$), and that an adaptive attacker can suppress it. We derive the exact security boundary—a confidence-gated equilibrium at gap $= 1/(2\lambda)$—and validate it empirically within 95\% CI. A monitor-aware attacker using divergence minimization stalls at this bound, providing a formal guarantee unavailable from threshold-based detection.
+
+A deployment evaluation across 35 frontier LLM-as-canary models identifies 10 Pareto-dominant configurations achieving $\geq 71\%$ detection at $< 1.5\%$ FPR ($N{=}1000$ validation).
+\end{abstract}
+
+
+%==============================================================================
+% PAIRED SUBMISSION FRAMING
+%==============================================================================
+% The two papers together address the full agent security pipeline:
+%
+% Paper 1 (Injection Surface): Where do persistent memory attacks succeed/fail?
+%   → Answer: At the memory-to-tool pathway; defenses fail by architectural layer misalignment
+%
+% Paper 2 (Monitoring Surface): Can we detect attacks that bypass defenses?
+%   → Answer: Yes, via score-disagreement monitoring with provable security boundary
+%
+% Cross-reference language for P1:
+%   "Our companion paper [Anonymous, 2027] addresses the complementary question:
+%    when defenses at the memory layer fail, can runtime monitoring detect the
+%    resulting evasion? That work derives formal security bounds for canary-based
+%    detection applicable to the attack class we evaluate here."
+%
+% Cross-reference language for P2:
+%   "Our companion paper [Anonymous, 2027] systematically evaluates memory-layer
+%    defenses against the persistent injection attacks whose evasion detection we
+%    characterize here, establishing that five of six defense classes fail structurally—
+%    motivating runtime monitoring as a necessary complementary layer."
+
+%==============================================================================
+% TITLE OPTIONS (for NDSS framing)
+%==============================================================================
+% Paper 1:
+%   Original: "Persistent Memory Attacks on Stateful LLM Agents:
+%              A Cross-Vendor Defense Evaluation"
+%   NDSS alt: "Why Memory-Layer Defenses Fail: Architectural Misalignment in
+%              Stateful LLM Agent Security"
+%   NDSS alt2: "Delayed Trigger Attacks Against LLM Agent Persistent Memory:
+%               A Factorial Defense Evaluation Across Providers"
+%
+% Paper 2:
+%   Original: "Online Monitoring of Safety Classifier Distributional Shift"
+%   NDSS alt: "Detecting Evasion in Deployed Safety Classifiers: A Formal
+%              Security Characterization of Score-Disagreement Monitoring"
+%   NDSS alt2: "Confidence-Gated Equilibrium: Provable Detection Limits for
+%               Monitor-Aware Adversaries Against Safety Classifiers"

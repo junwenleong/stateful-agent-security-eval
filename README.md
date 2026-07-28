@@ -3,7 +3,7 @@
 **Paper:** [arXiv:2605.08442](https://arxiv.org/abs/2605.08442)
 **Venue submission:** NDSS 2027 Fall Cycle (Aug 19 deadline)
 **Companion:** [Forensic Trajectory Signatures - arXiv:2606.30566](https://arxiv.org/abs/2606.30566)
-**Benchmark:** PersistBench v1.0.0 (see `persistbench/`)
+**Benchmark:** SleeperBench v1.0.0 (see `sleeperbench/`)
 **Live site:** [junwenleong.github.io/stateful-agent-security-eval](https://junwenleong.github.io/stateful-agent-security-eval/)
 
 Reproducible evaluation framework for persistent memory attacks on LLM agents. Tests whether standard defenses can stop attacks that persist across session boundaries through tool-mediated state (SQLite-backed memory).

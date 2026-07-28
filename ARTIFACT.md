@@ -1,11 +1,11 @@
-# Artifact Appendix: PersistBench
+# Artifact Appendix: SleeperBench
 
 ## Abstract
 
 This artifact accompanies the paper "Persistent Memory Attacks on Stateful LLM Agents:
 A Cross-Vendor Defense Evaluation." It provides:
 
-1. **PersistBench v1.0.0** — an open-source benchmark for evaluating persistent memory
+1. **SleeperBench v1.0.0** — an open-source benchmark for evaluating persistent memory
    attacks against stateful LLM agents, with 5 defense layers and ground-truth
    tool-call verification.
 
@@ -29,14 +29,14 @@ We claim all three NDSS artifact badges:
 
 ### Available
 
-- Complete source code for PersistBench v1.0.0 (22 Python source files, MIT license)
+- Complete source code for SleeperBench v1.0.0 (22 Python source files, MIT license)
 - All raw experimental data (JSONL format, ~50MB uncompressed)
 - All analysis scripts
 - Hosted at [anonymous repository URL]
 
 ### Functional
 
-- PersistBench installs via `pip install -e ".[all]"` on Python 3.11-3.13
+- SleeperBench installs via `pip install -e ".[all]"` on Python 3.11-3.13
 - Smoke test runs offline in <2 minutes with no API keys
 - Core benchmark reproduces representative subset in ~30 minutes per model
 - All dependencies pinned in `pyproject.toml`
@@ -79,8 +79,8 @@ make smoke
 
 ```bash
 # Clone the repository
-git clone [ANONYMOUS_URL] persistbench
-cd persistbench
+git clone [ANONYMOUS_URL] sleeperbench
+cd sleeperbench
 
 # Create virtual environment
 python3 -m venv .venv && source .venv/bin/activate
@@ -128,11 +128,11 @@ Runs all 5,040 trials across all available models.
 ## Artifact Structure
 
 ```
-persistbench/
+sleeperbench/
 ├── README.md              # Quick-start documentation
 ├── pyproject.toml         # Package metadata and dependencies
 ├── Makefile               # Build/run shortcuts
-├── persistbench/          # Source code
+├── sleeperbench/          # Source code
 │   ├── adapters/          # Model backends (OpenAI, Anthropic, Ollama, Recorded)
 │   ├── attacks/           # Attack implementations
 │   ├── defenses/          # 5 defense layers

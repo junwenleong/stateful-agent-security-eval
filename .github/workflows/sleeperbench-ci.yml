@@ -1,0 +1,29 @@
+name: SleeperBench CI
+
+on:
+  push:
+    branches: [main]
+    paths: ['sleeperbench/**']
+  pull_request:
+    paths: ['sleeperbench/**']
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.11', '3.12', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install
+        working-directory: sleeperbench
+        run: pip install -e ".[dev]"
+      - name: Smoke test (no API keys needed)
+        working-directory: sleeperbench
+        run: python -m sleeperbench.cli run --profile smoke
+      - name: Unit tests
+        working-directory: sleeperbench
+        run: python -m pytest tests/ -v --tb=short

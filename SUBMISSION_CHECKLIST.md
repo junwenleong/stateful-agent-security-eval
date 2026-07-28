@@ -16,9 +16,9 @@
 - [x] All key numbers from claims_ledger_ndss.md present
 - [x] verify_canonical.py: ALL CHECKS PASSED
 - [x] Double-blind: author anonymized, no GitHub URLs, no self-identifying references
-- [x] PersistBench artifact built (22 files, smoke test offline <1s)
+- [x] SleeperBench artifact built (22 files, smoke test offline <1s)
 - [x] Claims ledger locked (384 lines, 10 claims, 9-paper prior-art matrix)
-- [ ] Artifact packaging (PersistBench + raw data + reproduce scripts)
+- [ ] Artifact packaging (SleeperBench + raw data + reproduce scripts)
 - [ ] Internal adversarial red-team review
 - [ ] Final anonymization audit (PDF metadata, git history, package names)
 - [ ] Submit
@@ -35,11 +35,11 @@ pdflatex -interaction=nonstopmode paper.tex
 
 ### Artifact (targeting all 3 badges: Available, Functional, Reproduced)
 
-- PersistBench v1.0.0 at `persistbench/`
-- Smoke test: `persistbench run --profile smoke` (offline, <1s)
-- Core test: `persistbench run --profile core` (representative subset, API keys needed)
-- Full: `persistbench run --profile full` (all 5,040 runs)
-- Reproduce paper figures: `make -C persistbench figures`
+- SleeperBench v1.0.0 at `sleeperbench/`
+- Smoke test: `sleeperbench run --profile smoke` (offline, <1s)
+- Core test: `sleeperbench run --profile core` (representative subset, API keys needed)
+- Full: `sleeperbench run --profile full` (all 5,040 runs)
+- Reproduce paper figures: `make -C sleeperbench figures`
 
 ### Key numbers (must match paper)
 

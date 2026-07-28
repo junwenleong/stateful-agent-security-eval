@@ -39,7 +39,7 @@
 \maketitle
 
 \begin{abstract}
-LLM-powered agents that persist state across sessions via retrieval-augmented generation (RAG) are vulnerable to persistent memory attacks: adversarial content injected into the memory store can override system-level policies in subsequent sessions. We present a systematic evaluation of six architectural defense layers against this threat across nine open-source models and 21 frontier API endpoints from three vendors, comprising 5,040 protocol-committed factorial runs with zero experimental errors. Our evaluation reveals a structural vulnerability: five of six defense categories fail because they operate at architectural layers that cannot observe or arbitrate RAG-injected content at the point of behavioral integration. Only memory sandboxing---which isolates retrieved content from the instruction stream---achieves 0\% attack success rate on 8/9 models, though a reasoning-mode bypass inverts this defense on one model. We document a tripartite vendor divergence: one vendor blocks at injection (0\% memory storage), another blocks at execution (100\% injection but 0\% attack success for recent models), and a third blocks at neither (22--95\% attack success). We release PersistBench, an evaluation framework for persistent memory security, to enable reproducible cross-vendor assessment.
+LLM-powered agents that persist state across sessions via retrieval-augmented generation (RAG) are vulnerable to persistent memory attacks: adversarial content injected into the memory store can override system-level policies in subsequent sessions. We present a systematic evaluation of six architectural defense layers against this threat across nine open-source models and 21 frontier API endpoints from three vendors, comprising 5,040 protocol-committed factorial runs with zero experimental errors. Our evaluation reveals a structural vulnerability: five of six defense categories fail because they operate at architectural layers that cannot observe or arbitrate RAG-injected content at the point of behavioral integration. Only memory sandboxing---which isolates retrieved content from the instruction stream---achieves 0\% attack success rate on 8/9 models, though a reasoning-mode bypass inverts this defense on one model. We document a tripartite vendor divergence: one vendor blocks at injection (0\% memory storage), another blocks at execution (100\% injection but 0\% attack success for recent models), and a third blocks at neither (22--95\% attack success). We release SleeperBench, an evaluation framework for persistent memory security, to enable reproducible cross-vendor assessment.
 \end{abstract}
 
 % ============================================================
@@ -62,7 +62,7 @@ This paper makes five contributions:
 \item \textbf{Memory Sandbox} as the only effective defense in our evaluation, with characterization of a reasoning-model bypass that replicates cross-family, producing a double dissociation that constrains safe deployment.
 \item A \textbf{cross-vendor generational security architecture taxonomy}: tripartite vendor divergence with non-monotonic hardening, documenting where each vendor's safety architecture blocks and where it fails.
 \item An \textbf{injection-execution dissociation} as a measurable supply-chain risk: all OpenAI models store malicious rules at $\geq$97.5\% regardless of execution resistance, creating compositional risk in shared-memory deployments.
-\item \textbf{PersistBench}: a reproducible evaluation framework including the delayed-trigger attack, six defense implementations, statistical methodology, and reproducibility protocols for local inference evaluation.
+\item \textbf{SleeperBench}: a reproducible evaluation framework including the delayed-trigger attack, six defense implementations, statistical methodology, and reproducibility protocols for local inference evaluation.
 \end{enumerate}
 
 
@@ -456,7 +456,7 @@ Persistence changes the security problem for LLM agents. When agents write obser
 
 Frontier safety is neither categorical nor vendor-uniform: Gemini 3.1 Pro Preview exfiltrates at 95\% under standard compliance framing, GPT-5.1 represents a generational regression (22.5\% vs.\ 5\% for its predecessor), and nearly all OpenAI models store malicious rules at 100\% injection rate regardless of execution resistance---creating persistent supply-chain risk in shared-memory deployments. Among vendors evaluated, only Anthropic consistently blocked storage at the injection layer, leaving no adversarial state in memory.
 
-These findings establish that persistent memory security is an architectural design problem, not a prompt-classification problem. Defenses should treat memory recall as a privileged operation, verify model-specific defense interactions before deployment, and implement write-time provenance to prevent the compositional supply-chain risk that execution-layer-only approaches leave unaddressed. We release PersistBench---the evaluation harness, defense implementations, execution logs, and reproducibility protocols---to enable the community to extend this evaluation as models and defenses evolve. We additionally contribute two reusable evaluation-validity criteria: the Retrieval-Fidelity Criterion (RAG-security evaluations require retrievable adversarial content) and the Defense Attribution Validity Criterion (defense effects require reproducible baselines and pre-activation arm equivalence). Both emerged from errors we caught in our own evaluation and prevented us from reporting artifactual results as genuine effects.
+These findings establish that persistent memory security is an architectural design problem, not a prompt-classification problem. Defenses should treat memory recall as a privileged operation, verify model-specific defense interactions before deployment, and implement write-time provenance to prevent the compositional supply-chain risk that execution-layer-only approaches leave unaddressed. We release SleeperBench---the evaluation harness, defense implementations, execution logs, and reproducibility protocols---to enable the community to extend this evaluation as models and defenses evolve. We additionally contribute two reusable evaluation-validity criteria: the Retrieval-Fidelity Criterion (RAG-security evaluations require retrievable adversarial content) and the Defense Attribution Validity Criterion (defense effects require reproducible baselines and pre-activation arm equivalence). Both emerged from errors we caught in our own evaluation and prevented us from reporting artifactual results as genuine effects.
 
 % ============================================================
 \section*{Ethics Considerations}
@@ -477,10 +477,10 @@ This work evaluates security vulnerabilities in LLM agents. No human subjects we
 % APPENDICES (do not count toward 13-page limit)
 \appendix
 
-\section{PersistBench: Evaluation Artifact}
+\section{SleeperBench: Evaluation Artifact}
 \label{app:artifact}
 
-PersistBench comprises the following components, released to enable reproducible evaluation of persistent memory security:
+SleeperBench comprises the following components, released to enable reproducible evaluation of persistent memory security:
 
 \begin{itemize}
 \item \textbf{Attack harness:} LangGraph agent with SQLite persistence, ChromaDB RAG, configurable tool schemas, and the delayed-trigger attack (4-session DTA with strict session isolation).

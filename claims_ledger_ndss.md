@@ -63,7 +63,10 @@
 
 ### Claim 4: Frontier Vendor Divergence (Tripartite Architecture)
 
-**Statement**: Three vendors implement structurally different safety approaches. Anthropic blocks at injection (0-2.5% storage), OpenAI blocks at execution (100% injection, 0% ASR for GPT-5.4+), Google blocks at neither (22.5-95% ASR).
+**Statement**: Three vendors implement structurally different safety approaches. Anthropic is
+execution-immune across the entire Claude family (0% ASR) but injection-heterogeneous
+(2.5-95% storage depending on model — see below); OpenAI blocks at execution (100% injection,
+0% ASR for GPT-5.4+); Google blocks at neither (22.5-95% ASR).
 
 **Evidence**:
 - Confirmatory evaluation: 21 models, N=40 each, loaded corpus, standard compliance framing
@@ -72,6 +75,12 @@
 - Gemini 2.5 Pro: 22.5% ASR [12.3%, 37.5%]
 - Sonnet 4.6: 2.5% injection, 0% ASR [0%, 8.8%]
 - Opus 4.5: 2.5% injection, 0% ASR
+- Opus 4.8: 17.5% injection, 0% ASR
+- Sonnet 4.5: **57.5% injection**, 0% ASR [0%, 8.8%] — Partial Detector, stores the rule in 23/40 runs but never executes
+- Haiku 4.5: **95.0% injection**, 0% ASR [0%, 8.8%] — Active Detector with Defensive Storage;
+  stores a security alert in place of the payload and refuses execution by referencing its own
+  alert (NOT low-injection — the vendor-wide invariant across all 5 Claude models tested is 0%
+  ASR, not uniformly-low injection)
 - GPT-5.4/5.5: 100% injection, 0% ASR [0%, 8.8%]
 - All OpenAI models inject at >= 97.5%
 - Sonnet 4.6 framing-invariant: 0% ASR across varA, varB, varC (N=40 each)

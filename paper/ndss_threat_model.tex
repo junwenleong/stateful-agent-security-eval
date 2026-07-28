@@ -1,0 +1,96 @@
+%==============================================================================
+% NDSS Threat Model Section (to be inserted as Section 2 in NDSS version)
+% This formalizes what is currently implicit in the Methodology section
+%==============================================================================
+
+\section{Background and Threat Model}
+\label{sec:threat-model}
+
+\subsection{System Model}
+
+We consider an LLM agent deployed in an enterprise environment with the following components:
+
+\begin{itemize}
+    \item \textbf{Language Model} $\mathcal{M}$: A pre-trained instruction-following LLM that processes user queries and generates tool calls.
+    \item \textbf{Persistent Memory Store} $\mathcal{S}$: A key-value database (e.g., SQLite, Redis) that persists across conversation sessions. The agent reads from and writes to $\mathcal{S}$ via tool calls (\tool{memory\_save\_fact}, \tool{memory\_recall\_fact}, \tool{memory\_list\_all\_facts}).
+    \item \textbf{RAG Retrieval Pipeline} $\mathcal{R}$: A document retrieval system that returns relevant documents from an organisational corpus in response to agent queries.
+    \item \textbf{Tool Set} $\mathcal{T}$: External capabilities including email, calendar, search, and file access. Tool invocations are the primary attack surface: exfiltration occurs via \tool{send\_email}.
+    \item \textbf{Defense Layers} $\mathcal{D} = \{D_{\text{input}}, D_{\text{retrieval}}, D_{\text{instruction}}, D_{\text{tool}}\}$: Optional security mechanisms deployed at four architectural layers.
+\end{itemize}
+
+Sessions are isolated: each session receives a fresh conversation context. The \emph{only} state that persists across sessions is $\mathcal{S}$, making it the sole cross-session attack vector.
+
+\subsection{Attacker Model}
+
+\paragraph{Capabilities.} The attacker can:
+\begin{enumerate}
+    \item \textbf{Inject documents into $\mathcal{R}$}: Plant a malicious document in any corpus the agent retrieves from (shared drives, wikis, email attachments, external data sources). This is the standard indirect prompt injection assumption~\citep{greshake2023indirect}.
+    \item \textbf{Craft compliance-framed payloads}: The injected document is indistinguishable from legitimate organisational policy at the surface-text level. It cites plausible regulatory frameworks and uses corporate formatting.
+    \item \textbf{Wait for trigger conditions}: The attacker does not control when the payload fires. Execution depends on a legitimate user issuing a benign query that invokes the stored rule.
+\end{enumerate}
+
+\paragraph{Limitations.} The attacker \emph{cannot}:
+\begin{enumerate}
+    \item Modify the agent's system prompt, tool definitions, or model weights.
+    \item Directly access the memory store $\mathcal{S}$ (writes occur only through the agent's tool calls).
+    \item Observe intermediate reasoning traces or tool-call logs.
+    \item Control the timing or content of the trigger session.
+\end{enumerate}
+
+\paragraph{Attack goal.} Data exfiltration: cause the agent to send sensitive information (email content, stored facts, document snippets) to an attacker-controlled external address via \tool{send\_email}.
+
+\subsection{The Delayed Trigger Attack (DTA)}
+
+The DTA exploits the temporal separation between injection and execution:
+
+\begin{enumerate}
+    \item \textbf{Injection (Session 1)}: Agent retrieves malicious document from $\mathcal{R}$, stores routing rule in $\mathcal{S}$ via \tool{memory\_save\_fact}.
+    \item \textbf{Dormancy (Sessions 2--3)}: Benign interactions. The payload persists in $\mathcal{S}$ but is not activated.
+    \item \textbf{Trigger (Session 4)}: A benign user query causes the agent to recall the stored rule via \tool{memory\_recall\_fact} and execute it, routing email to the attacker.
+\end{enumerate}
+
+This attack is fundamentally different from single-turn injection: (a) the conversation context containing the original malicious document has been discarded by trigger time; (b) the payload's authority derives from its \emph{persistence}---the agent treats a recalled fact as a policy it previously endorsed; (c) no safety classifier deployed at the input or output boundary observes the memory-to-tool transition unless explicitly instrumented for it.
+
+\subsection{Defense Taxonomy}
+
+We evaluate defenses at four architectural layers, ordered by proximity to the attack's authority boundary:
+
+\begin{center}
+\small
+\begin{tabular}{lll}
+\toprule
+\textbf{Layer} & \textbf{Defense} & \textbf{Observation Point} \\
+\midrule
+Input & Minimizer, Sanitizer & User query only \\
+Retrieval & RAG Sanitizer, RAG LLM Judge & Retrieved documents \\
+Instruction & Prompt Hardening & System prompt \\
+Tool & Memory Sandbox & Tool schema \\
+Content & RATG (proof-of-concept) & Recalled values \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{Structural prediction.} A defense can block an attack \emph{only if it observes the payload at some point in the attack chain}. Input-layer defenses never observe the payload (it enters via $\mathcal{R}$, not user input). Retrieval-layer defenses observe the raw document but must distinguish malicious compliance from legitimate compliance---a classification problem at which our tested classifiers fail. Tool-layer defenses remove the capability rather than detecting the content, avoiding the classification problem entirely. This architectural alignment predicts which defenses will succeed before any experiment is run.
+
+\subsection{Security Properties}
+
+We evaluate three security properties:
+
+\begin{enumerate}
+    \item \textbf{Injection Resistance}: Does the defense prevent the malicious rule from being stored in $\mathcal{S}$? Measured as 1 $-$ injection rate.
+    \item \textbf{Execution Resistance}: Given successful injection, does the defense prevent exfiltration in the trigger session? Measured as 1 $-$ ASR (conditioned on injection).
+    \item \textbf{Benign Preservation (BTCR)}: Does the defense preserve the agent's ability to complete legitimate tasks? A defense that achieves 0\% ASR by disabling all tool use is not acceptable.
+\end{enumerate}
+
+An ideal defense achieves injection resistance = 1.0, execution resistance = 1.0, BTCR = 1.0. We show no tested defense achieves all three simultaneously across model classes.
+
+\subsection{Evaluation Validity Criteria}
+
+NDSS papers evaluating security mechanisms must address whether the evaluation itself is sound. We introduce two criteria (formalized in Sections~\ref{sec:empty-corpus} and~\ref{sec:ratg}):
+
+\begin{enumerate}
+    \item \textbf{Retrieval-Fidelity Criterion}: A RAG-security evaluation is valid only if the malicious document is retrievable through the same channel the agent uses in production. Violating this (e.g., testing with an empty corpus) produces spurious safety claims.
+    \item \textbf{Defense Attribution Criterion}: A defense effect is attributable only when (a) the vulnerable baseline reproduces across environments, and (b) the defended and undefended arms are identical in all sessions preceding the defense's activation point.
+\end{enumerate}
+
+These criteria generalize beyond our specific attack: any evaluation of memory-layer security must satisfy retrieval fidelity, and any defense evaluation in non-deterministic inference environments must satisfy defense attribution.
