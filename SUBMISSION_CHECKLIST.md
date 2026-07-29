@@ -43,11 +43,13 @@ pdflatex -interaction=nonstopmode paper.tex
 
 ### Key numbers (must match paper)
 
+- **Injection-execution dissociation**: OpenAI stores at >=97.5% but execution varies independently (0-22.5%)
 - 5,040 pre-registered factorial runs, zero errors
-- 88.9% overall ASR on failing defenses (320/360)
-- Memory Sandbox: 0% ASR on 8/9 models
-- qwq:32b reasoning bypass: inverts Memory Sandbox to 100%
-- Tripartite vendor: Anthropic 0% injection, OpenAI generational hardening, Google 95% ASR
+- 5/6 defenses fail (target injection, not execution): 88.9% ASR
+- Memory Sandbox (authority-boundary enforcement): 0% ASR on 8/9 models
+- Non-monotonic generational regression: GPT-5.1 regresses to 22.5% from GPT-5's 5.0%
+- Vendor divergence: Anthropic blocks injection, OpenAI blocks execution, Google blocks neither (95% ASR)
+- Double dissociation in Qwen-3-32B reasoning toggle
 - 9 open-source + 21 frontier models, 3 vendors
 # arXiv Submission Checklist
 
@@ -102,7 +104,7 @@ pdflatex -interaction=nonstopmode paper.tex
 - ✅ Bedrock Sonnet/Haiku N=100: 400 runs (completed April)
 
 ## Metadata
-- **Title**: Defense Effectiveness Across Architectural Layers: A Mechanistic Evaluation of Persistent Memory Attacks on Stateful LLM Agents
+- **Title**: Injection--Execution Dissociation: A Mechanistic Evaluation of Persistent Memory Attacks and Defenses in Stateful LLM Agents
 - **Primary**: cs.CR (Cryptography and Security)
 - **Secondary**: cs.LG, cs.AI
 - **Comments**: 5,040 factorial runs + 210 frontier screening runs + 46 sandbox probe runs; 9 open-source models, 21 frontier models, 3 providers; pre-registered comparisons; BCa bootstrap CIs.

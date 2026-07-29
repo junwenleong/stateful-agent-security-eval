@@ -6,9 +6,9 @@
 **Benchmark:** SleeperBench v1.0.0 (see `sleeperbench/`)
 **Live site:** [junwenleong.github.io/stateful-agent-security-eval](https://junwenleong.github.io/stateful-agent-security-eval/)
 
-Reproducible evaluation framework for persistent memory attacks on LLM agents. Tests whether standard defenses can stop attacks that persist across session boundaries through tool-mediated state (SQLite-backed memory).
+Reveals a fundamental **injection-execution dissociation** in LLM agents with persistent memory: models reliably store malicious instructions (>=97.5% across all OpenAI models) while execution varies independently from 0% to 95% as a function of model generation, vendor, and defense configuration. Storage and execution are mechanistically separable safety properties, requiring distinct defenses at distinct architectural layers.
 
-**Core result:** Five of six defenses fail to reduce attack success below the undefended baseline (88.6% ASR). Only Memory Sandbox (tool-level isolation) works, dropping ASR to 0% for 8/9 models. Frontier evaluation finds Gemini 3.1 Pro Preview at 95% ASR and a non-monotonic GPT-5 generational trend. Full results in [FINDINGS.md](FINDINGS.md), technical writeup at the [live site](https://junwenleong.github.io/stateful-agent-security-eval/).
+**Core result:** Frontier safety is neither categorical nor monotonically preserved across generations. Vendor divergence maps to the dissociation: Anthropic blocks at injection, OpenAI blocks at execution (non-monotonically---GPT-5.1 regresses to 22.5% before recovery), Google blocks at neither (Gemini 3.1 Pro Preview: 95% ASR). Only Memory Sandbox (tool-layer isolation enforcing authority boundaries) reduces ASR to 0% for 8/9 models. Full results in [FINDINGS.md](FINDINGS.md), technical writeup at the [live site](https://junwenleong.github.io/stateful-agent-security-eval/).
 
 ---
 
@@ -18,9 +18,9 @@ A research-grade evaluation framework for testing session-persistent security at
 
 ## Three Pillars
 
-1. **Session-persistent attack evaluation** - LangGraph agent with SQLite persistence, multi-session delayed trigger attacks
-2. **Mechanistic defense analysis** - Tool-call instrumentation distinguishing injection-stage vs. execution-stage blocking
-3. **Statistical rigor** - Bootstrap BCa CIs, power analysis, Holm-Bonferroni corrections, Wilson Score meta-analysis
+1. **Injection-execution dissociation** - Empirically separating storage vulnerability from execution vulnerability across models and generations
+2. **Layer-structural defense analysis** - Tool-call instrumentation showing defense effectiveness is governed by where a defense sits relative to the attack's authority boundary
+3. **Statistical rigor** - 5,040-run factorial with bootstrap BCa CIs, power analysis, Holm-Bonferroni corrections, Wilson Score meta-analysis
 
 ## Quick Start (Local)
 

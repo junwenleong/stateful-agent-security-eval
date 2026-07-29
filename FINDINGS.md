@@ -2,20 +2,23 @@
 
 ## Findings at a Glance
 
+**Central finding: Injection-execution dissociation.** Models reliably store malicious instructions (storage rates >=97.5% across all OpenAI models) while execution varies independently---from 0% to 95%---as a function of model generation, vendor, and defense configuration. Storage and execution are mechanistically separable safety properties.
+
 This document reports results from two experimental campaigns:
 
 **Campaign 1: Open-source defense factorial** (5,040 runs, 9 models, N=40 per cell)
-- 5 of 6 defenses are indistinguishable from no defense (88.6-88.9% ASR)
-- Memory Sandbox is the only effective defense (11.1% aggregate, 0% for 8/9 models)
+- Injection-execution dissociation: storage is near-universal, execution is the variable
+- 5 of 6 defenses fail (88.6-88.9% ASR) because they target injection, not execution
+- Memory Sandbox (tool-layer isolation) is the only effective defense (0% ASR for 8/9 models)
 - Double dissociation: no single sandbox variant is safe across reasoning and non-reasoning models
 - Content-layer defense (RATG) reduces ASR 100% to 0% on mechanical models
 
 **Campaign 2: Frontier confirmatory** (39 experiments, N=40 each, loaded corpus)
+- Vendor divergence maps to the dissociation: Anthropic blocks injection, OpenAI blocks execution, Google blocks neither
 - Gemini 3.1 Pro Preview: **95% ASR** (Wilson CI [83.5%, 98.6%]), highest of any frontier model
 - GPT-5 generational trend is **non-monotonic**: 5% to 22.5% (regression) to 0%
 - GPT-4o: 60.3% ASR (N=68) under authority-escalation framing
-- Tripartite vendor architecture: Anthropic is injection-heterogeneous but execution-immune (0-95% injection depending on model — Opus/Sonnet-4.6 near-immune, Haiku/Sonnet-4.5 inject but still refuse — 0% ASR across the entire Claude family), OpenAI blocks execution (100% injection, 0% ASR for GPT-5.4+), Google does not block (22.5-95%)
-- All OpenAI and Google models inject at 100%, creating supply-chain risk even when execution is blocked
+- All OpenAI and Google models inject at >=97.5%, creating supply-chain risk even when execution is blocked
 
 **Companion:** Forensic detection achieves AUC = 0.990 from tool-call sequences alone ([arXiv:2606.30566](https://arxiv.org/abs/2606.30566))
 
@@ -23,7 +26,9 @@ This document reports results from two experimental campaigns:
 
 ## Summary
 
-Five of six defenses fail completely against delayed trigger attacks that persist through LLM agent memory. Across 5,040 controlled experiment runs (9 models, 6 defenses + undefended baseline, N=40 per condition), input filtering, retrieval filtering, and instruction hardening all leave attack success rates at or near the undefended baseline of 88.6%. Prompt Hardening is statistically distinguishable at 77.8% but provides no protection for 7 of 9 models. The only defense that works is Memory Sandbox, which structurally removes the memory recall pathway and drops attack success to 0% for 8 of 9 models. The exception is qwq:32b, which bypasses the sandbox entirely through an alternative RAG retrieval pathway, achieving 100% attack success under the strongest defense. Zero false positives across all 2,520 baseline runs: no model ever spontaneously exfiltrated data when no attack was present.
+The central empirical finding is an **injection-execution dissociation**: models reliably store malicious instructions while independently varying in whether they execute them. This reframes persistent memory security---preventing storage and preventing execution are separate safety problems requiring distinct defenses.
+
+Across 5,040 controlled experiment runs (9 models, 6 defenses + undefended baseline, N=40 per condition), five of six defenses fail because they target the wrong stage. Input filtering, retrieval filtering, and instruction hardening all leave attack success rates at or near the undefended baseline of 88.6%. These defenses attempt to prevent injection (storage), but storage is near-universal regardless of defense. The only defense that works is Memory Sandbox, which structurally isolates recalled memory from executable context and drops attack success to 0% for 8 of 9 models. The exception is qwq:32b, which bypasses the sandbox via an alternative RAG retrieval pathway, achieving 100% attack success under the strongest defense. Zero false positives across all 2,520 baseline runs: no model ever spontaneously exfiltrated data when no attack was present.
 
 ## The Attack
 
