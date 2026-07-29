@@ -1,4 +1,4 @@
-# Minimal pre-commit config for Agentic Attack Evaluation (research repo — deliberately lightweight)
+# Minimal pre-commit config for agentic (research repo — deliberately lightweight)
 # Install: pre-commit install
 # Run manually: pre-commit run --all-files
 #
