@@ -1,6 +1,6 @@
 ---
 layout: default
-title: "Persistent Memory Attacks: Defense Evaluation"
+title: "Injection-Execution Dissociation in Stateful LLM Agents"
 image: https://junwenleong.github.io/stateful-agent-security-eval/assets/og-image.png
 ---
 
@@ -19,7 +19,7 @@ The one defense that works removes memory access entirely. But for one model, th
 - **GPT-5 generational trend is non-monotonic**: GPT-5 (5%) to GPT-5.1 (22.5%, regression) to GPT-5.4/5.5 (0%)
 - **GPT-4o: 60.3% ASR** (N=68) under authority-escalation framing
 - **Tripartite vendor architecture**: Anthropic is execution-immune across the whole Claude family (0% ASR) but injection-heterogeneous (2.5% for Opus/Sonnet-4.6, up to 95% for Haiku 4.5, which stores a security alert rather than the payload); OpenAI blocks at the execution layer (100% injection, 0% ASR for GPT-5.4+); Google does not block (22.5-95% ASR)
-- **Companion forensic paper** achieves AUC = 0.990 detection from tool-call sequences alone ([arXiv:2606.30566](https://arxiv.org/abs/2606.30566))
+- **Companion forensic paper** separates successful from unsuccessful attacks within poisoned sessions (AUC = 0.990, tool-call sequences only), and shows the same signature fires on benign memory-grounded activity, so it does not work as a standalone detector ([arXiv:2606.30566](https://arxiv.org/abs/2606.30566))
 
 ---
 
@@ -117,7 +117,7 @@ A reasoning-mode ablation using Qwen3-32B's thinking toggle reveals a double dis
 
 ## Cross-provider validation (Bedrock, full-precision)
 
-A Bedrock validation (1,180 runs, 6 models, full-precision serving) confirms the Memory Sandbox RAG-fallback bypass generalizes across providers: mistral-large-3-675b (97.5% ASR under sandbox), glm-5 (32%), gpt-oss-120b (55%). The mechanism replicates across four providers (Qwen, Mistral, Z.AI, OpenAI) and two serving stacks. Llama 4 Maverick is injection-resistant (0/20), the first non-Anthropic model to resist injection entirely. Full details in [FINDINGS.md](https://github.com/junwenleong/stateful-agent-security-eval/blob/main/FINDINGS.md) and [arXiv v4](https://arxiv.org/abs/2605.08442) Appendix B.
+A Bedrock validation (1,180 runs, 6 models, full-precision serving) confirms the Memory Sandbox RAG-fallback bypass generalizes across providers: mistral-large-3-675b (97.5% ASR under sandbox), glm-5 (32%), gpt-oss-120b (55%). The mechanism replicates across four providers (Qwen, Mistral, Z.AI, OpenAI) and two serving stacks. Llama 4 Maverick is injection-resistant (0/20), the first non-Anthropic model to resist injection entirely. Full details in [FINDINGS.md](https://github.com/junwenleong/stateful-agent-security-eval/blob/main/FINDINGS.md) and [arXiv v5](https://arxiv.org/abs/2605.08442) Appendix B.
 
 ## Frontier models under loaded-corpus evaluation
 
@@ -145,19 +145,19 @@ GPT-4o remains the most vulnerable OpenAI model: 20% ASR (varA) / 60.3% (varB, N
 ### Tripartite vendor architecture
 
 - **Anthropic**: Blocks at injection layer. Sonnet 4.6: 2.5% injection, 0% ASR across 3 payload framings. Framing-invariant semantic intent detection.
-- **Google (pre-2025 Gemini)**: Does not block. 22.5–95% ASR under standard framing. No escalation needed.
+- **Google (pre-2025 Gemini)**: Does not block. 22.5-95% ASR under standard framing. No escalation needed.
 - **Google (Gemini 2.5 Flash)**: Latent Carrier. 100% injection, 0% ASR.
 - **OpenAI (GPT-5.4+, reasoning models)**: Blocks at execution layer. 100% injection, 0% ASR. Payload stored, never executed. Supply-chain risk persists.
-- **OpenAI (GPT-4o through GPT-5.1)**: Partially blocks. 5–22.5% ASR (standard framing); GPT-4o reaches 60.3% under authority escalation.
+- **OpenAI (GPT-4o through GPT-5.1)**: Partially blocks. 5-22.5% ASR (standard framing); GPT-4o reaches 60.3% under authority escalation.
 
 ### Additional confirmatory findings
 
 - **All OpenAI and Google models inject at 100%** - even GPT-5.5 stores the malicious rule. Only Anthropic prevents storage.
-- **Tool-existence ablation confirmed at N=40**: removing `save_fact` drops injection from 97–100% to exactly 0% (gpt-5.1, o3-mini, o4-mini). Zero hallucinated saves.
+- **Tool-existence ablation confirmed at N=40**: removing `save_fact` drops injection from 97-100% to exactly 0% (gpt-5.1, o3-mini, o4-mini). Zero hallucinated saves.
 - **Memory Sandbox does not invert on frontier reasoning models.** Sandbox probe on 4 Latent Carriers (46 runs): 0 bypasses, 0 RAG-fallback attempts.
 - **Supply chain is compositionally proven.** Frontier Latent Carriers store at 100%; open-source Vulnerable Executors execute at 100%. Composes across model boundaries.
 - **System-prompt mitigation is generation-dependent**: GPT-5/4.1 fully mitigable (0% with SECURE prompt). GPT-4o partially mitigable (60% → 22.5%, residual leak - CI excludes 0%).
-- **Concurrent work**: Trojan Hippo (arXiv:2605.01970) reports 85–100% ASR under adaptive attacks on Gemini 3.1 Pro and GPT-5-mini. Our fixed-framing results are lower-bound estimates.
+- **Concurrent work**: Trojan Hippo (arXiv:2605.01970) reports 85-100% ASR under adaptive attacks on Gemini 3.1 Pro and GPT-5-mini. Our fixed-framing results are lower-bound estimates.
 
 ### A content-layer defense that works, and a reasoning-model evaluation caveat
 
@@ -183,7 +183,9 @@ The qwq:32b Draft-Only archetype and its associated Memory Sandbox inversion (0%
 
 ## Companion: Forensic Detection (June 2026)
 
-A companion paper demonstrates that memory-channel attacks leave a detectable forensic signature in tool-call logs. A classifier trained on the factorial data achieves AUC = 0.990 using only operation names and ordering (no content inspection). The key invariant: `recall_before_send` is mechanistically forced by the attack - no evasion possible without abandoning the memory channel. Details: [arXiv:2606.30566](https://arxiv.org/abs/2606.30566).
+A companion paper examines whether memory-channel attacks leave a forensic signature in tool-call logs. A classifier trained on the factorial data reaches AUC = 0.990 using only operation names and ordering, but the negative class there is poisoned-but-defended sessions, so this measures separation of successful from unsuccessful attacks, not detection of attacks against benign traffic.
+
+Two limits are load-bearing. First, benign memory-grounded sends produce the same trajectory: false positives run 24.7 to 57.6 percent across 13 models (N = 4,160), with positive predictive value at or below 3.85 percent at 1 percent prevalence. The transition is an attack precondition, not a maliciousness predicate. Second, the invariant is conditional on the payload being reachable only through an agent-visible retrieval call. Implicit, framework-side delivery evades it entirely while attacks remain viable, so evasion is possible without abandoning the memory channel. Details: [arXiv:2606.30566](https://arxiv.org/abs/2606.30566).
 
 ## Links
 
