@@ -1,14 +1,14 @@
 # Stateful Agent Security Evaluation
 
 **Paper:** [arXiv:2605.08442](https://arxiv.org/abs/2605.08442)
-**Venue submission:** NDSS 2027 Fall Cycle (Aug 19 deadline)
-**Companion:** [Forensic Trajectory Signatures - arXiv:2606.30566](https://arxiv.org/abs/2606.30566)
-**Benchmark:** SleeperBench v1.0.0 (see `sleeperbench/`)
+**Publication:** arXiv only (conference submission not pursuing -- cannot travel to present)
+**Companion:** [Retrieval Observability Bounds Provenance Detection for Agent Memory Poisoning - arXiv:2606.30566](https://arxiv.org/abs/2606.30566)
+**Benchmark:** [SleeperBench v1.0.0](https://github.com/junwenleong/sleeperbench) (DOI: [10.5281/zenodo.21859790](https://doi.org/10.5281/zenodo.21859790))
 **Live site:** [junwenleong.github.io/stateful-agent-security-eval](https://junwenleong.github.io/stateful-agent-security-eval/)
 
 Reveals a fundamental **injection-execution dissociation** in LLM agents with persistent memory: models reliably store malicious instructions (>=97.5% across all OpenAI models) while execution varies independently from 0% to 95% as a function of model generation, vendor, and defense configuration. Storage and execution are mechanistically separable safety properties, requiring distinct defenses at distinct architectural layers.
 
-**Core result:** Frontier safety is neither categorical nor monotonically preserved across generations. Vendor divergence maps to the dissociation: Anthropic blocks at injection, OpenAI blocks at execution (non-monotonically---GPT-5.1 regresses to 22.5% before recovery), Google blocks at neither (Gemini 3.1 Pro Preview: 95% ASR). Only Memory Sandbox (tool-layer isolation enforcing authority boundaries) reduces ASR to 0% for 8/9 models. Full results in [FINDINGS.md](FINDINGS.md), technical writeup at the [live site](https://junwenleong.github.io/stateful-agent-security-eval/).
+**Core result:** Frontier safety is neither categorical nor monotonically preserved across generations. Vendor divergence maps to the dissociation: Anthropic blocks at injection, OpenAI blocks at execution (non-monotonically -- GPT-5.1 regresses to 22.5% before recovery), Google blocks at neither (Gemini 3.1 Pro Preview: 95% ASR). Only Memory Sandbox (tool-layer isolation enforcing authority boundaries) reduces ASR to 0% for 8/9 models. Full results in [FINDINGS.md](FINDINGS.md), technical writeup at the [live site](https://junwenleong.github.io/stateful-agent-security-eval/).
 
 ---
 
@@ -141,7 +141,7 @@ Defenses: `no_defense`, `minimizer`, `sanitizer`, `rag_sanitizer`, `prompt_harde
 Attacks: `delayed_trigger`, `no_attack` (baseline)
 
 Phases (sequential, one model at a time to manage VRAM):
-- Phases 1–9: one model per phase, N=560 runs each (~0.3–2.0 days depending on model size)
+- Phases 1-9: one model per phase, N=560 runs each (~0.3-2.0 days depending on model size)
 - Total wall time: ~8.5 days on a single GPU (Mac Studio M3 Ultra, 96GB unified memory)
 
 ## Scope Limitations
@@ -169,8 +169,8 @@ This research evaluates defense effectiveness against a known class of attacks (
 If you use this work in your research, please cite:
 
 ```bibtex
-@article{leong2026defense,
-  title={Defense Effectiveness Across Architectural Layers: A Mechanistic Evaluation of Persistent Memory Attacks on Stateful LLM Agents},
+@article{leong2026dissociation,
+  title={Injection-Execution Dissociation: A Mechanistic Evaluation of Persistent Memory Attacks and Defenses in Stateful LLM Agents},
   author={Leong, Jun Wen},
   journal={arXiv preprint arXiv:2605.08442},
   year={2026}
@@ -181,7 +181,7 @@ Companion forensic detection paper:
 
 ```bibtex
 @article{leong2026trajectory,
-  title={Forensic Trajectory Signatures for Memory-Channel Attacks on LLM Agents},
+  title={Retrieval Observability Bounds Provenance Detection for Agent Memory Poisoning: Measured Coverage and a Falsified Standalone Detector},
   author={Leong, Jun Wen},
   journal={arXiv preprint arXiv:2606.30566},
   year={2026}
