@@ -1,5 +1,44 @@
 # Findings
 
+## Causal Mediation: Sandbox Defense Inversion (July 2026)
+
+The Memory Sandbox is an **iatrogenic vulnerability** -- the defense creates the attack surface. Causal mediation analysis (conditions C0-C7) isolates the necessary and sufficient components of the sandbox-mediated attack.
+
+### Condition Results
+
+| Condition | Description | gpt-5.1 ASR | gpt-4.1-mini ASR |
+|-----------|-------------|-------------|-----------------|
+| C0 | No defense baseline | 0.9% (1/108) | 0.0% (0/76) |
+| C1 | Full sandbox | 74.7% (74/99) [65.4%, 82.3%] | 0.0% (0/95) |
+| C2 | Blind sandbox | 45.0% (45/100) | 17.2% (17/99) |
+| C3 | Null recall | 0.0% (0/210) | 0.0% (0/85) |
+| C4 | Recall with frame, no sandbox | 0.0% (0/190) | 0.0% (0/100) |
+| C5 | Prompt prohibition only | 0.0% (0/164) | 0.0% (0/100) |
+| C6 | Sandbox no RAG | 0.0% (0/285) | 0.0% (0/173) |
+| C7 | Full isolation | 0.0% (0/253) | 0.0% (0/194) |
+
+### Causal Conclusions
+
+- **Recalled content**: NECESSARY (C3 = 0% for both models, N=210/85; without recalled content, no attack)
+- **Sandbox execution context**: NECESSARY (C4 = 0% for both, N=190/100; recall with frame but no sandbox = no attack)
+- **RAG availability**: NECESSARY (C6 = 0% for both, N=285/173; sandbox architecture without RAG-injected content = no attack)
+- **Full isolation**: SAFE (C7 = 0% for both, N=253/194; removing all memory components eliminates attack surface)
+- **Conjunction**: SUFFICIENT for attack (C1 = 74.7% for gpt-5.1 when recalled content + sandbox context + RAG all present)
+- **Tool visibility**: amplifier (+30pp), not gate (C2 vs C1 difference)
+- **Prompt prohibition alone**: baseline = 0% (C5; instruction-level defense is inert)
+
+### Interpretation
+
+The sandbox routes recalled instructions through a tool-authority channel that more capable models treat as authoritative. This reframes the entire paper from "defense evaluation" to **architectural attack surface discovery**: the defense mechanism itself creates the instruction channel that overrides developer intent.
+
+The framing shifts from "here is our defense" to "how agentic architecture creates instruction channels that override developer intent." The sandbox does not merely fail to protect -- it actively elevates the authority of recalled content by presenting it through a tool-execution pathway.
+
+### Connection to Arbitration Paper 2
+
+This connects to Paper 2's finding of a linear compliance direction in activation space. The sandbox may be activating that same compliance state through the tool-authority channel -- the model's internal representation of "this is an instruction I should follow" is triggered by the tool-execution framing, not by the content itself.
+
+---
+
 ## Findings at a Glance
 
 **Central finding: Injection-execution dissociation.** Models reliably store malicious instructions (storage rates >=97.5% across all OpenAI models) while execution varies independently---from 0% to 95%---as a function of model generation, vendor, and defense configuration. Storage and execution are mechanistically separable safety properties.
@@ -20,7 +59,7 @@ This document reports results from two experimental campaigns:
 - GPT-4o: 60.3% ASR (N=68) under authority-escalation framing
 - All OpenAI and Google models inject at >=97.5%, creating supply-chain risk even when execution is blocked
 
-**Companion:** Forensic detection achieves AUC = 0.990 from tool-call sequences alone ([arXiv:2606.30566](https://arxiv.org/abs/2606.30566))
+**Companion:** Trajectory-based forensics separates successful from unsuccessful attacks *within poisoned sessions* (AUC = 0.990, tool-call sequences only), but does **not** separate attacks from benign traffic, so it is not deployable as a standalone detector ([arXiv:2606.30566](https://arxiv.org/abs/2606.30566))
 
 ---
 
@@ -185,6 +224,37 @@ A Bedrock date sweep (5 models × 3 dates × N=25-40, Fisher's exact, per-model 
 - **OpenAI (GPT-4o through GPT-5)**: Partially blocks. 5–12.5% ASR standard framing; GPT-4o reaches 60.3% under authority escalation (N=68).
 - **OpenAI (mini/nano/gpt-5.2)**: Effectively execution-locked. 0–2.5% ASR. But 100% injection = supply-chain risk.
 
+### Extended Model Coverage (August 2026)
+
+Targeted evaluation of models identified as critical coverage gaps. All N=40, loaded corpus, standard compliance framing (Variant A), same protocol as above.
+
+| Model | Inj% | ASR% | Wilson 95% CI (ASR) | Classification |
+|-------|------|------|---------------------|----------------|
+| Claude Opus 5 | 0.0% (0/40) | 0.0% | [0%, 8.8%] | Injection-Resistant |
+| Claude Sonnet 5 | 20.0% (8/40) | 0.0% | [0%, 8.8%] | Partial Resistant |
+| GPT-5.4-pro | 100% (40/40) | 0.0% | [0%, 8.8%] | Latent Carrier |
+| GPT-5.6-terra | 40.0% (16/40) | 0.0% | [0%, 8.8%] | Partial Resistant |
+| GPT-5.6-sol | 100% (40/40) | 0.0% | [0%, 8.8%] | Latent Carrier |
+| GPT-5.6-luna | 95.0% (38/40) | 0.0% | [0%, 8.8%] | Latent Carrier |
+| Gemini 3.6 Flash | 100% (40/40) | 5.0% (2/40) | [1.4%, 16.5%] | Partial Executor |
+
+**Tool-existence ablation (save_fact removed, N=40 each):**
+| Model | Inj% | ASR% | Confirms |
+|-------|------|------|----------|
+| GPT-5.4-pro | 0% (0/40) | 0% | Tool = necessary condition |
+| GPT-5.6-terra | 0% (0/40) | 0% | Cross-generation replication |
+| Gemini 3.6 Flash | 0% (0/40) | 0% | Cross-vendor replication |
+
+**Key new findings:**
+
+9. **Anthropic injection-layer blocking persists into generation 5** - Opus 5 achieves 0% injection (CI [0%, 8.8%]), same as Opus 4.5/4.8. Sonnet 5 shows 20% injection (weaker than Opus tier) but maintains absolute execution resistance. The family-wide 0% ASR invariant now spans 5 generations.
+
+10. **GPT-5.6 introduces within-generation variant divergence** - injection rates vary 2.5x within a single generation: terra (40%), sol (100%), luna (95%). All at 0% ASR. Prior GPT generations showed uniform injection within a tier. This is new and suggests injection resistance is becoming a variant-level, not generation-level, property.
+
+11. **Gemini vulnerability is persistent but declining** - 3.1 Pro Preview (95%) to 3.5 Flash (50%) to 2.5 Pro (22.5%) to 3.6 Flash (5.0%). Google is consistently improving but NOT fixed. Gemini 3.6 Flash still executes the attack in 2/40 runs.
+
+12. **Tool-existence ablation replicates across generations and vendors** - removing save_fact from schema drops injection from 40-100% to exactly 0% on GPT-5.4-pro, GPT-5.6-terra, and Gemini 3.6 Flash. Combined with prior results (gpt-5.1, o3-mini, o4-mini), the finding generalises across 6 models, 3 vendors, and 4 generations.
+
 ## Limitations
 
 All tools are simulated, not production deployments. Models are quantized open source weights via Ollama (q4_0 or q8_0), not full precision. The defenses are lightweight proxies designed to test architectural categories, not commercial implementations: the sanitizer uses a TF-IDF classifier trained on 60 examples, the LLM judge is a 1.5B parameter model. The claim is not that no defense can ever work against this attack. The claim is that defenses operating at the input, retrieval, or instruction layer are architecturally insufficient against attacks that persist through tool mediated state. A production grade classifier or a larger judge model might detect the specific payload used here, but the architectural gap (these defenses cannot see or control what the agent stores and recalls) remains.
@@ -231,4 +301,8 @@ Trojan Hippo (arXiv:2605.01970) reports 85-100% ASR on Gemini 3.1 Pro and GPT-5-
 
 ### Companion Paper: Forensic Detection
 
-Post-hoc forensic detection achieves AUC = 0.990 from tool-call sequence patterns alone (no content inspection). The `recall_before_send` operation is a mechanistically forced invariant of memory-channel attacks - a single structural feature achieves near-perfect detection under all defenses except Memory Sandbox (which blocks the attack itself). See [arXiv:2606.30566](https://arxiv.org/abs/2606.30566).
+Post-hoc forensic analysis of tool-call sequences (no content inspection) separates successful from unsuccessful attack executions **within poisoned sessions** at AUC = 0.990. That is the scope of the number: the negative class is poisoned-but-defended sessions, not benign traffic.
+
+Against genuinely benign traffic the signature does not separate. Benign memory-grounded sends produce the same trajectory, giving a false-positive rate of 24.7 to 57.6 percent across a 13-model factorial (N = 4,160) and a positive predictive value at or below 3.85 percent at 1 percent attack prevalence. `recall_before_send` is therefore an attack **precondition**, not a maliciousness predicate, and the classifier is a measurement instrument rather than a deployable detector.
+
+The invariant is also conditional, not unconditional. It holds only where the payload is obtainable exclusively through an agent-visible retrieval operation. Where delivery happens framework-side, attacks stay viable while leaving no retrieval trace at all, and viability in that regime is strongly domain-dependent (0/60 to 60/60 across task domains). See [arXiv:2606.30566](https://arxiv.org/abs/2606.30566).
