@@ -1,1 +1,1 @@
-36 pages, 1 figure. v6: British English, presentation and reference fixes; model identifiers given as bare names. No change to results. Code and data: https://github.com/junwenleong/stateful-agent-security-eval
+36 pages, 1 figure. v6 adds a frontier tool-schema ablation, a tool-existence ablation, newer frontier endpoints, a cross-model write-then-read experiment, frontier retrieval-layer judges and a payload-framing experiment, with a revised abstract and scope notes. British English. Code and data: https://github.com/junwenleong/stateful-agent-security-eval
