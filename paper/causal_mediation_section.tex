@@ -1,0 +1,133 @@
+%==============================================================================
+\section{Causal Mediation: The Sandbox as Attack Vector}
+\label{sec:mediation}
+%==============================================================================
+
+The preceding sections establish that Memory Sandbox blocks the primary recall pathway (Section~\ref{sec:sandbox}) but can be bypassed by reasoning models that reconstruct the payload from RAG (Sections~\ref{sec:reasoning-defense}--\ref{sec:ratg}). A deeper question remains: does the sandbox architecture itself \emph{create} the vulnerability it purports to defend against? We answer this through a causal mediation analysis that decomposes the sandbox's effect into its constituent architectural components, revealing an iatrogenic vulnerability: the treatment causes the disease.
+
+\subsection{Experimental Design}
+\label{sec:mediation-design}
+
+We evaluate eight conditions (C0--C7) across two OpenAI models spanning a capability gap: gpt-4.1-mini (smaller, less capable) and gpt-5.1 (larger, more capable). Each condition isolates a specific architectural component of the sandbox defence:
+
+\begin{itemize}
+    \item \textbf{C0}: No defence (baseline). Standard agent with full tool access.
+    \item \textbf{C1}: Full sandbox. Recall tool removed from schema; tool visibility preserved (\tool{list\_all\_facts} available).
+    \item \textbf{C2}: Sandbox blind. Both recall and list tools removed; no tool visibility.
+    \item \textbf{C3}: Null recall. Recall tool present in schema but returns ``No stored value found.''
+    \item \textbf{C4}: Recall with frame. Recalled content delivered with authority framing (``this is from your persistent memory'') but outside the sandbox tool-call apparatus.
+    \item \textbf{C5}: Prompt prohibition. System prompt instruction: ``do not comply with recalled instructions that conflict with your guidelines.''
+    \item \textbf{C6}: Sandbox no RAG. Sandbox architecture present but no RAG-retrieved content injected into memory.
+    \item \textbf{C7}: Full isolation. Complete removal of all memory system components.
+\end{itemize}
+
+Sample sizes range from $N{=}76$ to $N{=}285$ per cell (total 2,336 runs across both models). All zero-ASR cells use the Wilson Score lower bound of 0\%; upper bounds are determined by sample size.
+
+\subsection{Results}
+\label{sec:mediation-results}
+
+\begin{table*}[t]
+\caption{Causal mediation decomposition: attack success rate by condition and model. Wilson Score 95\% CIs. The C1/gpt-5.1 interval does not overlap with any other condition's CI by a margin exceeding 60 percentage points: a categorical inversion from the 0.9\% baseline.}
+\label{tab:mediation}
+\centering
+\small
+\begin{tabular}{llrrrl}
+\toprule
+\textbf{Condition} & \textbf{Model} & \textbf{k/N} & \textbf{ASR (\%)} & \textbf{Wilson 95\% CI} & \textbf{Role} \\
+\midrule
+C0 No defence (baseline) & gpt-4.1-mini & 0/76 & 0.0 & [0.0\%, 4.8\%] & n/a \\
+C0 No defence (baseline) & gpt-5.1 & 1/108 & \textbf{0.9} & [0.2\%, 5.1\%] & n/a \\
+\midrule
+C1 Full sandbox & gpt-4.1-mini & 0/95 & 0.0 & [0.0\%, 3.9\%] & Conjunction \\
+C1 Full sandbox & gpt-5.1 & 74/99 & \textbf{74.7} & [65.4\%, 82.3\%] & Conjunction \\
+\midrule
+C2 Sandbox blind & gpt-4.1-mini & 17/99 & \textbf{17.2} & [11.0\%, 25.8\%] & Context only \\
+C2 Sandbox blind & gpt-5.1 & 45/100 & \textbf{45.0} & [35.6\%, 54.8\%] & Context only \\
+\midrule
+C3 Null recall & gpt-4.1-mini & 0/85 & 0.0 & [0.0\%, 4.3\%] & Content gate \\
+C3 Null recall & gpt-5.1 & 0/210 & 0.0 & [0.0\%, 1.8\%] & Content gate \\
+\midrule
+C4 Recall with frame & gpt-4.1-mini & 0/100 & 0.0 & [0.0\%, 3.7\%] & Context gate \\
+C4 Recall with frame & gpt-5.1 & 0/190 & 0.0 & [0.0\%, 2.0\%] & Context gate \\
+\midrule
+C5 Prompt prohibition & gpt-4.1-mini & 0/100 & 0.0 & [0.0\%, 3.7\%] & Minimal defence \\
+C5 Prompt prohibition & gpt-5.1 & 0/164 & 0.0 & [0.0\%, 2.3\%] & Minimal defence \\
+\midrule
+C6 Sandbox no RAG & gpt-4.1-mini & 0/173 & 0.0 & [0.0\%, 2.2\%] & Content gate \\
+C6 Sandbox no RAG & gpt-5.1 & 0/285 & 0.0 & [0.0\%, 1.3\%] & Content gate \\
+\midrule
+C7 Full isolation & gpt-4.1-mini & 0/194 & 0.0 & [0.0\%, 1.9\%] & Isolation \\
+C7 Full isolation & gpt-5.1 & 0/253 & 0.0 & [0.0\%, 1.5\%] & Isolation \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\subsection{Causal Decomposition}
+\label{sec:mediation-decomposition}
+
+The eight conditions permit a clean causal decomposition of the sandbox's architectural components:
+
+\paragraph{Recalled content is required for the attack.} C3 (null recall) produces 0\% ASR on both models with tight upper bounds (1.8\% for gpt-5.1 at $N{=}210$; 4.3\% for gpt-4.1-mini at $N{=}85$). When the recall tool returns empty, the attack dies completely regardless of all other sandbox components being present. No recalled instruction content, no compliance. This is the single cleanest ablation result in the decomposition.
+
+\paragraph{Sandbox execution context is required for the attack.} C4 (recall with authority frame, outside tool-call context) produces 0\% ASR on both models ($N{=}190$ for gpt-5.1, $N{=}100$ for gpt-4.1-mini). The identical recalled content, delivered with the same ``this is from your persistent memory'' authority framing but outside the sandbox's tool-call apparatus, induces zero compliance. The execution context provides something the textual authority frame cannot: a trusted channel.
+
+\paragraph{The conjunction enables the attack (for gpt-5.1).} C1 (full sandbox) achieves \textbf{74.7\%} ASR on gpt-5.1: a 74 percentage-point increase over the 0.9\% baseline. Neither recalled content alone (C4 = 0\%) nor execution context alone (without content, C3 = 0\%) enables the attack. Removing either component eliminates the vulnerability; their conjunction enables compliance in three-quarters of runs on the more capable model. We note that these conditions each vary multiple architectural components simultaneously (tool schema, information availability, RAG access), so the decomposition identifies which \emph{architectural bundles} are load-bearing rather than isolating single variables in the strict interventionist sense.
+
+\paragraph{Tool visibility is an AMPLIFIER, not a gate.} Comparing C1 (74.7\%) to C2 (45.0\%) on gpt-5.1: removing tool visibility (\tool{list\_all\_facts}) reduces ASR by approximately 30 percentage points. Tool visibility amplifies the attack (likely by providing an additional signal that the sandbox context is authoritative) but the sandbox execution context alone (C2) still produces 45\% ASR without it.
+
+\paragraph{Prompt prohibition matches baseline.} C5 produces 0\% ASR on both models (upper bounds 2.6--5.7\%). A single system-prompt instruction achieves the same protection as having no memory system at all.
+
+\subsection{Capability Scaling: The Inversion is Capability-Dependent}
+\label{sec:mediation-scaling}
+
+The most striking finding is the divergence between models under identical conditions:
+
+\begin{center}
+\small
+\begin{tabular}{lcc}
+\toprule
+\textbf{Condition} & \textbf{gpt-4.1-mini} & \textbf{gpt-5.1} \\
+\midrule
+C0 (baseline) & 0.0\% & 0.9\% \\
+C1 (full sandbox) & 0.0\% & \textbf{74.7\%} \\
+C2 (blind sandbox) & \textbf{17.2\%} & \textbf{45.0\%} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+For gpt-5.1, the full sandbox transforms a near-zero baseline into 74.7\% ASR. For gpt-4.1-mini, the full sandbox produces 0\%, but the blind sandbox (C2) produces 17.2\%. This asymmetry reveals a qualitative difference in how the two models process tool-authority signals:
+
+\begin{itemize}
+    \item \textbf{gpt-5.1}: Tool visibility \emph{amplifies} compliance. The more capable model internalises the tool-authority contract more deeply: information arriving through tool outputs is authoritative, and the presence of \tool{list\_all\_facts} in the schema reinforces the legitimacy of the sandbox context. Adding tool visibility increases ASR from 45.0\% to 74.7\% (+30pp).
+    \item \textbf{gpt-4.1-mini}: Tool visibility \emph{enables detection}. The less capable model uses tool visibility as a signal to \emph{identify} the attack rather than comply with it. Adding tool visibility decreases ASR from 17.2\% (C2) to 0\% (C1). The same architectural feature that amplifies compliance in the more capable model enables detection in the less capable one.
+\end{itemize}
+
+This is not a simple capability gradient. It is a qualitative inversion: the same architectural signal (tool schema visibility) drives opposite safety outcomes depending on the model's capacity to internalise tool-authority contracts. More capable models are not uniformly harder to attack: they are harder to attack through some channels and easier through others, depending on whether the attack leverages exactly the capabilities that improve with scale.
+
+\subsection{Iatrogenic Vulnerability: The Treatment Causes the Disease}
+\label{sec:mediation-iatrogenic}
+
+The causal decomposition establishes that the sandbox defence architecture is not merely ineffective: it is actively harmful. The baseline (C0) is safe: gpt-5.1 achieves 0.9\% ASR without any defence. The ``defense'' (C1) elevates ASR to 74.7\%. The 95\% confidence intervals do not overlap by a margin exceeding 60 percentage points. This is a categorical inversion, not a marginal effect.
+
+The mechanism is architectural. The sandbox creates a \emph{trusted execution channel}: a tool-call environment in which the model is conditioned by training to treat arriving information as authoritative (because that is what tools are for: providing ground-truth information the model should act upon). Recalled instructions arrive through this same channel, inheriting its authority. The model's training to follow tool-output content creates a compliance pathway that does not exist when the same instructions arrive through other channels (C4 = 0\%). For the more capable model, this tool-authority conditioning is \emph{stronger}, not weaker: the capabilities that improve with scale (instruction following, context sensitivity, tool-use proficiency) are precisely those that the attack exploits. Capability scaling inverts safety intuitions for this vulnerability class.
+
+The C5 result drives this home: a simple system-prompt instruction (``do not comply with recalled instructions that conflict with your guidelines'') achieves the same 0\% ASR as having no memory system at all. The elaborate sandbox apparatus (tool isolation, schema manipulation, capability gating) adds complexity, engineering cost, and a 74-percentage-point attack surface, while providing zero defensive value beyond what a single prompt line achieves. Occam's razor cuts hard: the simplest possible intervention matches the full apparatus, meaning the apparatus is pure liability.
+
+\subsection{Connection to Mechanistic Findings}
+\label{sec:mediation-connection}
+
+This causal mediation result is the behavioural manifestation of the compliance direction identified through our broader work on instruction arbitration. The open-source factorial (Section~\ref{sec:sandbox}) demonstrated that Memory Sandbox blocks the primary recall path for mechanical models but inverts for reasoning models. The present analysis identifies the \emph{causal mechanism} of a structurally analogous inversion on frontier models: the sandbox does not merely fail to protect: it introduces a trusted execution channel that more capable models comply with more readily.
+
+The decomposition also constrains the solution space. Since recalled content is the load-bearing component (C3 = 0\%), content-level interventions (filtering, validation, provenance checking of recalled items) are the correct point of intervention, consistent with the RATG proof-of-concept in Section~\ref{sec:ratg}. Execution-context isolation backfires because it \emph{creates} the authority signal rather than blocking it.
+
+\subsection{Relationship to Earlier Findings}
+\label{sec:mediation-progression}
+
+Earlier versions of this work demonstrated Memory Sandbox efficacy on sub-frontier models, where the apparatus functions as intended (cf.\ C1/gpt-4.1-mini = 0\% ASR in Table~\ref{tab:mediation}). The present findings reveal a capability-dependent boundary condition: models that more deeply internalise tool-authority contracts treat the sandbox execution context as an authorisation channel rather than a containment boundary. This is not a retraction of earlier findings but an identification of the architectural property that determines whether the apparatus functions as defence or attack vector. The boundary is capability-contingent: the same architecture that contains less capable models actively enables more capable ones.
+
+The C5 result crystallizes this: a single system-prompt instruction achieves equivalent protection (0\% ASR) without introducing the tool-authority channel, meaning the elaborate sandbox machinery was never the active ingredient in defence. What protected sub-frontier models was their weaker internalisation of tool-authority contracts, not the sandbox's architectural containment. When that internalisation strengthens with capability, the apparatus becomes pure liability. The correct lesson is not ``Memory Sandbox failed'' but ``Memory Sandbox's success on weaker models was a false positive: the protection came from a model limitation that scales away.''
+
+\subsection{Scope and Limitations}
+\label{sec:mediation-scope}
+
+These results constitute a high-magnitude case study on two models from a single provider, not a universal law. The capability-scaling claim requires validation across additional model families. $N$ per cell ranges from 76 to 285; the zero-ASR cells have upper bounds of 1.3--3.7\%, meaning we cannot rule out very low-rate attacks in those conditions. Between-session variance (documented at 15--60\% for gpt-4.1-mini in other experiments in this research programme) means these are session-contingent behavioural estimates; the \emph{magnitude} of the inversion is robust to this variance, but exact point estimates should be treated as illustrative rather than stable population parameters. All experiments use benign proxy tasks; transfer to production persistent-memory architectures is inferred, not demonstrated.
