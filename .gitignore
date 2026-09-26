@@ -63,3 +63,7 @@ CLAUDE.md
 .opencode/
 opencode.json
 AGENTS.md
+.token-savior-cache.json
+
+# Experiment run logs -- real script output but not meant to be version-controlled (scoped to avoid the paper/ndss build log)
+results/**/*.log
