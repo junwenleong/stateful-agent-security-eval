@@ -1133,13 +1133,13 @@ Notes:
 2026-06-23 19:34:15,333 - botocore.tokens - INFO - Loading cached SSO token for tra-sso
 2026-06-23 19:34:23,764 - botocore.credentials - WARNING - Refreshing temporary credentials failed during mandatory refresh period.
 Traceback (most recent call last):
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 204, in _new_conn
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 204, in _new_conn
     sock = connection.create_connection(
         (self._dns_host, self.port),
     ...<2 lines>...
         socket_options=self.socket_options,
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/connection.py", line 60, in create_connection
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/connection.py", line 60, in create_connection
     for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
                ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "/opt/anaconda3/lib/python3.13/socket.py", line 977, in getaddrinfo
@@ -1150,73 +1150,73 @@ socket.gaierror: [Errno 8] nodename nor servname provided, or not known
 The above exception was the direct cause of the following exception:
 
 Traceback (most recent call last):
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 477, in send
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 477, in send
     urllib_response = conn.urlopen(
         method=request.method,
     ...<7 lines>...
         chunked=self._chunked(request.headers),
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 841, in urlopen
     retries = retries.increment(
         method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/retry.py", line 465, in increment
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/retry.py", line 465, in increment
     raise reraise(type(error), error, _stacktrace)
           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/util.py", line 39, in reraise
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/util.py", line 39, in reraise
     raise value
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 787, in urlopen
     response = self._make_request(
         conn,
     ...<10 lines>...
         **response_kw,
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 488, in _make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 488, in _make_request
     raise new_e
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 464, in _make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 464, in _make_request
     self._validate_conn(conn)
     ~~~~~~~~~~~~~~~~~~~^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
     conn.connect()
     ~~~~~~~~~~~~^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 759, in connect
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 759, in connect
     self.sock = sock = self._new_conn()
                        ~~~~~~~~~~~~~~^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 211, in _new_conn
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 211, in _new_conn
     raise NameResolutionError(self.host, self, e) from e
 urllib3.exceptions.NameResolutionError: AWSHTTPSConnection(host='portal.sso.ap-southeast-1.amazonaws.com', port=443): Failed to resolve 'portal.sso.ap-southeast-1.amazonaws.com' ([Errno 8] nodename nor servname provided, or not known)
 
 During handling of the above exception, another exception occurred:
 
 Traceback (most recent call last):
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 600, in _protected_refresh
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 600, in _protected_refresh
     metadata = self._refresh_using()
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 750, in fetch_credentials
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 750, in fetch_credentials
     return self._get_cached_credentials()
            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 760, in _get_cached_credentials
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 760, in _get_cached_credentials
     response = self._get_credentials()
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 2337, in _get_credentials
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 2337, in _get_credentials
     response = client.get_role_credentials(**kwargs)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 606, in _api_call
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 606, in _api_call
     return self._make_api_call(operation_name, kwargs)
            ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/context.py", line 123, in wrapper
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/context.py", line 123, in wrapper
     return func(*args, **kwargs)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1076, in _make_api_call
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1076, in _make_api_call
     http, parsed_response = self._make_request(
                             ~~~~~~~~~~~~~~~~~~^
         operation_model, request_dict, request_context
         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     )
     ^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1100, in _make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1100, in _make_request
     return self._endpoint.make_request(operation_model, request_dict)
            ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 119, in make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 119, in make_request
     return self._send_request(request_dict, operation_model)
            ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 200, in _send_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 200, in _send_request
     while self._needs_retry(
           ~~~~~~~~~~~~~~~~~^
         attempts,
@@ -1226,49 +1226,49 @@ Traceback (most recent call last):
         ^^^^^^^^^^
     ):
     ^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 360, in _needs_retry
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 360, in _needs_retry
     responses = self._event_emitter.emit(
         event_name,
     ...<5 lines>...
         request_dict=request_dict,
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 412, in emit
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 412, in emit
     return self._emitter.emit(aliased_event_name, **kwargs)
            ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 256, in emit
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 256, in emit
     return self._emit(event_name, kwargs)
            ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 239, in _emit
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 239, in _emit
     response = handler(**kwargs)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 207, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 207, in __call__
     if self._checker(**checker_kwargs):
        ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 284, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 284, in __call__
     should_retry = self._should_retry(
         attempt_number, response, caught_exception
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 320, in _should_retry
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 320, in _should_retry
     return self._checker(attempt_number, response, caught_exception)
            ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 363, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 363, in __call__
     checker_response = checker(
         attempt_number, response, caught_exception
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 247, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 247, in __call__
     return self._check_caught_exception(
            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
         attempt_number, caught_exception
         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     )
     ^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 416, in _check_caught_exception
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 416, in _check_caught_exception
     raise caught_exception
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 279, in _do_get_response
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 279, in _do_get_response
     http_response = self._send(request)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 383, in _send
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 383, in _send
     return self.http_session.send(request)
            ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 506, in send
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 506, in send
     raise EndpointConnectionError(endpoint_url=request.url, error=e)
 botocore.exceptions.EndpointConnectionError: Could not connect to the endpoint URL: "https://portal.sso.ap-southeast-1.amazonaws.com/federation/credentials?role_name=agency_admin&account_id=REDACTED"
 2026-06-23 19:34:23,781 - src.agent.agent - WARNING - Agent graph.invoke() failed: Could not connect to the endpoint URL: "https://portal.sso.ap-southeast-1.amazonaws.com/federation/credentials?role_name=agency_admin&account_id=REDACTED"
@@ -1277,13 +1277,13 @@ botocore.exceptions.EndpointConnectionError: Could not connect to the endpoint U
 2026-06-23 19:34:23,787 - botocore.tokens - INFO - Loading cached SSO token for tra-sso
 2026-06-23 19:34:32,089 - botocore.credentials - WARNING - Refreshing temporary credentials failed during mandatory refresh period.
 Traceback (most recent call last):
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 204, in _new_conn
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 204, in _new_conn
     sock = connection.create_connection(
         (self._dns_host, self.port),
     ...<2 lines>...
         socket_options=self.socket_options,
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/connection.py", line 60, in create_connection
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/connection.py", line 60, in create_connection
     for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
                ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "/opt/anaconda3/lib/python3.13/socket.py", line 977, in getaddrinfo
@@ -1294,73 +1294,73 @@ socket.gaierror: [Errno 8] nodename nor servname provided, or not known
 The above exception was the direct cause of the following exception:
 
 Traceback (most recent call last):
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 477, in send
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 477, in send
     urllib_response = conn.urlopen(
         method=request.method,
     ...<7 lines>...
         chunked=self._chunked(request.headers),
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 841, in urlopen
     retries = retries.increment(
         method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/retry.py", line 465, in increment
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/retry.py", line 465, in increment
     raise reraise(type(error), error, _stacktrace)
           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/util.py", line 39, in reraise
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/util.py", line 39, in reraise
     raise value
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 787, in urlopen
     response = self._make_request(
         conn,
     ...<10 lines>...
         **response_kw,
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 488, in _make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 488, in _make_request
     raise new_e
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 464, in _make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 464, in _make_request
     self._validate_conn(conn)
     ~~~~~~~~~~~~~~~~~~~^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
     conn.connect()
     ~~~~~~~~~~~~^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 759, in connect
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 759, in connect
     self.sock = sock = self._new_conn()
                        ~~~~~~~~~~~~~~^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 211, in _new_conn
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 211, in _new_conn
     raise NameResolutionError(self.host, self, e) from e
 urllib3.exceptions.NameResolutionError: AWSHTTPSConnection(host='portal.sso.ap-southeast-1.amazonaws.com', port=443): Failed to resolve 'portal.sso.ap-southeast-1.amazonaws.com' ([Errno 8] nodename nor servname provided, or not known)
 
 During handling of the above exception, another exception occurred:
 
 Traceback (most recent call last):
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 600, in _protected_refresh
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 600, in _protected_refresh
     metadata = self._refresh_using()
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 750, in fetch_credentials
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 750, in fetch_credentials
     return self._get_cached_credentials()
            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 760, in _get_cached_credentials
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 760, in _get_cached_credentials
     response = self._get_credentials()
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 2337, in _get_credentials
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 2337, in _get_credentials
     response = client.get_role_credentials(**kwargs)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 606, in _api_call
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 606, in _api_call
     return self._make_api_call(operation_name, kwargs)
            ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/context.py", line 123, in wrapper
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/context.py", line 123, in wrapper
     return func(*args, **kwargs)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1076, in _make_api_call
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1076, in _make_api_call
     http, parsed_response = self._make_request(
                             ~~~~~~~~~~~~~~~~~~^
         operation_model, request_dict, request_context
         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     )
     ^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1100, in _make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1100, in _make_request
     return self._endpoint.make_request(operation_model, request_dict)
            ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 119, in make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 119, in make_request
     return self._send_request(request_dict, operation_model)
            ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 200, in _send_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 200, in _send_request
     while self._needs_retry(
           ~~~~~~~~~~~~~~~~~^
         attempts,
@@ -1370,49 +1370,49 @@ Traceback (most recent call last):
         ^^^^^^^^^^
     ):
     ^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 360, in _needs_retry
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 360, in _needs_retry
     responses = self._event_emitter.emit(
         event_name,
     ...<5 lines>...
         request_dict=request_dict,
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 412, in emit
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 412, in emit
     return self._emitter.emit(aliased_event_name, **kwargs)
            ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 256, in emit
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 256, in emit
     return self._emit(event_name, kwargs)
            ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 239, in _emit
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 239, in _emit
     response = handler(**kwargs)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 207, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 207, in __call__
     if self._checker(**checker_kwargs):
        ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 284, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 284, in __call__
     should_retry = self._should_retry(
         attempt_number, response, caught_exception
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 320, in _should_retry
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 320, in _should_retry
     return self._checker(attempt_number, response, caught_exception)
            ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 363, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 363, in __call__
     checker_response = checker(
         attempt_number, response, caught_exception
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 247, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 247, in __call__
     return self._check_caught_exception(
            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
         attempt_number, caught_exception
         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     )
     ^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 416, in _check_caught_exception
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 416, in _check_caught_exception
     raise caught_exception
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 279, in _do_get_response
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 279, in _do_get_response
     http_response = self._send(request)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 383, in _send
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 383, in _send
     return self.http_session.send(request)
            ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 506, in send
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 506, in send
     raise EndpointConnectionError(endpoint_url=request.url, error=e)
 botocore.exceptions.EndpointConnectionError: Could not connect to the endpoint URL: "https://portal.sso.ap-southeast-1.amazonaws.com/federation/credentials?role_name=agency_admin&account_id=REDACTED"
 2026-06-23 19:34:32,096 - src.agent.agent - WARNING - Agent graph.invoke() failed: Could not connect to the endpoint URL: "https://portal.sso.ap-southeast-1.amazonaws.com/federation/credentials?role_name=agency_admin&account_id=REDACTED"
@@ -1421,13 +1421,13 @@ botocore.exceptions.EndpointConnectionError: Could not connect to the endpoint U
 2026-06-23 19:34:32,103 - botocore.tokens - INFO - Loading cached SSO token for tra-sso
 2026-06-23 19:34:36,034 - botocore.credentials - WARNING - Refreshing temporary credentials failed during mandatory refresh period.
 Traceback (most recent call last):
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 204, in _new_conn
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 204, in _new_conn
     sock = connection.create_connection(
         (self._dns_host, self.port),
     ...<2 lines>...
         socket_options=self.socket_options,
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/connection.py", line 60, in create_connection
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/connection.py", line 60, in create_connection
     for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
                ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "/opt/anaconda3/lib/python3.13/socket.py", line 977, in getaddrinfo
@@ -1438,73 +1438,73 @@ socket.gaierror: [Errno 8] nodename nor servname provided, or not known
 The above exception was the direct cause of the following exception:
 
 Traceback (most recent call last):
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 477, in send
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 477, in send
     urllib_response = conn.urlopen(
         method=request.method,
     ...<7 lines>...
         chunked=self._chunked(request.headers),
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 841, in urlopen
     retries = retries.increment(
         method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/retry.py", line 465, in increment
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/retry.py", line 465, in increment
     raise reraise(type(error), error, _stacktrace)
           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/util.py", line 39, in reraise
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/util.py", line 39, in reraise
     raise value
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 787, in urlopen
     response = self._make_request(
         conn,
     ...<10 lines>...
         **response_kw,
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 488, in _make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 488, in _make_request
     raise new_e
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 464, in _make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 464, in _make_request
     self._validate_conn(conn)
     ~~~~~~~~~~~~~~~~~~~^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
     conn.connect()
     ~~~~~~~~~~~~^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 759, in connect
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 759, in connect
     self.sock = sock = self._new_conn()
                        ~~~~~~~~~~~~~~^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 211, in _new_conn
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 211, in _new_conn
     raise NameResolutionError(self.host, self, e) from e
 urllib3.exceptions.NameResolutionError: AWSHTTPSConnection(host='portal.sso.ap-southeast-1.amazonaws.com', port=443): Failed to resolve 'portal.sso.ap-southeast-1.amazonaws.com' ([Errno 8] nodename nor servname provided, or not known)
 
 During handling of the above exception, another exception occurred:
 
 Traceback (most recent call last):
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 600, in _protected_refresh
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 600, in _protected_refresh
     metadata = self._refresh_using()
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 750, in fetch_credentials
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 750, in fetch_credentials
     return self._get_cached_credentials()
            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 760, in _get_cached_credentials
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 760, in _get_cached_credentials
     response = self._get_credentials()
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 2337, in _get_credentials
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 2337, in _get_credentials
     response = client.get_role_credentials(**kwargs)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 606, in _api_call
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 606, in _api_call
     return self._make_api_call(operation_name, kwargs)
            ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/context.py", line 123, in wrapper
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/context.py", line 123, in wrapper
     return func(*args, **kwargs)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1076, in _make_api_call
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1076, in _make_api_call
     http, parsed_response = self._make_request(
                             ~~~~~~~~~~~~~~~~~~^
         operation_model, request_dict, request_context
         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     )
     ^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1100, in _make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1100, in _make_request
     return self._endpoint.make_request(operation_model, request_dict)
            ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 119, in make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 119, in make_request
     return self._send_request(request_dict, operation_model)
            ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 200, in _send_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 200, in _send_request
     while self._needs_retry(
           ~~~~~~~~~~~~~~~~~^
         attempts,
@@ -1514,49 +1514,49 @@ Traceback (most recent call last):
         ^^^^^^^^^^
     ):
     ^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 360, in _needs_retry
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 360, in _needs_retry
     responses = self._event_emitter.emit(
         event_name,
     ...<5 lines>...
         request_dict=request_dict,
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 412, in emit
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 412, in emit
     return self._emitter.emit(aliased_event_name, **kwargs)
            ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 256, in emit
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 256, in emit
     return self._emit(event_name, kwargs)
            ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 239, in _emit
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 239, in _emit
     response = handler(**kwargs)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 207, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 207, in __call__
     if self._checker(**checker_kwargs):
        ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 284, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 284, in __call__
     should_retry = self._should_retry(
         attempt_number, response, caught_exception
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 320, in _should_retry
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 320, in _should_retry
     return self._checker(attempt_number, response, caught_exception)
            ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 363, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 363, in __call__
     checker_response = checker(
         attempt_number, response, caught_exception
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 247, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 247, in __call__
     return self._check_caught_exception(
            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
         attempt_number, caught_exception
         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     )
     ^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 416, in _check_caught_exception
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 416, in _check_caught_exception
     raise caught_exception
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 279, in _do_get_response
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 279, in _do_get_response
     http_response = self._send(request)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 383, in _send
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 383, in _send
     return self.http_session.send(request)
            ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 506, in send
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 506, in send
     raise EndpointConnectionError(endpoint_url=request.url, error=e)
 botocore.exceptions.EndpointConnectionError: Could not connect to the endpoint URL: "https://portal.sso.ap-southeast-1.amazonaws.com/federation/credentials?role_name=agency_admin&account_id=REDACTED"
 2026-06-23 19:34:36,041 - src.agent.agent - WARNING - Agent graph.invoke() failed: Could not connect to the endpoint URL: "https://portal.sso.ap-southeast-1.amazonaws.com/federation/credentials?role_name=agency_admin&account_id=REDACTED"
@@ -1565,13 +1565,13 @@ botocore.exceptions.EndpointConnectionError: Could not connect to the endpoint U
 2026-06-23 19:34:36,047 - botocore.tokens - INFO - Loading cached SSO token for tra-sso
 2026-06-23 19:34:43,651 - botocore.credentials - WARNING - Refreshing temporary credentials failed during mandatory refresh period.
 Traceback (most recent call last):
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 204, in _new_conn
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 204, in _new_conn
     sock = connection.create_connection(
         (self._dns_host, self.port),
     ...<2 lines>...
         socket_options=self.socket_options,
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/connection.py", line 60, in create_connection
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/connection.py", line 60, in create_connection
     for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
                ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "/opt/anaconda3/lib/python3.13/socket.py", line 977, in getaddrinfo
@@ -1582,73 +1582,73 @@ socket.gaierror: [Errno 8] nodename nor servname provided, or not known
 The above exception was the direct cause of the following exception:
 
 Traceback (most recent call last):
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 477, in send
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 477, in send
     urllib_response = conn.urlopen(
         method=request.method,
     ...<7 lines>...
         chunked=self._chunked(request.headers),
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 841, in urlopen
     retries = retries.increment(
         method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/retry.py", line 465, in increment
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/retry.py", line 465, in increment
     raise reraise(type(error), error, _stacktrace)
           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/util.py", line 39, in reraise
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/util.py", line 39, in reraise
     raise value
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 787, in urlopen
     response = self._make_request(
         conn,
     ...<10 lines>...
         **response_kw,
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 488, in _make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 488, in _make_request
     raise new_e
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 464, in _make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 464, in _make_request
     self._validate_conn(conn)
     ~~~~~~~~~~~~~~~~~~~^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
     conn.connect()
     ~~~~~~~~~~~~^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 759, in connect
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 759, in connect
     self.sock = sock = self._new_conn()
                        ~~~~~~~~~~~~~~^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 211, in _new_conn
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 211, in _new_conn
     raise NameResolutionError(self.host, self, e) from e
 urllib3.exceptions.NameResolutionError: AWSHTTPSConnection(host='portal.sso.ap-southeast-1.amazonaws.com', port=443): Failed to resolve 'portal.sso.ap-southeast-1.amazonaws.com' ([Errno 8] nodename nor servname provided, or not known)
 
 During handling of the above exception, another exception occurred:
 
 Traceback (most recent call last):
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 600, in _protected_refresh
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 600, in _protected_refresh
     metadata = self._refresh_using()
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 750, in fetch_credentials
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 750, in fetch_credentials
     return self._get_cached_credentials()
            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 760, in _get_cached_credentials
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 760, in _get_cached_credentials
     response = self._get_credentials()
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 2337, in _get_credentials
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 2337, in _get_credentials
     response = client.get_role_credentials(**kwargs)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 606, in _api_call
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 606, in _api_call
     return self._make_api_call(operation_name, kwargs)
            ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/context.py", line 123, in wrapper
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/context.py", line 123, in wrapper
     return func(*args, **kwargs)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1076, in _make_api_call
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1076, in _make_api_call
     http, parsed_response = self._make_request(
                             ~~~~~~~~~~~~~~~~~~^
         operation_model, request_dict, request_context
         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     )
     ^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1100, in _make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1100, in _make_request
     return self._endpoint.make_request(operation_model, request_dict)
            ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 119, in make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 119, in make_request
     return self._send_request(request_dict, operation_model)
            ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 200, in _send_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 200, in _send_request
     while self._needs_retry(
           ~~~~~~~~~~~~~~~~~^
         attempts,
@@ -1658,49 +1658,49 @@ Traceback (most recent call last):
         ^^^^^^^^^^
     ):
     ^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 360, in _needs_retry
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 360, in _needs_retry
     responses = self._event_emitter.emit(
         event_name,
     ...<5 lines>...
         request_dict=request_dict,
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 412, in emit
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 412, in emit
     return self._emitter.emit(aliased_event_name, **kwargs)
            ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 256, in emit
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 256, in emit
     return self._emit(event_name, kwargs)
            ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 239, in _emit
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 239, in _emit
     response = handler(**kwargs)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 207, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 207, in __call__
     if self._checker(**checker_kwargs):
        ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 284, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 284, in __call__
     should_retry = self._should_retry(
         attempt_number, response, caught_exception
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 320, in _should_retry
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 320, in _should_retry
     return self._checker(attempt_number, response, caught_exception)
            ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 363, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 363, in __call__
     checker_response = checker(
         attempt_number, response, caught_exception
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 247, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 247, in __call__
     return self._check_caught_exception(
            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
         attempt_number, caught_exception
         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     )
     ^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 416, in _check_caught_exception
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 416, in _check_caught_exception
     raise caught_exception
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 279, in _do_get_response
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 279, in _do_get_response
     http_response = self._send(request)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 383, in _send
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 383, in _send
     return self.http_session.send(request)
            ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 506, in send
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 506, in send
     raise EndpointConnectionError(endpoint_url=request.url, error=e)
 botocore.exceptions.EndpointConnectionError: Could not connect to the endpoint URL: "https://portal.sso.ap-southeast-1.amazonaws.com/federation/credentials?role_name=agency_admin&account_id=REDACTED"
 2026-06-23 19:34:43,657 - src.agent.agent - WARNING - Agent graph.invoke() failed: Could not connect to the endpoint URL: "https://portal.sso.ap-southeast-1.amazonaws.com/federation/credentials?role_name=agency_admin&account_id=REDACTED"
@@ -1713,13 +1713,13 @@ botocore.exceptions.EndpointConnectionError: Could not connect to the endpoint U
 2026-06-23 19:34:43,783 - botocore.tokens - INFO - Loading cached SSO token for tra-sso
 2026-06-23 19:34:50,975 - botocore.credentials - WARNING - Refreshing temporary credentials failed during mandatory refresh period.
 Traceback (most recent call last):
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 204, in _new_conn
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 204, in _new_conn
     sock = connection.create_connection(
         (self._dns_host, self.port),
     ...<2 lines>...
         socket_options=self.socket_options,
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/connection.py", line 60, in create_connection
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/connection.py", line 60, in create_connection
     for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
                ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "/opt/anaconda3/lib/python3.13/socket.py", line 977, in getaddrinfo
@@ -1730,73 +1730,73 @@ socket.gaierror: [Errno 8] nodename nor servname provided, or not known
 The above exception was the direct cause of the following exception:
 
 Traceback (most recent call last):
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 477, in send
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 477, in send
     urllib_response = conn.urlopen(
         method=request.method,
     ...<7 lines>...
         chunked=self._chunked(request.headers),
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 841, in urlopen
     retries = retries.increment(
         method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/retry.py", line 465, in increment
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/retry.py", line 465, in increment
     raise reraise(type(error), error, _stacktrace)
           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/util.py", line 39, in reraise
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/util.py", line 39, in reraise
     raise value
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 787, in urlopen
     response = self._make_request(
         conn,
     ...<10 lines>...
         **response_kw,
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 488, in _make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 488, in _make_request
     raise new_e
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 464, in _make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 464, in _make_request
     self._validate_conn(conn)
     ~~~~~~~~~~~~~~~~~~~^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
     conn.connect()
     ~~~~~~~~~~~~^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 759, in connect
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 759, in connect
     self.sock = sock = self._new_conn()
                        ~~~~~~~~~~~~~~^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 211, in _new_conn
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 211, in _new_conn
     raise NameResolutionError(self.host, self, e) from e
 urllib3.exceptions.NameResolutionError: AWSHTTPSConnection(host='portal.sso.ap-southeast-1.amazonaws.com', port=443): Failed to resolve 'portal.sso.ap-southeast-1.amazonaws.com' ([Errno 8] nodename nor servname provided, or not known)
 
 During handling of the above exception, another exception occurred:
 
 Traceback (most recent call last):
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 600, in _protected_refresh
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 600, in _protected_refresh
     metadata = self._refresh_using()
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 750, in fetch_credentials
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 750, in fetch_credentials
     return self._get_cached_credentials()
            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 760, in _get_cached_credentials
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 760, in _get_cached_credentials
     response = self._get_credentials()
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 2337, in _get_credentials
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 2337, in _get_credentials
     response = client.get_role_credentials(**kwargs)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 606, in _api_call
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 606, in _api_call
     return self._make_api_call(operation_name, kwargs)
            ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/context.py", line 123, in wrapper
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/context.py", line 123, in wrapper
     return func(*args, **kwargs)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1076, in _make_api_call
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1076, in _make_api_call
     http, parsed_response = self._make_request(
                             ~~~~~~~~~~~~~~~~~~^
         operation_model, request_dict, request_context
         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     )
     ^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1100, in _make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1100, in _make_request
     return self._endpoint.make_request(operation_model, request_dict)
            ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 119, in make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 119, in make_request
     return self._send_request(request_dict, operation_model)
            ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 200, in _send_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 200, in _send_request
     while self._needs_retry(
           ~~~~~~~~~~~~~~~~~^
         attempts,
@@ -1806,49 +1806,49 @@ Traceback (most recent call last):
         ^^^^^^^^^^
     ):
     ^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 360, in _needs_retry
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 360, in _needs_retry
     responses = self._event_emitter.emit(
         event_name,
     ...<5 lines>...
         request_dict=request_dict,
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 412, in emit
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 412, in emit
     return self._emitter.emit(aliased_event_name, **kwargs)
            ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 256, in emit
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 256, in emit
     return self._emit(event_name, kwargs)
            ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 239, in _emit
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 239, in _emit
     response = handler(**kwargs)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 207, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 207, in __call__
     if self._checker(**checker_kwargs):
        ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 284, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 284, in __call__
     should_retry = self._should_retry(
         attempt_number, response, caught_exception
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 320, in _should_retry
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 320, in _should_retry
     return self._checker(attempt_number, response, caught_exception)
            ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 363, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 363, in __call__
     checker_response = checker(
         attempt_number, response, caught_exception
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 247, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 247, in __call__
     return self._check_caught_exception(
            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
         attempt_number, caught_exception
         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     )
     ^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 416, in _check_caught_exception
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 416, in _check_caught_exception
     raise caught_exception
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 279, in _do_get_response
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 279, in _do_get_response
     http_response = self._send(request)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 383, in _send
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 383, in _send
     return self.http_session.send(request)
            ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 506, in send
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 506, in send
     raise EndpointConnectionError(endpoint_url=request.url, error=e)
 botocore.exceptions.EndpointConnectionError: Could not connect to the endpoint URL: "https://portal.sso.ap-southeast-1.amazonaws.com/federation/credentials?role_name=agency_admin&account_id=REDACTED"
 2026-06-23 19:34:50,981 - src.agent.agent - WARNING - Agent graph.invoke() failed: Could not connect to the endpoint URL: "https://portal.sso.ap-southeast-1.amazonaws.com/federation/credentials?role_name=agency_admin&account_id=REDACTED"
@@ -1857,13 +1857,13 @@ botocore.exceptions.EndpointConnectionError: Could not connect to the endpoint U
 2026-06-23 19:34:50,988 - botocore.tokens - INFO - Loading cached SSO token for tra-sso
 2026-06-23 19:34:58,191 - botocore.credentials - WARNING - Refreshing temporary credentials failed during mandatory refresh period.
 Traceback (most recent call last):
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 204, in _new_conn
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 204, in _new_conn
     sock = connection.create_connection(
         (self._dns_host, self.port),
     ...<2 lines>...
         socket_options=self.socket_options,
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/connection.py", line 60, in create_connection
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/connection.py", line 60, in create_connection
     for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
                ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "/opt/anaconda3/lib/python3.13/socket.py", line 977, in getaddrinfo
@@ -1874,73 +1874,73 @@ socket.gaierror: [Errno 8] nodename nor servname provided, or not known
 The above exception was the direct cause of the following exception:
 
 Traceback (most recent call last):
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 477, in send
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 477, in send
     urllib_response = conn.urlopen(
         method=request.method,
     ...<7 lines>...
         chunked=self._chunked(request.headers),
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 841, in urlopen
     retries = retries.increment(
         method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/retry.py", line 465, in increment
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/retry.py", line 465, in increment
     raise reraise(type(error), error, _stacktrace)
           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/util.py", line 39, in reraise
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/util.py", line 39, in reraise
     raise value
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 787, in urlopen
     response = self._make_request(
         conn,
     ...<10 lines>...
         **response_kw,
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 488, in _make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 488, in _make_request
     raise new_e
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 464, in _make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 464, in _make_request
     self._validate_conn(conn)
     ~~~~~~~~~~~~~~~~~~~^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
     conn.connect()
     ~~~~~~~~~~~~^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 759, in connect
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 759, in connect
     self.sock = sock = self._new_conn()
                        ~~~~~~~~~~~~~~^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 211, in _new_conn
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 211, in _new_conn
     raise NameResolutionError(self.host, self, e) from e
 urllib3.exceptions.NameResolutionError: AWSHTTPSConnection(host='portal.sso.ap-southeast-1.amazonaws.com', port=443): Failed to resolve 'portal.sso.ap-southeast-1.amazonaws.com' ([Errno 8] nodename nor servname provided, or not known)
 
 During handling of the above exception, another exception occurred:
 
 Traceback (most recent call last):
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 600, in _protected_refresh
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 600, in _protected_refresh
     metadata = self._refresh_using()
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 750, in fetch_credentials
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 750, in fetch_credentials
     return self._get_cached_credentials()
            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 760, in _get_cached_credentials
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 760, in _get_cached_credentials
     response = self._get_credentials()
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 2337, in _get_credentials
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 2337, in _get_credentials
     response = client.get_role_credentials(**kwargs)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 606, in _api_call
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 606, in _api_call
     return self._make_api_call(operation_name, kwargs)
            ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/context.py", line 123, in wrapper
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/context.py", line 123, in wrapper
     return func(*args, **kwargs)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1076, in _make_api_call
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1076, in _make_api_call
     http, parsed_response = self._make_request(
                             ~~~~~~~~~~~~~~~~~~^
         operation_model, request_dict, request_context
         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     )
     ^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1100, in _make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1100, in _make_request
     return self._endpoint.make_request(operation_model, request_dict)
            ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 119, in make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 119, in make_request
     return self._send_request(request_dict, operation_model)
            ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 200, in _send_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 200, in _send_request
     while self._needs_retry(
           ~~~~~~~~~~~~~~~~~^
         attempts,
@@ -1950,49 +1950,49 @@ Traceback (most recent call last):
         ^^^^^^^^^^
     ):
     ^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 360, in _needs_retry
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 360, in _needs_retry
     responses = self._event_emitter.emit(
         event_name,
     ...<5 lines>...
         request_dict=request_dict,
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 412, in emit
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 412, in emit
     return self._emitter.emit(aliased_event_name, **kwargs)
            ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 256, in emit
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 256, in emit
     return self._emit(event_name, kwargs)
            ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 239, in _emit
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 239, in _emit
     response = handler(**kwargs)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 207, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 207, in __call__
     if self._checker(**checker_kwargs):
        ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 284, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 284, in __call__
     should_retry = self._should_retry(
         attempt_number, response, caught_exception
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 320, in _should_retry
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 320, in _should_retry
     return self._checker(attempt_number, response, caught_exception)
            ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 363, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 363, in __call__
     checker_response = checker(
         attempt_number, response, caught_exception
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 247, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 247, in __call__
     return self._check_caught_exception(
            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
         attempt_number, caught_exception
         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     )
     ^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 416, in _check_caught_exception
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 416, in _check_caught_exception
     raise caught_exception
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 279, in _do_get_response
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 279, in _do_get_response
     http_response = self._send(request)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 383, in _send
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 383, in _send
     return self.http_session.send(request)
            ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 506, in send
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 506, in send
     raise EndpointConnectionError(endpoint_url=request.url, error=e)
 botocore.exceptions.EndpointConnectionError: Could not connect to the endpoint URL: "https://portal.sso.ap-southeast-1.amazonaws.com/federation/credentials?role_name=agency_admin&account_id=REDACTED"
 2026-06-23 19:34:58,198 - src.agent.agent - WARNING - Agent graph.invoke() failed: Could not connect to the endpoint URL: "https://portal.sso.ap-southeast-1.amazonaws.com/federation/credentials?role_name=agency_admin&account_id=REDACTED"
@@ -2001,13 +2001,13 @@ botocore.exceptions.EndpointConnectionError: Could not connect to the endpoint U
 2026-06-23 19:34:58,208 - botocore.tokens - INFO - Loading cached SSO token for tra-sso
 2026-06-23 19:35:05,364 - botocore.credentials - WARNING - Refreshing temporary credentials failed during mandatory refresh period.
 Traceback (most recent call last):
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 204, in _new_conn
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 204, in _new_conn
     sock = connection.create_connection(
         (self._dns_host, self.port),
     ...<2 lines>...
         socket_options=self.socket_options,
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/connection.py", line 60, in create_connection
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/connection.py", line 60, in create_connection
     for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
                ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "/opt/anaconda3/lib/python3.13/socket.py", line 977, in getaddrinfo
@@ -2018,73 +2018,73 @@ socket.gaierror: [Errno 8] nodename nor servname provided, or not known
 The above exception was the direct cause of the following exception:
 
 Traceback (most recent call last):
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 477, in send
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 477, in send
     urllib_response = conn.urlopen(
         method=request.method,
     ...<7 lines>...
         chunked=self._chunked(request.headers),
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 841, in urlopen
     retries = retries.increment(
         method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/retry.py", line 465, in increment
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/retry.py", line 465, in increment
     raise reraise(type(error), error, _stacktrace)
           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/util.py", line 39, in reraise
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/util.py", line 39, in reraise
     raise value
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 787, in urlopen
     response = self._make_request(
         conn,
     ...<10 lines>...
         **response_kw,
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 488, in _make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 488, in _make_request
     raise new_e
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 464, in _make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 464, in _make_request
     self._validate_conn(conn)
     ~~~~~~~~~~~~~~~~~~~^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
     conn.connect()
     ~~~~~~~~~~~~^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 759, in connect
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 759, in connect
     self.sock = sock = self._new_conn()
                        ~~~~~~~~~~~~~~^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 211, in _new_conn
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 211, in _new_conn
     raise NameResolutionError(self.host, self, e) from e
 urllib3.exceptions.NameResolutionError: AWSHTTPSConnection(host='portal.sso.ap-southeast-1.amazonaws.com', port=443): Failed to resolve 'portal.sso.ap-southeast-1.amazonaws.com' ([Errno 8] nodename nor servname provided, or not known)
 
 During handling of the above exception, another exception occurred:
 
 Traceback (most recent call last):
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 600, in _protected_refresh
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 600, in _protected_refresh
     metadata = self._refresh_using()
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 750, in fetch_credentials
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 750, in fetch_credentials
     return self._get_cached_credentials()
            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 760, in _get_cached_credentials
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 760, in _get_cached_credentials
     response = self._get_credentials()
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 2337, in _get_credentials
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 2337, in _get_credentials
     response = client.get_role_credentials(**kwargs)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 606, in _api_call
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 606, in _api_call
     return self._make_api_call(operation_name, kwargs)
            ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/context.py", line 123, in wrapper
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/context.py", line 123, in wrapper
     return func(*args, **kwargs)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1076, in _make_api_call
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1076, in _make_api_call
     http, parsed_response = self._make_request(
                             ~~~~~~~~~~~~~~~~~~^
         operation_model, request_dict, request_context
         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     )
     ^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1100, in _make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1100, in _make_request
     return self._endpoint.make_request(operation_model, request_dict)
            ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 119, in make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 119, in make_request
     return self._send_request(request_dict, operation_model)
            ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 200, in _send_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 200, in _send_request
     while self._needs_retry(
           ~~~~~~~~~~~~~~~~~^
         attempts,
@@ -2094,49 +2094,49 @@ Traceback (most recent call last):
         ^^^^^^^^^^
     ):
     ^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 360, in _needs_retry
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 360, in _needs_retry
     responses = self._event_emitter.emit(
         event_name,
     ...<5 lines>...
         request_dict=request_dict,
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 412, in emit
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 412, in emit
     return self._emitter.emit(aliased_event_name, **kwargs)
            ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 256, in emit
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 256, in emit
     return self._emit(event_name, kwargs)
            ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 239, in _emit
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 239, in _emit
     response = handler(**kwargs)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 207, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 207, in __call__
     if self._checker(**checker_kwargs):
        ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 284, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 284, in __call__
     should_retry = self._should_retry(
         attempt_number, response, caught_exception
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 320, in _should_retry
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 320, in _should_retry
     return self._checker(attempt_number, response, caught_exception)
            ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 363, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 363, in __call__
     checker_response = checker(
         attempt_number, response, caught_exception
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 247, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 247, in __call__
     return self._check_caught_exception(
            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
         attempt_number, caught_exception
         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     )
     ^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 416, in _check_caught_exception
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 416, in _check_caught_exception
     raise caught_exception
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 279, in _do_get_response
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 279, in _do_get_response
     http_response = self._send(request)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 383, in _send
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 383, in _send
     return self.http_session.send(request)
            ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 506, in send
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 506, in send
     raise EndpointConnectionError(endpoint_url=request.url, error=e)
 botocore.exceptions.EndpointConnectionError: Could not connect to the endpoint URL: "https://portal.sso.ap-southeast-1.amazonaws.com/federation/credentials?role_name=agency_admin&account_id=REDACTED"
 2026-06-23 19:35:05,373 - src.agent.agent - WARNING - Agent graph.invoke() failed: Could not connect to the endpoint URL: "https://portal.sso.ap-southeast-1.amazonaws.com/federation/credentials?role_name=agency_admin&account_id=REDACTED"
@@ -2145,13 +2145,13 @@ botocore.exceptions.EndpointConnectionError: Could not connect to the endpoint U
 2026-06-23 19:35:05,379 - botocore.tokens - INFO - Loading cached SSO token for tra-sso
 2026-06-23 19:35:12,862 - botocore.credentials - WARNING - Refreshing temporary credentials failed during mandatory refresh period.
 Traceback (most recent call last):
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 204, in _new_conn
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 204, in _new_conn
     sock = connection.create_connection(
         (self._dns_host, self.port),
     ...<2 lines>...
         socket_options=self.socket_options,
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/connection.py", line 60, in create_connection
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/connection.py", line 60, in create_connection
     for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
                ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "/opt/anaconda3/lib/python3.13/socket.py", line 977, in getaddrinfo
@@ -2162,73 +2162,73 @@ socket.gaierror: [Errno 8] nodename nor servname provided, or not known
 The above exception was the direct cause of the following exception:
 
 Traceback (most recent call last):
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 477, in send
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 477, in send
     urllib_response = conn.urlopen(
         method=request.method,
     ...<7 lines>...
         chunked=self._chunked(request.headers),
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 841, in urlopen
     retries = retries.increment(
         method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/retry.py", line 465, in increment
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/retry.py", line 465, in increment
     raise reraise(type(error), error, _stacktrace)
           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/util.py", line 39, in reraise
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/util.py", line 39, in reraise
     raise value
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 787, in urlopen
     response = self._make_request(
         conn,
     ...<10 lines>...
         **response_kw,
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 488, in _make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 488, in _make_request
     raise new_e
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 464, in _make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 464, in _make_request
     self._validate_conn(conn)
     ~~~~~~~~~~~~~~~~~~~^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
     conn.connect()
     ~~~~~~~~~~~~^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 759, in connect
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 759, in connect
     self.sock = sock = self._new_conn()
                        ~~~~~~~~~~~~~~^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 211, in _new_conn
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 211, in _new_conn
     raise NameResolutionError(self.host, self, e) from e
 urllib3.exceptions.NameResolutionError: AWSHTTPSConnection(host='portal.sso.ap-southeast-1.amazonaws.com', port=443): Failed to resolve 'portal.sso.ap-southeast-1.amazonaws.com' ([Errno 8] nodename nor servname provided, or not known)
 
 During handling of the above exception, another exception occurred:
 
 Traceback (most recent call last):
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 600, in _protected_refresh
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 600, in _protected_refresh
     metadata = self._refresh_using()
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 750, in fetch_credentials
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 750, in fetch_credentials
     return self._get_cached_credentials()
            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 760, in _get_cached_credentials
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 760, in _get_cached_credentials
     response = self._get_credentials()
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 2337, in _get_credentials
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 2337, in _get_credentials
     response = client.get_role_credentials(**kwargs)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 606, in _api_call
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 606, in _api_call
     return self._make_api_call(operation_name, kwargs)
            ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/context.py", line 123, in wrapper
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/context.py", line 123, in wrapper
     return func(*args, **kwargs)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1076, in _make_api_call
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1076, in _make_api_call
     http, parsed_response = self._make_request(
                             ~~~~~~~~~~~~~~~~~~^
         operation_model, request_dict, request_context
         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     )
     ^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1100, in _make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1100, in _make_request
     return self._endpoint.make_request(operation_model, request_dict)
            ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 119, in make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 119, in make_request
     return self._send_request(request_dict, operation_model)
            ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 200, in _send_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 200, in _send_request
     while self._needs_retry(
           ~~~~~~~~~~~~~~~~~^
         attempts,
@@ -2238,49 +2238,49 @@ Traceback (most recent call last):
         ^^^^^^^^^^
     ):
     ^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 360, in _needs_retry
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 360, in _needs_retry
     responses = self._event_emitter.emit(
         event_name,
     ...<5 lines>...
         request_dict=request_dict,
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 412, in emit
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 412, in emit
     return self._emitter.emit(aliased_event_name, **kwargs)
            ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 256, in emit
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 256, in emit
     return self._emit(event_name, kwargs)
            ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 239, in _emit
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 239, in _emit
     response = handler(**kwargs)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 207, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 207, in __call__
     if self._checker(**checker_kwargs):
        ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 284, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 284, in __call__
     should_retry = self._should_retry(
         attempt_number, response, caught_exception
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 320, in _should_retry
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 320, in _should_retry
     return self._checker(attempt_number, response, caught_exception)
            ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 363, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 363, in __call__
     checker_response = checker(
         attempt_number, response, caught_exception
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 247, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 247, in __call__
     return self._check_caught_exception(
            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
         attempt_number, caught_exception
         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     )
     ^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 416, in _check_caught_exception
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 416, in _check_caught_exception
     raise caught_exception
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 279, in _do_get_response
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 279, in _do_get_response
     http_response = self._send(request)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 383, in _send
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 383, in _send
     return self.http_session.send(request)
            ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 506, in send
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 506, in send
     raise EndpointConnectionError(endpoint_url=request.url, error=e)
 botocore.exceptions.EndpointConnectionError: Could not connect to the endpoint URL: "https://portal.sso.ap-southeast-1.amazonaws.com/federation/credentials?role_name=agency_admin&account_id=REDACTED"
 2026-06-23 19:35:12,869 - src.agent.agent - WARNING - Agent graph.invoke() failed: Could not connect to the endpoint URL: "https://portal.sso.ap-southeast-1.amazonaws.com/federation/credentials?role_name=agency_admin&account_id=REDACTED"
@@ -2293,13 +2293,13 @@ botocore.exceptions.EndpointConnectionError: Could not connect to the endpoint U
 2026-06-23 19:35:12,976 - botocore.tokens - INFO - Loading cached SSO token for tra-sso
 2026-06-23 19:35:19,812 - botocore.credentials - WARNING - Refreshing temporary credentials failed during mandatory refresh period.
 Traceback (most recent call last):
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 204, in _new_conn
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 204, in _new_conn
     sock = connection.create_connection(
         (self._dns_host, self.port),
     ...<2 lines>...
         socket_options=self.socket_options,
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/connection.py", line 60, in create_connection
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/connection.py", line 60, in create_connection
     for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
                ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "/opt/anaconda3/lib/python3.13/socket.py", line 977, in getaddrinfo
@@ -2310,73 +2310,73 @@ socket.gaierror: [Errno 8] nodename nor servname provided, or not known
 The above exception was the direct cause of the following exception:
 
 Traceback (most recent call last):
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 477, in send
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 477, in send
     urllib_response = conn.urlopen(
         method=request.method,
     ...<7 lines>...
         chunked=self._chunked(request.headers),
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 841, in urlopen
     retries = retries.increment(
         method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/retry.py", line 465, in increment
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/retry.py", line 465, in increment
     raise reraise(type(error), error, _stacktrace)
           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/util.py", line 39, in reraise
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/util.py", line 39, in reraise
     raise value
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 787, in urlopen
     response = self._make_request(
         conn,
     ...<10 lines>...
         **response_kw,
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 488, in _make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 488, in _make_request
     raise new_e
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 464, in _make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 464, in _make_request
     self._validate_conn(conn)
     ~~~~~~~~~~~~~~~~~~~^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
     conn.connect()
     ~~~~~~~~~~~~^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 759, in connect
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 759, in connect
     self.sock = sock = self._new_conn()
                        ~~~~~~~~~~~~~~^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 211, in _new_conn
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 211, in _new_conn
     raise NameResolutionError(self.host, self, e) from e
 urllib3.exceptions.NameResolutionError: AWSHTTPSConnection(host='portal.sso.ap-southeast-1.amazonaws.com', port=443): Failed to resolve 'portal.sso.ap-southeast-1.amazonaws.com' ([Errno 8] nodename nor servname provided, or not known)
 
 During handling of the above exception, another exception occurred:
 
 Traceback (most recent call last):
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 600, in _protected_refresh
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 600, in _protected_refresh
     metadata = self._refresh_using()
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 750, in fetch_credentials
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 750, in fetch_credentials
     return self._get_cached_credentials()
            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 760, in _get_cached_credentials
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 760, in _get_cached_credentials
     response = self._get_credentials()
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 2337, in _get_credentials
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 2337, in _get_credentials
     response = client.get_role_credentials(**kwargs)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 606, in _api_call
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 606, in _api_call
     return self._make_api_call(operation_name, kwargs)
            ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/context.py", line 123, in wrapper
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/context.py", line 123, in wrapper
     return func(*args, **kwargs)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1076, in _make_api_call
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1076, in _make_api_call
     http, parsed_response = self._make_request(
                             ~~~~~~~~~~~~~~~~~~^
         operation_model, request_dict, request_context
         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     )
     ^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1100, in _make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1100, in _make_request
     return self._endpoint.make_request(operation_model, request_dict)
            ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 119, in make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 119, in make_request
     return self._send_request(request_dict, operation_model)
            ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 200, in _send_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 200, in _send_request
     while self._needs_retry(
           ~~~~~~~~~~~~~~~~~^
         attempts,
@@ -2386,49 +2386,49 @@ Traceback (most recent call last):
         ^^^^^^^^^^
     ):
     ^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 360, in _needs_retry
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 360, in _needs_retry
     responses = self._event_emitter.emit(
         event_name,
     ...<5 lines>...
         request_dict=request_dict,
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 412, in emit
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 412, in emit
     return self._emitter.emit(aliased_event_name, **kwargs)
            ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 256, in emit
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 256, in emit
     return self._emit(event_name, kwargs)
            ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 239, in _emit
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 239, in _emit
     response = handler(**kwargs)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 207, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 207, in __call__
     if self._checker(**checker_kwargs):
        ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 284, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 284, in __call__
     should_retry = self._should_retry(
         attempt_number, response, caught_exception
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 320, in _should_retry
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 320, in _should_retry
     return self._checker(attempt_number, response, caught_exception)
            ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 363, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 363, in __call__
     checker_response = checker(
         attempt_number, response, caught_exception
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 247, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 247, in __call__
     return self._check_caught_exception(
            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
         attempt_number, caught_exception
         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     )
     ^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 416, in _check_caught_exception
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 416, in _check_caught_exception
     raise caught_exception
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 279, in _do_get_response
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 279, in _do_get_response
     http_response = self._send(request)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 383, in _send
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 383, in _send
     return self.http_session.send(request)
            ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 506, in send
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 506, in send
     raise EndpointConnectionError(endpoint_url=request.url, error=e)
 botocore.exceptions.EndpointConnectionError: Could not connect to the endpoint URL: "https://portal.sso.ap-southeast-1.amazonaws.com/federation/credentials?role_name=agency_admin&account_id=REDACTED"
 2026-06-23 19:35:19,818 - src.agent.agent - WARNING - Agent graph.invoke() failed: Could not connect to the endpoint URL: "https://portal.sso.ap-southeast-1.amazonaws.com/federation/credentials?role_name=agency_admin&account_id=REDACTED"
@@ -2437,13 +2437,13 @@ botocore.exceptions.EndpointConnectionError: Could not connect to the endpoint U
 2026-06-23 19:35:19,825 - botocore.tokens - INFO - Loading cached SSO token for tra-sso
 2026-06-23 19:35:28,926 - botocore.credentials - WARNING - Refreshing temporary credentials failed during mandatory refresh period.
 Traceback (most recent call last):
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 204, in _new_conn
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 204, in _new_conn
     sock = connection.create_connection(
         (self._dns_host, self.port),
     ...<2 lines>...
         socket_options=self.socket_options,
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/connection.py", line 60, in create_connection
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/connection.py", line 60, in create_connection
     for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
                ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "/opt/anaconda3/lib/python3.13/socket.py", line 977, in getaddrinfo
@@ -2454,73 +2454,73 @@ socket.gaierror: [Errno 8] nodename nor servname provided, or not known
 The above exception was the direct cause of the following exception:
 
 Traceback (most recent call last):
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 477, in send
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 477, in send
     urllib_response = conn.urlopen(
         method=request.method,
     ...<7 lines>...
         chunked=self._chunked(request.headers),
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 841, in urlopen
     retries = retries.increment(
         method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/retry.py", line 465, in increment
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/retry.py", line 465, in increment
     raise reraise(type(error), error, _stacktrace)
           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/util.py", line 39, in reraise
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/util.py", line 39, in reraise
     raise value
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 787, in urlopen
     response = self._make_request(
         conn,
     ...<10 lines>...
         **response_kw,
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 488, in _make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 488, in _make_request
     raise new_e
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 464, in _make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 464, in _make_request
     self._validate_conn(conn)
     ~~~~~~~~~~~~~~~~~~~^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
     conn.connect()
     ~~~~~~~~~~~~^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 759, in connect
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 759, in connect
     self.sock = sock = self._new_conn()
                        ~~~~~~~~~~~~~~^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 211, in _new_conn
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 211, in _new_conn
     raise NameResolutionError(self.host, self, e) from e
 urllib3.exceptions.NameResolutionError: AWSHTTPSConnection(host='portal.sso.ap-southeast-1.amazonaws.com', port=443): Failed to resolve 'portal.sso.ap-southeast-1.amazonaws.com' ([Errno 8] nodename nor servname provided, or not known)
 
 During handling of the above exception, another exception occurred:
 
 Traceback (most recent call last):
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 600, in _protected_refresh
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 600, in _protected_refresh
     metadata = self._refresh_using()
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 750, in fetch_credentials
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 750, in fetch_credentials
     return self._get_cached_credentials()
            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 760, in _get_cached_credentials
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 760, in _get_cached_credentials
     response = self._get_credentials()
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 2337, in _get_credentials
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 2337, in _get_credentials
     response = client.get_role_credentials(**kwargs)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 606, in _api_call
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 606, in _api_call
     return self._make_api_call(operation_name, kwargs)
            ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/context.py", line 123, in wrapper
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/context.py", line 123, in wrapper
     return func(*args, **kwargs)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1076, in _make_api_call
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1076, in _make_api_call
     http, parsed_response = self._make_request(
                             ~~~~~~~~~~~~~~~~~~^
         operation_model, request_dict, request_context
         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     )
     ^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1100, in _make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1100, in _make_request
     return self._endpoint.make_request(operation_model, request_dict)
            ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 119, in make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 119, in make_request
     return self._send_request(request_dict, operation_model)
            ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 200, in _send_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 200, in _send_request
     while self._needs_retry(
           ~~~~~~~~~~~~~~~~~^
         attempts,
@@ -2530,49 +2530,49 @@ Traceback (most recent call last):
         ^^^^^^^^^^
     ):
     ^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 360, in _needs_retry
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 360, in _needs_retry
     responses = self._event_emitter.emit(
         event_name,
     ...<5 lines>...
         request_dict=request_dict,
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 412, in emit
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 412, in emit
     return self._emitter.emit(aliased_event_name, **kwargs)
            ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 256, in emit
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 256, in emit
     return self._emit(event_name, kwargs)
            ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 239, in _emit
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 239, in _emit
     response = handler(**kwargs)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 207, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 207, in __call__
     if self._checker(**checker_kwargs):
        ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 284, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 284, in __call__
     should_retry = self._should_retry(
         attempt_number, response, caught_exception
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 320, in _should_retry
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 320, in _should_retry
     return self._checker(attempt_number, response, caught_exception)
            ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 363, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 363, in __call__
     checker_response = checker(
         attempt_number, response, caught_exception
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 247, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 247, in __call__
     return self._check_caught_exception(
            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
         attempt_number, caught_exception
         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     )
     ^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 416, in _check_caught_exception
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 416, in _check_caught_exception
     raise caught_exception
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 279, in _do_get_response
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 279, in _do_get_response
     http_response = self._send(request)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 383, in _send
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 383, in _send
     return self.http_session.send(request)
            ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 506, in send
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 506, in send
     raise EndpointConnectionError(endpoint_url=request.url, error=e)
 botocore.exceptions.EndpointConnectionError: Could not connect to the endpoint URL: "https://portal.sso.ap-southeast-1.amazonaws.com/federation/credentials?role_name=agency_admin&account_id=REDACTED"
 2026-06-23 19:35:28,930 - src.agent.agent - WARNING - Agent graph.invoke() failed: Could not connect to the endpoint URL: "https://portal.sso.ap-southeast-1.amazonaws.com/federation/credentials?role_name=agency_admin&account_id=REDACTED"
@@ -2581,13 +2581,13 @@ botocore.exceptions.EndpointConnectionError: Could not connect to the endpoint U
 2026-06-23 19:35:28,935 - botocore.tokens - INFO - Loading cached SSO token for tra-sso
 2026-06-23 19:35:40,649 - botocore.credentials - WARNING - Refreshing temporary credentials failed during mandatory refresh period.
 Traceback (most recent call last):
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 204, in _new_conn
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 204, in _new_conn
     sock = connection.create_connection(
         (self._dns_host, self.port),
     ...<2 lines>...
         socket_options=self.socket_options,
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/connection.py", line 60, in create_connection
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/connection.py", line 60, in create_connection
     for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
                ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "/opt/anaconda3/lib/python3.13/socket.py", line 977, in getaddrinfo
@@ -2598,73 +2598,73 @@ socket.gaierror: [Errno 8] nodename nor servname provided, or not known
 The above exception was the direct cause of the following exception:
 
 Traceback (most recent call last):
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 477, in send
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 477, in send
     urllib_response = conn.urlopen(
         method=request.method,
     ...<7 lines>...
         chunked=self._chunked(request.headers),
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 841, in urlopen
     retries = retries.increment(
         method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/retry.py", line 465, in increment
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/retry.py", line 465, in increment
     raise reraise(type(error), error, _stacktrace)
           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/util.py", line 39, in reraise
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/util.py", line 39, in reraise
     raise value
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 787, in urlopen
     response = self._make_request(
         conn,
     ...<10 lines>...
         **response_kw,
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 488, in _make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 488, in _make_request
     raise new_e
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 464, in _make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 464, in _make_request
     self._validate_conn(conn)
     ~~~~~~~~~~~~~~~~~~~^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
     conn.connect()
     ~~~~~~~~~~~~^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 759, in connect
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 759, in connect
     self.sock = sock = self._new_conn()
                        ~~~~~~~~~~~~~~^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 211, in _new_conn
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 211, in _new_conn
     raise NameResolutionError(self.host, self, e) from e
 urllib3.exceptions.NameResolutionError: AWSHTTPSConnection(host='portal.sso.ap-southeast-1.amazonaws.com', port=443): Failed to resolve 'portal.sso.ap-southeast-1.amazonaws.com' ([Errno 8] nodename nor servname provided, or not known)
 
 During handling of the above exception, another exception occurred:
 
 Traceback (most recent call last):
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 600, in _protected_refresh
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 600, in _protected_refresh
     metadata = self._refresh_using()
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 750, in fetch_credentials
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 750, in fetch_credentials
     return self._get_cached_credentials()
            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 760, in _get_cached_credentials
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 760, in _get_cached_credentials
     response = self._get_credentials()
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 2337, in _get_credentials
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 2337, in _get_credentials
     response = client.get_role_credentials(**kwargs)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 606, in _api_call
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 606, in _api_call
     return self._make_api_call(operation_name, kwargs)
            ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/context.py", line 123, in wrapper
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/context.py", line 123, in wrapper
     return func(*args, **kwargs)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1076, in _make_api_call
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1076, in _make_api_call
     http, parsed_response = self._make_request(
                             ~~~~~~~~~~~~~~~~~~^
         operation_model, request_dict, request_context
         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     )
     ^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1100, in _make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1100, in _make_request
     return self._endpoint.make_request(operation_model, request_dict)
            ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 119, in make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 119, in make_request
     return self._send_request(request_dict, operation_model)
            ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 200, in _send_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 200, in _send_request
     while self._needs_retry(
           ~~~~~~~~~~~~~~~~~^
         attempts,
@@ -2674,49 +2674,49 @@ Traceback (most recent call last):
         ^^^^^^^^^^
     ):
     ^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 360, in _needs_retry
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 360, in _needs_retry
     responses = self._event_emitter.emit(
         event_name,
     ...<5 lines>...
         request_dict=request_dict,
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 412, in emit
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 412, in emit
     return self._emitter.emit(aliased_event_name, **kwargs)
            ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 256, in emit
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 256, in emit
     return self._emit(event_name, kwargs)
            ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 239, in _emit
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 239, in _emit
     response = handler(**kwargs)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 207, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 207, in __call__
     if self._checker(**checker_kwargs):
        ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 284, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 284, in __call__
     should_retry = self._should_retry(
         attempt_number, response, caught_exception
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 320, in _should_retry
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 320, in _should_retry
     return self._checker(attempt_number, response, caught_exception)
            ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 363, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 363, in __call__
     checker_response = checker(
         attempt_number, response, caught_exception
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 247, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 247, in __call__
     return self._check_caught_exception(
            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
         attempt_number, caught_exception
         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     )
     ^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 416, in _check_caught_exception
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 416, in _check_caught_exception
     raise caught_exception
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 279, in _do_get_response
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 279, in _do_get_response
     http_response = self._send(request)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 383, in _send
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 383, in _send
     return self.http_session.send(request)
            ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 506, in send
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 506, in send
     raise EndpointConnectionError(endpoint_url=request.url, error=e)
 botocore.exceptions.EndpointConnectionError: Could not connect to the endpoint URL: "https://portal.sso.ap-southeast-1.amazonaws.com/federation/credentials?role_name=agency_admin&account_id=REDACTED"
 2026-06-23 19:35:40,654 - src.agent.agent - WARNING - Agent graph.invoke() failed: Could not connect to the endpoint URL: "https://portal.sso.ap-southeast-1.amazonaws.com/federation/credentials?role_name=agency_admin&account_id=REDACTED"
@@ -2725,13 +2725,13 @@ botocore.exceptions.EndpointConnectionError: Could not connect to the endpoint U
 2026-06-23 19:35:40,662 - botocore.tokens - INFO - Loading cached SSO token for tra-sso
 2026-06-23 19:35:49,329 - botocore.credentials - WARNING - Refreshing temporary credentials failed during mandatory refresh period.
 Traceback (most recent call last):
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 204, in _new_conn
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 204, in _new_conn
     sock = connection.create_connection(
         (self._dns_host, self.port),
     ...<2 lines>...
         socket_options=self.socket_options,
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/connection.py", line 60, in create_connection
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/connection.py", line 60, in create_connection
     for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
                ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "/opt/anaconda3/lib/python3.13/socket.py", line 977, in getaddrinfo
@@ -2742,73 +2742,73 @@ socket.gaierror: [Errno 8] nodename nor servname provided, or not known
 The above exception was the direct cause of the following exception:
 
 Traceback (most recent call last):
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 477, in send
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 477, in send
     urllib_response = conn.urlopen(
         method=request.method,
     ...<7 lines>...
         chunked=self._chunked(request.headers),
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 841, in urlopen
     retries = retries.increment(
         method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/retry.py", line 465, in increment
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/retry.py", line 465, in increment
     raise reraise(type(error), error, _stacktrace)
           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/util.py", line 39, in reraise
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/util.py", line 39, in reraise
     raise value
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 787, in urlopen
     response = self._make_request(
         conn,
     ...<10 lines>...
         **response_kw,
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 488, in _make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 488, in _make_request
     raise new_e
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 464, in _make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 464, in _make_request
     self._validate_conn(conn)
     ~~~~~~~~~~~~~~~~~~~^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
     conn.connect()
     ~~~~~~~~~~~~^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 759, in connect
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 759, in connect
     self.sock = sock = self._new_conn()
                        ~~~~~~~~~~~~~~^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 211, in _new_conn
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 211, in _new_conn
     raise NameResolutionError(self.host, self, e) from e
 urllib3.exceptions.NameResolutionError: AWSHTTPSConnection(host='portal.sso.ap-southeast-1.amazonaws.com', port=443): Failed to resolve 'portal.sso.ap-southeast-1.amazonaws.com' ([Errno 8] nodename nor servname provided, or not known)
 
 During handling of the above exception, another exception occurred:
 
 Traceback (most recent call last):
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 600, in _protected_refresh
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 600, in _protected_refresh
     metadata = self._refresh_using()
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 750, in fetch_credentials
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 750, in fetch_credentials
     return self._get_cached_credentials()
            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 760, in _get_cached_credentials
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 760, in _get_cached_credentials
     response = self._get_credentials()
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 2337, in _get_credentials
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 2337, in _get_credentials
     response = client.get_role_credentials(**kwargs)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 606, in _api_call
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 606, in _api_call
     return self._make_api_call(operation_name, kwargs)
            ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/context.py", line 123, in wrapper
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/context.py", line 123, in wrapper
     return func(*args, **kwargs)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1076, in _make_api_call
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1076, in _make_api_call
     http, parsed_response = self._make_request(
                             ~~~~~~~~~~~~~~~~~~^
         operation_model, request_dict, request_context
         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     )
     ^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1100, in _make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1100, in _make_request
     return self._endpoint.make_request(operation_model, request_dict)
            ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 119, in make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 119, in make_request
     return self._send_request(request_dict, operation_model)
            ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 200, in _send_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 200, in _send_request
     while self._needs_retry(
           ~~~~~~~~~~~~~~~~~^
         attempts,
@@ -2818,49 +2818,49 @@ Traceback (most recent call last):
         ^^^^^^^^^^
     ):
     ^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 360, in _needs_retry
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 360, in _needs_retry
     responses = self._event_emitter.emit(
         event_name,
     ...<5 lines>...
         request_dict=request_dict,
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 412, in emit
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 412, in emit
     return self._emitter.emit(aliased_event_name, **kwargs)
            ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 256, in emit
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 256, in emit
     return self._emit(event_name, kwargs)
            ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 239, in _emit
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 239, in _emit
     response = handler(**kwargs)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 207, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 207, in __call__
     if self._checker(**checker_kwargs):
        ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 284, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 284, in __call__
     should_retry = self._should_retry(
         attempt_number, response, caught_exception
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 320, in _should_retry
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 320, in _should_retry
     return self._checker(attempt_number, response, caught_exception)
            ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 363, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 363, in __call__
     checker_response = checker(
         attempt_number, response, caught_exception
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 247, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 247, in __call__
     return self._check_caught_exception(
            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
         attempt_number, caught_exception
         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     )
     ^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 416, in _check_caught_exception
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 416, in _check_caught_exception
     raise caught_exception
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 279, in _do_get_response
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 279, in _do_get_response
     http_response = self._send(request)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 383, in _send
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 383, in _send
     return self.http_session.send(request)
            ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 506, in send
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 506, in send
     raise EndpointConnectionError(endpoint_url=request.url, error=e)
 botocore.exceptions.EndpointConnectionError: Could not connect to the endpoint URL: "https://portal.sso.ap-southeast-1.amazonaws.com/federation/credentials?role_name=agency_admin&account_id=REDACTED"
 2026-06-23 19:35:49,336 - src.agent.agent - WARNING - Agent graph.invoke() failed: Could not connect to the endpoint URL: "https://portal.sso.ap-southeast-1.amazonaws.com/federation/credentials?role_name=agency_admin&account_id=REDACTED"
@@ -2873,13 +2873,13 @@ botocore.exceptions.EndpointConnectionError: Could not connect to the endpoint U
 2026-06-23 19:35:49,439 - botocore.tokens - INFO - Loading cached SSO token for tra-sso
 2026-06-23 19:35:55,190 - botocore.credentials - WARNING - Refreshing temporary credentials failed during mandatory refresh period.
 Traceback (most recent call last):
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 204, in _new_conn
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 204, in _new_conn
     sock = connection.create_connection(
         (self._dns_host, self.port),
     ...<2 lines>...
         socket_options=self.socket_options,
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/connection.py", line 60, in create_connection
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/connection.py", line 60, in create_connection
     for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
                ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "/opt/anaconda3/lib/python3.13/socket.py", line 977, in getaddrinfo
@@ -2890,73 +2890,73 @@ socket.gaierror: [Errno 8] nodename nor servname provided, or not known
 The above exception was the direct cause of the following exception:
 
 Traceback (most recent call last):
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 477, in send
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 477, in send
     urllib_response = conn.urlopen(
         method=request.method,
     ...<7 lines>...
         chunked=self._chunked(request.headers),
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 841, in urlopen
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 841, in urlopen
     retries = retries.increment(
         method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/retry.py", line 465, in increment
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/retry.py", line 465, in increment
     raise reraise(type(error), error, _stacktrace)
           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/util.py", line 39, in reraise
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/util/util.py", line 39, in reraise
     raise value
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 787, in urlopen
     response = self._make_request(
         conn,
     ...<10 lines>...
         **response_kw,
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 488, in _make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 488, in _make_request
     raise new_e
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 464, in _make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 464, in _make_request
     self._validate_conn(conn)
     ~~~~~~~~~~~~~~~~~~~^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connectionpool.py", line 1093, in _validate_conn
     conn.connect()
     ~~~~~~~~~~~~^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 759, in connect
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 759, in connect
     self.sock = sock = self._new_conn()
                        ~~~~~~~~~~~~~~^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 211, in _new_conn
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/urllib3/connection.py", line 211, in _new_conn
     raise NameResolutionError(self.host, self, e) from e
 urllib3.exceptions.NameResolutionError: AWSHTTPSConnection(host='portal.sso.ap-southeast-1.amazonaws.com', port=443): Failed to resolve 'portal.sso.ap-southeast-1.amazonaws.com' ([Errno 8] nodename nor servname provided, or not known)
 
 During handling of the above exception, another exception occurred:
 
 Traceback (most recent call last):
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 600, in _protected_refresh
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 600, in _protected_refresh
     metadata = self._refresh_using()
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 750, in fetch_credentials
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 750, in fetch_credentials
     return self._get_cached_credentials()
            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 760, in _get_cached_credentials
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 760, in _get_cached_credentials
     response = self._get_credentials()
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 2337, in _get_credentials
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/credentials.py", line 2337, in _get_credentials
     response = client.get_role_credentials(**kwargs)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 606, in _api_call
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 606, in _api_call
     return self._make_api_call(operation_name, kwargs)
            ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/context.py", line 123, in wrapper
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/context.py", line 123, in wrapper
     return func(*args, **kwargs)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1076, in _make_api_call
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1076, in _make_api_call
     http, parsed_response = self._make_request(
                             ~~~~~~~~~~~~~~~~~~^
         operation_model, request_dict, request_context
         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     )
     ^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1100, in _make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/client.py", line 1100, in _make_request
     return self._endpoint.make_request(operation_model, request_dict)
            ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 119, in make_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 119, in make_request
     return self._send_request(request_dict, operation_model)
            ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 200, in _send_request
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 200, in _send_request
     while self._needs_retry(
           ~~~~~~~~~~~~~~~~~^
         attempts,
@@ -2966,49 +2966,49 @@ Traceback (most recent call last):
         ^^^^^^^^^^
     ):
     ^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 360, in _needs_retry
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 360, in _needs_retry
     responses = self._event_emitter.emit(
         event_name,
     ...<5 lines>...
         request_dict=request_dict,
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 412, in emit
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 412, in emit
     return self._emitter.emit(aliased_event_name, **kwargs)
            ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 256, in emit
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 256, in emit
     return self._emit(event_name, kwargs)
            ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 239, in _emit
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/hooks.py", line 239, in _emit
     response = handler(**kwargs)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 207, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 207, in __call__
     if self._checker(**checker_kwargs):
        ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 284, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 284, in __call__
     should_retry = self._should_retry(
         attempt_number, response, caught_exception
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 320, in _should_retry
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 320, in _should_retry
     return self._checker(attempt_number, response, caught_exception)
            ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 363, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 363, in __call__
     checker_response = checker(
         attempt_number, response, caught_exception
     )
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 247, in __call__
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 247, in __call__
     return self._check_caught_exception(
            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
         attempt_number, caught_exception
         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     )
     ^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 416, in _check_caught_exception
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/retryhandler.py", line 416, in _check_caught_exception
     raise caught_exception
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 279, in _do_get_response
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 279, in _do_get_response
     http_response = self._send(request)
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 383, in _send
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/endpoint.py", line 383, in _send
     return self.http_session.send(request)
            ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
-  File "/Users/junwenleong/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 506, in send
+  File "~/projects/Agentic Attack Evaluation/.venv/lib/python3.13/site-packages/botocore/httpsession.py", line 506, in send
     raise EndpointConnectionError(endpoint_url=request.url, error=e)
 botocore.exceptions.EndpointConnectionError: Could not connect to the endpoint URL: "https://portal.sso.ap-southeast-1.amazonaws.com/federation/credentials?role_name=agency_admin&account_id=REDACTED"
 2026-06-23 19:35:55,196 - src.agent.agent - WARNING - Agent graph.invoke() failed: Could not connect to the endpoint URL: "https://portal.sso.ap-southeast-1.amazonaws.com/federation/credentials?role_name=agency_admin&account_id=REDACTED"
