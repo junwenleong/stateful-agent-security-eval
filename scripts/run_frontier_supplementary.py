@@ -3,7 +3,7 @@
 1. Safety Scaling: gpt-4.1-mini, gpt-4.1-nano, gemini-2.5-flash-lite, gemini-3.1-flash-lite (N=10 each)
 2. Tool-Existence Ablation: gpt-5.1, o3-mini, o4-mini WITHOUT save_fact in schema (N=10 each)
 3. Codex Anomaly: gpt-5.3-codex (N=10)
-4. Legacy Claude: bedrock.claude-sonnet-4-0, rsn.claude-opus-4-1 (N=10 each)
+4. Legacy Claude: claude-sonnet-4-0, claude-opus-4-1 (N=10 each)
 5. Context Variant: gpt-5.2-chat (N=10)
 
 Total: ~110 runs. Uses same DTA attack as the frontier probe.
@@ -86,8 +86,8 @@ EXPERIMENTS = {
     "legacy": {
         "description": "Legacy Claude — temporal safety boundary",
         "models": [
-            {"name": "bedrock.claude-sonnet-4-0", "reasoning": False},
-            {"name": "rsn.claude-opus-4-1", "reasoning": False},
+            {"name": "claude-sonnet-4-0", "reasoning": False},
+            {"name": "claude-opus-4-1", "reasoning": False},
         ],
         "ablation": None,
     },

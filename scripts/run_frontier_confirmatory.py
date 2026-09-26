@@ -148,8 +148,8 @@ EXPERIMENTS.append(("gpt-5.1_no_tools", "gpt-5.1", False, None, None, SYSTEM_PRO
 EXPERIMENTS.append(("o3-mini_no_tools", "o3-mini", True, None, None, SYSTEM_PROMPT, 2))
 EXPERIMENTS.append(("o4-mini_no_tools", "o4-mini", True, None, None, SYSTEM_PROMPT, 2))
 # Sonnet brittleness
-EXPERIMENTS.append(("sonnet-4.6_varB_loaded", "rsn.claude-sonnet-4-6", False, PAYLOAD_B, FULL_TOOLS, SYSTEM_PROMPT, 2))
-EXPERIMENTS.append(("sonnet-4.6_varC_loaded", "rsn.claude-sonnet-4-6", False, PAYLOAD_C, FULL_TOOLS, SYSTEM_PROMPT, 2))
+EXPERIMENTS.append(("sonnet-4.6_varB_loaded", "claude-sonnet-4-6", False, PAYLOAD_B, FULL_TOOLS, SYSTEM_PROMPT, 2))
+EXPERIMENTS.append(("sonnet-4.6_varC_loaded", "claude-sonnet-4-6", False, PAYLOAD_C, FULL_TOOLS, SYSTEM_PROMPT, 2))
 # Generational trend (uniform N=40)
 EXPERIMENTS.append(("gpt-5.4_varB_loaded", "gpt-5.4", True, PAYLOAD_B, FULL_TOOLS, SYSTEM_PROMPT, 2))
 EXPERIMENTS.append(("gpt-5.5_varB_loaded", "gpt-5.5", False, PAYLOAD_B, FULL_TOOLS, SYSTEM_PROMPT, 2))
@@ -163,8 +163,8 @@ FRONTIER_MODELS = [
     {"name": "gpt-5.1", "reasoning": False},
     {"name": "o4-mini", "reasoning": True},
     {"name": "gemini-2.5-pro", "reasoning": False},
-    {"name": "rsn.claude-sonnet-4-6", "reasoning": False},
-    {"name": "rsn.claude-opus-4-8", "reasoning": False},
+    {"name": "claude-sonnet-4-6", "reasoning": False},
+    {"name": "claude-opus-4-8", "reasoning": False},
     {"name": "gpt-5.4", "reasoning": True},
     {"name": "gpt-5.5", "reasoning": False},
     {"name": "gpt-5-nano", "reasoning": False},
@@ -172,11 +172,11 @@ FRONTIER_MODELS = [
     {"name": "gemini-3.1-pro-preview", "reasoning": False},
     {"name": "gemini-2.5-flash", "reasoning": False},
     {"name": "gemini-3.5-flash", "reasoning": False},
-    {"name": "rsn.claude-haiku-4-5", "reasoning": False},
+    {"name": "claude-haiku-4-5", "reasoning": False},
     {"name": "o3", "reasoning": True},
     {"name": "o3-mini", "reasoning": True},
-    {"name": "rsn.claude-sonnet-4-5", "reasoning": False},
-    {"name": "rsn.claude-opus-4-5", "reasoning": False},
+    {"name": "claude-sonnet-4-5", "reasoning": False},
+    {"name": "claude-opus-4-5", "reasoning": False},
     {"name": "gpt-4o", "reasoning": False},
     {"name": "gpt-5.2", "reasoning": False},
     {"name": "gpt-5-mini", "reasoning": False},

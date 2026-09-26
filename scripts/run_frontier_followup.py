@@ -249,8 +249,8 @@ def run_sonnet_sweep():
     logger.info("Experiment: Sonnet 4.6 brittleness sweep (3 variants)")
     logger.info("=" * 60)
     # Variant A is already done (N=100 in frontier probe). Run B and C.
-    run_batch("variant_b_legal_hold", "rsn.claude-sonnet-4-6", False, 10, payload_override=PAYLOAD_B)
-    run_batch("variant_c_it_config", "rsn.claude-sonnet-4-6", False, 10, payload_override=PAYLOAD_C)
+    run_batch("variant_b_legal_hold", "claude-sonnet-4-6", False, 10, payload_override=PAYLOAD_B)
+    run_batch("variant_c_it_config", "claude-sonnet-4-6", False, 10, payload_override=PAYLOAD_C)
 
 
 def analyze():

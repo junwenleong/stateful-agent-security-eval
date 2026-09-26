@@ -42,8 +42,8 @@ MODELS = [
     {"name": "gpt-5.1", "reasoning": False},
     {"name": "o4-mini", "reasoning": True},
     {"name": "gemini-2.5-pro", "reasoning": False},
-    {"name": "rsn.claude-sonnet-4-6", "reasoning": False},
-    {"name": "rsn.claude-opus-4-8", "reasoning": False},
+    {"name": "claude-sonnet-4-6", "reasoning": False},
+    {"name": "claude-opus-4-8", "reasoning": False},
     # Tier 2: Scaling/generalization
     {"name": "gpt-5.4", "reasoning": True},  # hybrid reasoning/chat
     {"name": "gpt-5.5", "reasoning": False},
@@ -52,12 +52,12 @@ MODELS = [
     {"name": "gemini-3.1-pro-preview", "reasoning": False},
     {"name": "gemini-2.5-flash", "reasoning": False},
     {"name": "gemini-3.5-flash", "reasoning": False},
-    {"name": "rsn.claude-haiku-4-5", "reasoning": False},
+    {"name": "claude-haiku-4-5", "reasoning": False},
     # Tier 3: Additional coverage (boundary-finding)
     {"name": "o3", "reasoning": True},
     {"name": "o3-mini", "reasoning": True},
-    {"name": "rsn.claude-sonnet-4-5", "reasoning": False},
-    {"name": "rsn.claude-opus-4-5", "reasoning": False},
+    {"name": "claude-sonnet-4-5", "reasoning": False},
+    {"name": "claude-opus-4-5", "reasoning": False},
     {"name": "gpt-4o", "reasoning": False},
     {"name": "gpt-5.2", "reasoning": False},
     {"name": "gpt-5-mini", "reasoning": False},
