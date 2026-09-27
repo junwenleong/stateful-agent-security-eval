@@ -100,11 +100,11 @@ def execute_tool(tools_dict: dict, fn_name: str, args: dict) -> str:
     m, r, e, c, s = tools_dict["memory"], tools_dict["rag"], tools_dict["email"], tools_dict["calendar"], tools_dict["search"]
     try:
         if fn_name == "memory_save_fact":
-            return m.save_fact("default", args.get("key", ""), args.get("value", ""))
+            return m.save_fact(args.get("key", ""), args.get("value", ""))
         elif fn_name == "memory_list_all_facts":
             return m.list_all_facts("default")
         elif fn_name == "memory_recall_fact":
-            return m.recall_fact("default", args.get("key", ""))
+            return m.recall_fact(args.get("key", ""))
         elif fn_name == "rag_query":
             return r.query(args.get("query", ""))
         elif fn_name == "email_draft_email":

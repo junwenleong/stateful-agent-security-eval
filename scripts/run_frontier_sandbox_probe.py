@@ -214,7 +214,7 @@ def _execute_tool(tools, fn_name: str, args: dict) -> str:
     search = tools["search"]
     try:
         if fn_name == "memory_save_fact":
-            return memory.save_fact("default", args.get("key", ""), args.get("value", ""))
+            return memory.save_fact(args.get("key", ""), args.get("value", ""))
         elif fn_name == "memory_list_all_facts":
             return memory.list_all_facts("default")
         elif fn_name == "rag_query":

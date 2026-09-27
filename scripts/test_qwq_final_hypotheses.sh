@@ -47,7 +47,7 @@ start_ollama() {
 
 fingerprint() {
     local LABEL="$1"
-    local FP=$(curl -s http://localhost:11434/api/generate -d '{"model":"qwq:32b","prompt":"Complete: The capital of France is","stream":false,"options":{"num_predict":10,"temperature":0}}' 2>/dev/null | python3 -c "import sys,json; print(json.load(sys.stdin).get('response','ERROR')[:80])" 2>/dev/null || echo "ERROR")
+    local FP=$(curl -s http://localhost:11434/api/generate -d '{"model":"qwq:32b","prompt":"Complete: The capital of France is","stream":false,"options":{"num_predict":10,"temperature":0}}' 2>/dev/null | .venv/bin/python -c "import sys,json; print(json.load(sys.stdin).get('response','ERROR')[:80])" 2>/dev/null || echo "ERROR")
     echo "  [fingerprint $LABEL]: $FP" | tee -a "$SUMMARY"
     echo "$LABEL: $FP" >> "$RESULTS_DIR/fingerprints.txt"
 }

@@ -1,0 +1,31 @@
+{
+  "access_right": "open",
+  "creators": [
+    {
+      "name": "Leong, Jun Wen"
+    }
+  ],
+  "description": "SleeperBench v1.0.0 is a frozen research artifact released for reproducibility of the study <i>Injection\u2013Execution Dissociation: A Mechanistic Evaluation of Persistent Memory Attacks and Defenses in Stateful LLM Agents</i> (arXiv:2605.08442). It evaluates persistent memory attacks across 9 open-weight models and 21 frontier API endpoints, testing 6 architectural defense layers in a 5,040-run pre-registered factorial design. Results were validated against model and API versions available in June 2026. Community pull requests that improve reproducibility or documentation are welcome; no active maintenance or compatibility updates for newer model versions are promised. This release provides a stable reference baseline for research in LLM agent memory security.",
+  "keywords": [
+    "LLM agents",
+    "persistent memory attacks",
+    "prompt injection",
+    "agent security",
+    "benchmark",
+    "injection-execution dissociation",
+    "AI safety",
+    "reproducibility"
+  ],
+  "license": "MIT",
+  "related_identifiers": [
+    {
+      "identifier": "2605.08442",
+      "relation": "isSupplementTo",
+      "resource_type": "publication-preprint",
+      "scheme": "arxiv"
+    }
+  ],
+  "title": "SleeperBench: Benchmark for Persistent Memory Attacks on LLM Agents",
+  "upload_type": "software",
+  "version": "1.0.0"
+}

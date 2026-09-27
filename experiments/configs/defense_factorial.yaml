@@ -206,8 +206,8 @@ btcr_criteria:
 # ── Comparisons ─────────────────────────────────────────────────────────────
 # Primary (54):     9 models × 6 defenses vs no_defense on DTA
 # Secondary (45):   9 models × 5 BTCR defenses vs no_defense on no_attack
-# Cross-model (18): model pairs on no_defense DTA (9) + memory_sandbox DTA (9)
-# Total: 117 pre-specified comparisons, Holm-Bonferroni corrected
+# Cross-model (16): model pairs on no_defense DTA (8) + memory_sandbox DTA (8)
+# Total: 115 pre-specified comparisons, Holm-Bonferroni corrected
 # All comparisons pre-specified before first factorial run (2026-04-15)
 comparisons:
 

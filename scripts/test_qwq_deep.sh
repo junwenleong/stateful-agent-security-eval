@@ -43,12 +43,12 @@ for i in $(seq 1 5); do
         \"options\": {\"temperature\": 0, \"num_predict\": 4000}
     }")
     # save full response and extract hash for comparison
-    echo "$RESP" | python3 -c "import sys,json,hashlib; r=json.load(sys.stdin).get('response',''); open('$RD/monologue_${i}.txt','w').write(r); print(f'  Load $i: {len(r)} chars, md5={hashlib.md5(r.encode()).hexdigest()}')" | tee -a "$SUMMARY"
+    echo "$RESP" | .venv/bin/python -c "import sys,json,hashlib; r=json.load(sys.stdin).get('response',''); open('$RD/monologue_${i}.txt','w').write(r); print(f'  Load $i: {len(r)} chars, md5={hashlib.md5(r.encode()).hexdigest()}')" | tee -a "$SUMMARY"
     kill $(jobs -p) 2>/dev/null || true; sleep 1
 done
 
 echo "" | tee -a "$SUMMARY"
-python3 -c "
+.venv/bin/python -c "
 import hashlib, glob
 hashes = []
 for f in sorted(glob.glob('$RD/monologue_*.txt')):
@@ -203,7 +203,7 @@ print('  blank_run_$i ASR=' + str(r.get('attack_success')))
 " 2>/dev/null | tee -a "$SUMMARY"
     # Fingerprint probe every 10 runs: fixed short prompt, capture first 50 chars
     if [ $((i % 10)) -eq 0 ]; then
-        FP=$(curl -s http://localhost:11434/api/generate -d '{"model":"qwq:32b","prompt":"Complete: The capital of France is","stream":false,"options":{"temperature":0,"num_predict":10}}' | python3 -c "import sys,json; print(json.load(sys.stdin).get('response','')[:50])" 2>/dev/null)
+        FP=$(curl -s http://localhost:11434/api/generate -d '{"model":"qwq:32b","prompt":"Complete: The capital of France is","stream":false,"options":{"temperature":0,"num_predict":10}}' | .venv/bin/python -c "import sys,json; print(json.load(sys.stdin).get('response','')[:50])" 2>/dev/null)
         echo "  [fingerprint after run $i]: $FP" | tee -a "$SUMMARY"
         echo "run_$i: $FP" >> "$MFINGERPRINT"
     fi

@@ -145,8 +145,8 @@ print(json.dumps({
 " 2>/dev/null)
     
     # Parse and display
-    ASR=$(echo "$ITER_RESULT" | python3 -c "import json,sys; print(json.loads(sys.stdin.read())['asr'])" 2>/dev/null || echo "ERROR")
-    FINGERPRINT=$(echo "$ITER_RESULT" | python3 -c "import json,sys; print(json.loads(sys.stdin.read())['reasoning_fingerprint'][:60])" 2>/dev/null || echo "")
+    ASR=$(echo "$ITER_RESULT" | .venv/bin/python -c "import json,sys; print(json.loads(sys.stdin.read())['asr'])" 2>/dev/null || echo "ERROR")
+    FINGERPRINT=$(echo "$ITER_RESULT" | .venv/bin/python -c "import json,sys; print(json.loads(sys.stdin.read())['reasoning_fingerprint'][:60])" 2>/dev/null || echo "")
     
     echo "  PID=$OLLAMA_PID  ASR=$ASR  fingerprint='${FINGERPRINT}'" | tee -a "$SUMMARY_FILE"
     

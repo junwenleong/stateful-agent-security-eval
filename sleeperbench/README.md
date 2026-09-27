@@ -1,5 +1,7 @@
 # SleeperBench
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21859790.svg)](https://doi.org/10.5281/zenodo.21859790)
+
 Benchmark for evaluating persistent memory attacks on stateful LLM agents.
 
 ## What This Measures
@@ -118,25 +120,47 @@ Results are saved as JSONL with one record per scenario run:
 
 Reports include Wilson score 95% confidence intervals for all ASR estimates.
 
-## Reproducibility
+## Release Scope
 
-- **Available**: Source code and data publicly accessible
-- **Functional**: Smoke test validates harness without API keys
-- **Reproduced**: Core profile reproduces paper findings within CI bounds
+SleeperBench v1.0.0 is a frozen research artifact released for reproducibility of the
+study *Injection-Execution Dissociation: A Mechanistic Evaluation of Persistent Memory
+Attacks and Defenses in Stateful LLM Agents* ([arXiv:2605.08442](https://arxiv.org/abs/2605.08442)).
+Results were validated against model and API versions available in June 2026. Community
+pull requests that improve reproducibility or documentation are welcome; no active
+maintenance or compatibility updates for newer model versions are promised. This release
+provides a stable reference baseline for research in LLM agent memory security.
 
 ### Verification Steps
 
-1. `make smoke` passes with zero API keys (validates harness)
-2. `make core MODEL=gpt-4o-mini` reproduces Table 1 within reported CIs
+1. `make smoke` passes with zero API keys (validates harness using recorded traces)
+2. `make core MODEL=gpt-4o-mini` reproduces paper findings within reported CIs
 3. Results are deterministic at temperature=0 (modulo API-side variance)
 
 ## Citation
 
+If you use SleeperBench, please cite the paper and optionally the software artifact:
+
 ```bibtex
-@misc{sleeperbench,
-  title={Persistent Memory Attacks on Stateful {LLM} Agents: A Cross-Vendor Defense Evaluation},
-  howpublished={arXiv:2605.08442},
-  year={2026},
+@misc{leong2026injectionexecution,
+  title     = {Injection-Execution Dissociation: A Mechanistic Evaluation of
+               Persistent Memory Attacks and Defenses in Stateful {LLM} Agents},
+  author    = {Leong, Jun Wen},
+  year      = {2026},
+  eprint    = {2605.08442},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CR},
+  url       = {https://arxiv.org/abs/2605.08442}
+}
+
+@software{leong2026sleeperbench,
+  title   = {{SleeperBench}: Benchmark for Persistent Memory Attacks on {LLM} Agents},
+  author  = {Leong, Jun Wen},
+  year    = {2026},
+  version = {1.0.0},
+  license = {MIT},
+  url     = {https://doi.org/10.5281/zenodo.21859790},
+  doi     = {10.5281/zenodo.21859790},
+  note    = {Frozen research artifact, validated June 2026}
 }
 ```
 

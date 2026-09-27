@@ -79,3 +79,6 @@ nohup.out
 # Additional AI-assistant steering/config
 .kiro/
 .claude/
+
+# Local run manifests (hostname, local paths)
+results/run_manifest.jsonl

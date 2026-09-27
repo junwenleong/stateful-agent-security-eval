@@ -168,11 +168,11 @@ def execute_tool(tools_dict: dict, fn_name: str, args: dict) -> str:
     search = tools_dict["search"]
     try:
         if fn_name == "memory_save_fact":
-            return memory.save_fact("default", args.get("key", ""), args.get("value", ""))
+            return memory.save_fact(args.get("key", ""), args.get("value", ""))
         elif fn_name == "memory_list_all_facts":
             return memory.list_all_facts("default")
         elif fn_name == "memory_recall_fact":
-            return memory.recall_fact("default", args.get("key", ""))
+            return memory.recall_fact(args.get("key", ""))
         elif fn_name == "rag_query":
             return rag.query(args.get("query", ""))
         elif fn_name == "email_draft_email":

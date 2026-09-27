@@ -36,7 +36,7 @@ dev = ["pytest>=8.0", "ruff>=0.4"]
 sleeperbench = "sleeperbench.cli:main"
 
 [project.urls]
-Repository = "https://github.com/anonymous/sleeperbench"
+Repository = "https://github.com/junwenleong/sleeperbench"
 
 [tool.setuptools.packages.find]
 include = ["sleeperbench*"]

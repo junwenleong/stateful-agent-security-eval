@@ -313,17 +313,26 @@ class BootstrapEngine:
             outcomes_a = np.array(next(o for c, o in results if c == a_name), dtype=float)
             outcomes_b = np.array(next(o for c, o in results if c == b_name), dtype=float)
             diff_ci = self.compute_diff_ci(outcomes_a, outcomes_b)
-            
+
             # Significance test: CI-based (more robust than z-test for extreme proportions)
             # For binary outcomes near 0 or 1, the normal approximation breaks down.
-            # Instead, we use: significant if 95% CI for difference excludes zero.
-            # This is equivalent to a two-sided test at α=0.05 and is more robust.
+            # A comparison is flagged significant (pre-correction) if the 95% CI for
+            # the difference excludes zero. This is equivalent to a two-sided test at
+            # α=0.05 and is more robust than the normal approximation at extremes.
             ci_excludes_zero = (diff_ci.lower > 0) or (diff_ci.upper < 0)
-            p_value = 0.01 if ci_excludes_zero else 0.99  # Placeholder for Holm-Bonferroni
-            
-            # For reference: compute z-test p-value (for logging/diagnostics only)
-            # but don't use it for significance testing
+
+            # Real p-value via Fisher's exact test on the 2x2 (successes, failures)
+            # contingency table. This is what actually gets fed into Holm-Bonferroni
+            # below — NOT a placeholder derived from ci_excludes_zero.
             n_a, n_b = len(outcomes_a), len(outcomes_b)
+            a_succ, b_succ = int(np.sum(outcomes_a)), int(np.sum(outcomes_b))
+            _, p_value = scipy_stats.fisher_exact(
+                [[a_succ, n_a - a_succ], [b_succ, n_b - b_succ]]
+            )
+            p_value = float(p_value)
+
+            # For reference: normal-approximation z-test p-value (diagnostic only;
+            # unreliable for extreme proportions, kept for cross-checking).
             p_a = np.mean(outcomes_a)
             p_b = np.mean(outcomes_b)
             p_pool = (np.sum(outcomes_a) + np.sum(outcomes_b)) / (n_a + n_b)
@@ -335,8 +344,10 @@ class BootstrapEngine:
                 z_test_p = 1.0  # Undefined for extreme proportions
             
             logger.debug(
-                "Comparison %s vs %s: CI=[%.3f, %.3f], CI_excludes_zero=%s, z_test_p=%.3f (diagnostic only)",
-                a_name, b_name, diff_ci.lower, diff_ci.upper, ci_excludes_zero, z_test_p
+                "Comparison %s vs %s: CI=[%.3f, %.3f], CI_excludes_zero=%s, "
+                "fisher_p=%.4f, z_test_p=%.3f (diagnostic only)",
+                a_name, b_name, diff_ci.lower, diff_ci.upper, ci_excludes_zero,
+                p_value, z_test_p
             )
             
             comparison_results.append(ComparisonResult(

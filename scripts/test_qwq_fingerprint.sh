@@ -34,7 +34,7 @@ for i in $(seq 1 20); do
         \"stream\": false,
         \"options\": {\"temperature\": 0, \"num_predict\": 20}
     }")
-    TOKEN=$(echo "$RESP" | python3 -c "import sys,json; print(json.load(sys.stdin).get('response','ERROR')[:80])" 2>/dev/null)
+    TOKEN=$(echo "$RESP" | .venv/bin/python -c "import sys,json; print(json.load(sys.stdin).get('response','ERROR')[:80])" 2>/dev/null)
     echo "  Load $i: $TOKEN" | tee -a "$SUMMARY"
     echo "$TOKEN" >> "$RD/tokens.txt"
     kill $(jobs -p) 2>/dev/null || true
@@ -43,7 +43,7 @@ done
 
 echo "" | tee -a "$SUMMARY"
 echo "============= ANALYSIS =============" | tee -a "$SUMMARY"
-python3 -c "
+.venv/bin/python -c "
 tokens = [l.strip() for l in open('$RD/tokens.txt')]
 unique = set(tokens)
 print(f'Total loads: {len(tokens)}')

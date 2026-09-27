@@ -22,6 +22,19 @@ class RecordedAdapter(ModelAdapter):
     Trace files are JSONL where each line is a recorded response for a
     sequential interaction within a scenario. The adapter returns responses
     in order, advancing through the trace file.
+
+    IMPORTANT: the internal cursor (self._index) advances on every chat()
+    call regardless of the messages/tools/scenario that triggered it, and
+    a single adapter instance is shared across all scenarios in a `run`
+    invocation. This makes the smoke test scenario-blind: the response
+    returned for a given scenario depends only on that scenario's position
+    in the overall call sequence, not on its content. This is sufficient to
+    validate harness plumbing (tool-call execution, the ground-truth
+    verifier) without API calls, but the resulting by-attack/by-defense ASR
+    breakdown in the smoke report is NOT a measurement of live defense
+    effectiveness -- see ARTIFACT.md for the specific case this produces
+    (memory_sandbox/full showing asr=1.0 in the smoke trace, which is an
+    artifact of trace position, not a demonstrated bypass).
     """
 
     def __init__(self, trace_path: str | Path, model_name: str = "recorded") -> None:

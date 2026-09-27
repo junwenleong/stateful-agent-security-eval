@@ -231,72 +231,100 @@ def run_comparisons(
     by_condition: dict[str, list[dict]],
     engine: BootstrapEngine,
 ) -> list[dict]:
-    """BCa diff CIs for all pre-specified comparisons, then Holm-Bonferroni.
+    """BCa diff CIs for all pre-specified comparisons, then real Holm-Bonferroni.
+
+    Metric selection: comparisons where BOTH conditions are on the no_attack
+    arm test utility/BTCR impact and must diff `btcr_success`, not
+    `attack_success` (which is trivially ~0 for both sides of a no_attack-arm
+    comparison and would test nothing). All other comparisons diff
+    `attack_success` as before.
+
+    Significance: a real p-value is computed per comparison via Fisher's
+    exact test on the 2x2 (successes, failures) contingency table. Holm-
+    Bonferroni step-down correction is then applied via
+    BootstrapEngine.holm_bonferroni(), which sorts by ascending p-value and
+    computes the standard monotone-adjusted p-value (p_i * (k-i+1), running
+    max, capped at 1) — not a heuristic ranking by effect size.
 
     Comparisons involving qwq:32b's primary DTA conditions are annotated N/A
     (Draft-Only Executor: mechanistically distinct attack pathway) and excluded
     from the Holm-Bonferroni correction. They are still computed for
     completeness but do not count toward the active comparison set.
     """
+    from scipy.stats import fisher_exact
+
+    from src.stats.bootstrap_engine import ComparisonResult
+
     results = []
+    ci_objects = []
+
     for comp in comparisons:
         na_reason = _is_na_comparison(comp.condition_a, comp.condition_b)
 
         recs_a = by_condition[comp.condition_a]
         recs_b = by_condition[comp.condition_b]
-        a_asr = np.array([1.0 if r.get("attack_success") else 0.0 for r in recs_a])
-        b_asr = np.array([1.0 if r.get("attack_success") else 0.0 for r in recs_b])
-        ci = engine.compute_diff_ci(a_asr, b_asr)
-        # Significant if 95% CI excludes zero (equivalent to α=0.05 two-sided test)
+
+        # Metric selection: no_attack-arm comparisons test BTCR/utility impact,
+        # not attack success (there is no attack to succeed at in that arm).
+        is_no_attack = (
+            "attack=no_attack" in comp.condition_a
+            and "attack=no_attack" in comp.condition_b
+        )
+        metric_field = "btcr_success" if is_no_attack else "attack_success"
+
+        a_vals = np.array([1.0 if r.get(metric_field) else 0.0 for r in recs_a])
+        b_vals = np.array([1.0 if r.get(metric_field) else 0.0 for r in recs_b])
+        ci = engine.compute_diff_ci(a_vals, b_vals)
+        # CI-exclusion is retained as a secondary/diagnostic significance flag
+        # (matches the pre-registered "CI excludes zero" criterion for a single
+        # comparison); significant_holm below is the corrected, primary criterion.
         significant = ci.lower > 0 or ci.upper < 0
+
+        a_succ, a_n = int(a_vals.sum()), len(a_vals)
+        b_succ, b_n = int(b_vals.sum()), len(b_vals)
+        _, p_value = fisher_exact([[a_succ, a_n - a_succ], [b_succ, b_n - b_succ]])
+
         results.append({
             "condition_a": comp.condition_a,
             "condition_b": comp.condition_b,
+            "metric": metric_field,
             "diff_point": ci.point_estimate,
             "diff_lower": ci.lower,
             "diff_upper": ci.upper,
             "significant_pre_correction": significant,
+            "p_value": float(p_value),
             "warning": ci.warning,
             "na_reason": na_reason,
         })
+        ci_objects.append(ci)
 
-    # Holm-Bonferroni on ACTIVE comparisons only (exclude N/A)
+    # Real Holm-Bonferroni on ACTIVE comparisons only (exclude N/A).
     active_indices = [i for i, r in enumerate(results) if r["na_reason"] is None]
-    n_active = len(active_indices)
+    if active_indices:
+        comparison_results = [
+            ComparisonResult(
+                condition_a=results[i]["condition_a"],
+                condition_b=results[i]["condition_b"],
+                diff_ci=ci_objects[i],
+                p_value=results[i]["p_value"],
+            )
+            for i in active_indices
+        ]
+        corrected = engine.holm_bonferroni(comparison_results)
+        for idx, c in zip(active_indices, corrected):
+            results[idx]["corrected_p_value"] = c.corrected_p_value
+            results[idx]["significant_holm"] = c.corrected_p_value <= engine.alpha
 
-    # Sort active comparisons by significance then |diff| descending
-    # (Holm-Bonferroni: rank from most to least significant.
-    # With CI-based testing and bimodal effects, ordering by |diff|
-    # is equivalent to ordering by p-value since all significant
-    # comparisons have |diff| > 77pp and all non-significant have
-    # |diff| < 1pp. We sort significant-first, then by |diff|, to
-    # match canonical Holm-Bonferroni step-down behavior.)
-    ranked_active = sorted(
-        active_indices,
-        key=lambda i: (
-            0 if results[i]["significant_pre_correction"] else 1,
-            -abs(results[i]["diff_point"]),
-        ),
-    )
-
-    holm_significant = [False] * len(results)
-    for rank, idx in enumerate(ranked_active):
-        if results[idx]["significant_pre_correction"]:
-            holm_significant[idx] = True
-        else:
-            # Step-down: once we hit a non-significant result, stop
-            break
-
-    for i, r in enumerate(results):
+    for r in results:
         if r["na_reason"] is not None:
             r["significant_holm"] = None  # N/A — not tested
-        else:
-            r["significant_holm"] = holm_significant[i]
+            r["corrected_p_value"] = None
 
+    n_active = len(active_indices)
     n_na = sum(1 for r in results if r["na_reason"] is not None)
     n_sig = sum(1 for r in results if r["significant_holm"] is True)
     logger.info(
-        "Comparisons: %d total, %d N/A, %d active, %d significant (Holm-Bonferroni)",
+        "Comparisons: %d total, %d N/A, %d active, %d significant (real Holm-Bonferroni)",
         len(results), n_na, n_active, n_sig,
     )
 
@@ -378,11 +406,14 @@ def print_summary(stats: dict, comparison_results: list[dict]) -> None:
         else:
             sig = " "
         pre = "*" if r["significant_pre_correction"] else " "
+        metric = r.get("metric", "attack_success")
+        p_str = f"p={r['p_value']:.4f}" if "p_value" in r else ""
+        p_corr_str = f"p_holm={r['corrected_p_value']:.4f}" if r.get("corrected_p_value") is not None else ""
         print(
             f"[{sig}] {r['condition_a'][:45]:<45} vs"
             f"\n    {r['condition_b'][:45]:<45}"
             f"  diff={r['diff_point']:+.3f} [{r['diff_lower']:+.3f}, {r['diff_upper']:+.3f}]"
-            f"  pre={pre}"
+            f"  pre={pre}  metric={metric}  {p_str}  {p_corr_str}"
         )
         if r.get("na_reason"):
             print(f"    N/A: {r['na_reason']}")
