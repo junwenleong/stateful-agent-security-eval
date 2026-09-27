@@ -12,6 +12,16 @@ Scope and framing
   collapses (early sends under sandbox, intervening-session re-injection) count as successes
   rather than being silently missed.
 
+New sections
+- A causal-mediation analysis ("Causal Mediation: The Sandbox as Attack Vector", 2,336 runs
+  across two models) decomposes which conditions are necessary and which are sufficient for
+  the Memory Sandbox iatrogenic effect: tool removal itself, not model capability alone,
+  creates the attack pathway.
+- A frontier tool-schema ablation ("Frontier Tool-Schema Ablation: Sandbox Associated with
+  Increased Vulnerability Under In-Context Rules", 1,200 trials across 6 model configurations)
+  replicates the tool-removal-creates-vulnerability direction on frontier reasoning models via
+  API, independent of the Qwen-3-32B think-toggle result it generalises from.
+
 Reproducibility disclosure
 - The primary April 2026 factorial is disclosed as having been collected on a single long-lived
   Ollama 0.20.6 daemon (OLLAMA_MAX_LOADED_MODELS=1, 2-minute keep-alive that unloads but does

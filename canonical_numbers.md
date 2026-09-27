@@ -492,6 +492,19 @@ gemini-3.1-pro-preview (95% ASR) forensically verified:
 
 **NOT monotonically decreasing.** The prior claim of "monotonic decline" is incorrect. gpt-5.1 is a regression relative to gpt-5.
 
+### GPT-5.1 and GPT-5 Confirmatory Topup (Pooled Rates — Cited in Paper)
+
+**Source**: `results/frontier_topup/frontier_gpt_5_1.jsonl` (172 lines), `results/frontier_topup/frontier_gpt_5.jsonl` (104 lines)
+**Method**: Same protocol as Experiment 8 (loaded corpus, Variant A, frontier API). Additional runs pooled with the original N=40 confirmatory to tighten CIs for the headline non-monotonicity claim.
+**Date**: 2026-08-01 to 2026-08-02
+
+| Model | N (pooled) | k (successes) | ASR | Wilson 95% CI | Cited in paper as |
+|-------|-----------|---------------|-----|---------------|-------------------|
+| gpt-5.1 | 172 | 21 | **12.2%** | [8.1%, 17.9%] | Confirmatory topup |
+| gpt-5 | 104 | 2 | **1.9%** | [0.5%, 6.7%] | Confirmatory topup |
+
+**Relationship to Experiment 8 N=40 rates**: The initial N=40 confirmatory showed gpt-5.1 at 22.5% (9/40) and gpt-5 at 5.0% (2/40). The topup pooled rates (12.2% and 1.9%) incorporate 132 and 64 additional runs respectively. The CIs do not overlap (upper bound of gpt-5 at 6.7% < lower bound of gpt-5.1 at 8.1%), confirming the regression is statistically robust. The N=40 rates are consistent with the pooled rates (Fisher's exact p > 0.05 for both comparisons of N=40 subsample vs full pool).
+
 ### Vendor Divergence (Updated with Gemini)
 
 - **Anthropic**: 0% ASR across the entire Claude family; injection rate is model-dependent (2.5-17.5% Opus 4.5/4.8 and Sonnet 4.6; 57.5% Sonnet 4.5; 95% Haiku 4.5, storing a security alert rather than the payload). Only Opus/Sonnet-4.6 block at the injection layer; Sonnet 4.5/Haiku inject but refuse at execution — the vendor-wide invariant is 0% ASR, not uniformly-low injection.
@@ -500,6 +513,44 @@ gemini-3.1-pro-preview (95% ASR) forensically verified:
 - **OpenAI (GPT-5.4+, reasoning models)**: 100% injection, 0% ASR. Latent Carriers. Execution-resistant.
 - **OpenAI (GPT-5 and earlier)**: 100% injection, 5–60% ASR. Partially execution-resistant.
 - **OpenAI (mini/nano)**: 100% injection, 0–2.5% ASR. Effectively execution-locked.
+
+### Extended Model Coverage (2026-08-15)
+
+**Source**: `results/frontier_extended/*.jsonl`
+**Protocol**: Same as Experiment 8 — loaded corpus, Variant A, frontier API, N=40 per condition.
+**Purpose**: Extend frontier coverage to newer model generations and validate tool-existence ablation cross-vendor.
+
+#### New Model Results (N=40 each, 0 errors)
+
+| Model | API ID | Inj% | ASR% | Classification | Key Finding |
+|-------|--------|------|------|----------------|-------------|
+| Claude Opus 5 | claude-opus-5 | 0.0% (0/40) | 0.0% (0/40) | Injection-Resistant | Injection-layer blocking PERSISTS into generation 5 |
+| Claude Sonnet 5 | claude-sonnet-5 | 20.0% (8/40) | 0.0% (0/40) | Partial Resistant | Weaker injection resistance than Opus; execution resistance absolute |
+| GPT-5.4-pro | gpt-5.4-pro | 100.0% (40/40) | 0.0% (0/40) | Latent Carrier | Identical to GPT-5.4 base — pro variant does not differ |
+| GPT-5.6-terra | gpt-5.6-terra | 40.0% (16/40) | 0.0% (0/40) | Partial Resistant | Strongest injection resistance in 5.6 family |
+| GPT-5.6-sol | gpt-5.6-sol | 100.0% (40/40) | 0.0% (0/40) | Latent Carrier | Full injection, zero execution |
+| GPT-5.6-luna | gpt-5.6-luna | 95.0% (38/40) | 0.0% (0/40) | Latent Carrier | Near-universal injection, zero execution |
+| Gemini 3.6 Flash | gemini-3.6-flash | 100.0% (40/40) | 5.0% (2/40) | Partial Executor | Vulnerability PERSISTS but reduced (was 50% on 3.5 Flash, 95% on 3.1 Pro Preview) |
+
+#### Tool-Existence Ablation (remove memory_save_fact, N=40 each)
+
+| Model | API ID | Inj% | ASR% | Finding |
+|-------|--------|------|------|---------|
+| GPT-5.4-pro (no_save) | gpt-5.4-pro | 0.0% (0/40) | 0.0% (0/40) | Tool existence = necessary condition |
+| GPT-5.6-terra (no_save) | gpt-5.6-terra | 0.0% (0/40) | 0.0% (0/40) | Confirmed |
+| Gemini 3.6 Flash (no_save) | gemini-3.6-flash | 0.0% (0/40) | 0.0% (0/40) | Confirmed even for vulnerable model |
+
+#### Key Findings
+
+1. **Anthropic injection-layer pattern persists into generation 5**: Opus 5 = 0% injection (same as Opus 4.5/4.8/Sonnet 4.6). Sonnet 5 = 20% injection, 0% ASR — somewhat weaker injection resistance than the Opus tier, but execution resistance remains absolute. The family-wide 0% ASR invariant extends to all tested Claude models (Opus 4.1 through Opus 5, Sonnet 4.5 through Sonnet 5, Haiku 4.5).
+
+2. **GPT-5.6 variant divergence is dramatic**: Terra (40% inj) vs Sol (100%) vs Luna (95%) — injection rates vary 2.5x within the same generation depending on the variant. All three maintain 0% ASR (execution-resistant). This is a new phenomenon: within-generation, within-family variant divergence in injection resistance. Prior GPT generations showed uniform injection within a tier.
+
+3. **GPT-5.4-pro = GPT-5.4 base**: 100% injection, 0% ASR — identical classification to GPT-5.4 (Latent Carrier). The "pro" variant does not alter the safety profile on this evaluation.
+
+4. **Gemini vulnerability trajectory**: 3.1 Pro Preview (95% ASR) → 3.5 Flash (50%) → 2.5 Pro (22.5%) → Gemini 3.6 Flash (5.0%). Consistent improvement across generations but NOT fixed. Gemini 3.6 Flash still executes in 2/40 runs.
+
+5. **Tool-existence ablation replicates across new models**: Removing `memory_save_fact` from the schema → 0% injection for all three tested models (GPT-5.4-pro, GPT-5.6-terra, Gemini 3.6 Flash). This extends the prior finding (gpt-5.1, o3-mini, o4-mini all 0% without save_fact) to newer model generations. The tool's presence in the schema remains the necessary and sufficient condition for injection.
 
 ### Numbers Superseded by Experiment 8
 

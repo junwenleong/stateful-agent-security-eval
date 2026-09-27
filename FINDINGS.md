@@ -1,8 +1,8 @@
 # Findings
 
-## Causal Mediation: Sandbox Defense Inversion (July 2026)
+## Causal Mediation: A Universally Vulnerable Baseline, Partial Sandbox Protection (July-September 2026)
 
-The Memory Sandbox is an **iatrogenic vulnerability** -- the defense creates the attack surface. Causal mediation analysis (conditions C0-C7) isolates the necessary and sufficient components of the sandbox-mediated attack.
+A positional-argument bug in the standalone frontier scripts (fixed 2026-09-27) had corrupted three of eight causal-mediation conditions (C0, C4, C5): every simulated memory recall returned a bare key name instead of the actual routing rule, silently discarding the attacker's address before it ever reached the model. Re-collected at N=50 per model per condition (300 fresh runs, 0 errors): **C0 (no defense) is 100% ASR for both gpt-5.1 and gpt-4.1-mini** (was reported as 0.9%/0.0%), **C4 (recall with authority-framing prefix) is also 100% for both** (was 0%), and **C5 (prompt prohibition) splits by model: gpt-5.1 obeys it completely (0/50), gpt-4.1-mini ignores it completely (50/50)** (was 0% for both, for entirely non-mechanistic reasons). The corrected finding reverses the paper's original claim: Memory Sandbox does not create vulnerability relative to the baseline -- it reduces an already-universal 100% baseline, completely for gpt-4.1-mini (C1: 100%->0%) and substantially but incompletely for gpt-5.1 (C1: 100%->74.7%), with the residual explained by RAG fallback (100% of C1/C2 successes co-occur with a trigger-session `rag_query`, verified per-run). See canonical_numbers.md for the full condition table.
 
 ### Condition Results
 
