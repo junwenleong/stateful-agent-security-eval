@@ -1,0 +1,67 @@
+{
+  "timestamp": "2026-08-15 09:03:13",
+  "n_records": 5040,
+  "n_features_full": 23,
+  "n_features_content": 7,
+  "n_features_pathway": 16,
+  "label_distribution": {
+    "1": 1919,
+    "0": 3121
+  },
+  "results": [
+    {
+      "model_name": "logistic_regression_pathway+content",
+      "split_type": "model_family",
+      "n_folds": 4,
+      "mean_auroc": 0.9978070175438597,
+      "std_auroc": 0.0037983570341422386,
+      "mean_ap": 0.9965277777777778,
+      "mean_brier": 0.024453981773228307
+    },
+    {
+      "model_name": "gradient_boosting_pathway+content",
+      "split_type": "model_family",
+      "n_folds": 4,
+      "mean_auroc": 1.0,
+      "std_auroc": 0.0,
+      "mean_ap": 1.0,
+      "mean_brier": 0.0007906114524753939
+    },
+    {
+      "model_name": "logistic_regression_content_only",
+      "split_type": "model_family",
+      "n_folds": 4,
+      "mean_auroc": 1.0,
+      "std_auroc": 5.551115123125783e-17,
+      "mean_ap": 1.0,
+      "mean_brier": 0.00836184549974346
+    },
+    {
+      "model_name": "gradient_boosting_content_only",
+      "split_type": "model_family",
+      "n_folds": 4,
+      "mean_auroc": 1.0,
+      "std_auroc": 0.0,
+      "mean_ap": 1.0,
+      "mean_brier": 0.008156092764680918
+    },
+    {
+      "model_name": "logistic_regression_pathway_only",
+      "split_type": "model_family",
+      "n_folds": 4,
+      "mean_auroc": 0.9671501360635864,
+      "std_auroc": 0.040894282632856556,
+      "mean_ap": 0.9133878959081203,
+      "mean_brier": 0.046581498040310754
+    },
+    {
+      "model_name": "gradient_boosting_pathway_only",
+      "split_type": "model_family",
+      "n_folds": 4,
+      "mean_auroc": 0.9622159255372706,
+      "std_auroc": 0.0490865584518086,
+      "mean_ap": 0.9024767121844366,
+      "mean_brier": 0.04486162975149396
+    }
+  ]
+}

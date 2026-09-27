@@ -1,0 +1,25 @@
+{
+  "_note": "This file was previously a stub ({\"n_records\": 1200, \"models\": [...]}), which was ambiguous: 1200 is the raw line count in dissociation_results.jsonl INCLUDING 49 API-error placeholder records, not the count of valid/usable trials. Corrected 2026-09-27 to report valid vs error counts and the per-cell breakdown explicitly. This dataset (results/v6_double_dissociation_replication/) was collected with a single-API-call-per-trial harness that never gave the model a follow-up turn to act on a tool result -- see scripts/exp_double_dissociation_replication.py's module docstring and paper.tex Section frontier-dissociation for the full correction. A fixed multi-turn re-run is at results/v6_double_dissociation_replication_v2_multiturn/.",
+  "raw_lines_total": 1200,
+  "valid_records": 1151,
+  "error_records": 49,
+  "models": ["o3_high", "o3_low", "o4mini_high", "o4mini_low", "gemini25pro", "gemini25flash"],
+  "per_cell_valid_n": {
+    "gemini25flash/sandbox": 100,
+    "gemini25flash/with_recall": 100,
+    "gemini25pro/sandbox": 100,
+    "gemini25pro/with_recall": 100,
+    "o3_high/sandbox": 100,
+    "o3_high/with_recall": 100,
+    "o3_low/sandbox": 100,
+    "o3_low/with_recall": 52,
+    "o4mini_high/sandbox": 100,
+    "o4mini_high/with_recall": 100,
+    "o4mini_low/sandbox": 100,
+    "o4mini_low/with_recall": 99
+  },
+  "cells_below_target_n_100": {
+    "o3_low/with_recall": "52 valid of 100 attempted (48 lost to API errors); paper Table (sec:frontier-dissociation) already correctly reports N=52 for this cell",
+    "o4mini_low/with_recall": "99 valid of 100 attempted (1 lost to an API error); paper Table already correctly reports N=99 for this cell"
+  }
+}

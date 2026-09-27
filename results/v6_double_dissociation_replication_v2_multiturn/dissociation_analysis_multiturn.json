@@ -1,0 +1,11 @@
+{
+  "n_records": 600,
+  "models": [
+    "o3_high",
+    "o3_low",
+    "o4mini_high",
+    "o4mini_low",
+    "gemini25pro",
+    "gemini25flash"
+  ]
+}
