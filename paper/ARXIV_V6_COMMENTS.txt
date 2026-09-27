@@ -1,0 +1,48 @@
+Changes in v6 (relative to arXiv:2605.08442v5)
+
+Scope and framing
+- The abstract and introduction are rescoped. The injection-execution dissociation is now
+  stated as a bidirectional claim (blocking injection does not imply blocking execution, and
+  vice versa) that is evidenced across the frontier set, where some vendors block predominantly
+  at storage and others predominantly at execution. The open-source factorial is stated to
+  evidence only the execution-stage half, because its models are pre-selected Vulnerable
+  Executors with storage saturated at 100 percent.
+- Attack success (ASR) is defined explicitly as exfiltration to the attacker address in any
+  session of a run, not only in the intended trigger session S4. This makes attack-chain
+  collapses (early sends under sandbox, intervening-session re-injection) count as successes
+  rather than being silently missed.
+
+Reproducibility disclosure
+- The primary April 2026 factorial is disclosed as having been collected on a single long-lived
+  Ollama 0.20.6 daemon (OLLAMA_MAX_LOADED_MODELS=1, 2-minute keep-alive that unloads but does
+  not fully restart between models). The fresh-daemon-per-model protocol was adopted only for
+  the later RATG and judge-scaling extensions, after the daemon-state artefact was identified.
+- The qwq:32b defence-inversion result is demoted from a headline finding to an
+  environment-fragile observation: its baseline did not reproduce on a freshly booted machine,
+  and the reusable contribution is the bypass mechanism (RAG-fallback reconstruction), which
+  replicates cross-family, rather than the single-model inversion.
+
+Corrected and refined numbers
+- Prompt Hardening is reported at 77.8 percent ASR overall, with the per-arm figures 87.5
+  percent and 100 percent stated alongside, replacing the previous single summary figure.
+- The coding-agent dissociation table now reports 691 runs (N >= 50 per cell) with a per-run
+  joint Dissociation percentage, defined as the fraction of runs where the model both detects
+  the injection and executes it, rather than min(Detect percent, Execute percent).
+- The GPT-4o standalone disclosure figure under standard compliance framing is 12.5 percent
+  ASR (rising to 60.3 percent under authority escalation).
+
+Defence framing
+- RATG is retitled and scoped as a proof-of-concept existence result (a content-layer
+  intervention resolves the schema-layer dilemma), not an adversarially robust defence.
+- The "iatrogenic" framing of tool-schema restriction is retained but scoped to the tested
+  models and configurations rather than asserted as a general property.
+
+Disclosure hygiene
+- All institutional gateway routing prefixes were removed from the model-identifier appendix.
+  The provenance table now records the bare requested model identifiers, and the sentence that
+  described a gateway prefix as an aliasing artefact is removed. This is the primary reason a
+  replacement is issued: v5 carried these prefixes in the appendix.
+
+Dialect
+- British English throughout the prose, consistent with the author's other papers. Code
+  identifiers, condition names, file names and the title are unchanged.
