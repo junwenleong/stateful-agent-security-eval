@@ -1,7 +1,6 @@
 # Stateful Agent Security Evaluation
 
 **Paper:** [arXiv:2605.08442](https://arxiv.org/abs/2605.08442)
-**Publication:** arXiv
 **Companion:** [Retrieval Observability Bounds on Provenance Detection for Agent Memory Poisoning: Measured Coverage and a Falsified Standalone Detector, arXiv:2606.30566](https://arxiv.org/abs/2606.30566)
 **Benchmark:** [SleeperBench v1.0.0](https://github.com/junwenleong/sleeperbench) (DOI: [10.5281/zenodo.21859790](https://doi.org/10.5281/zenodo.21859790))
 **Live site:** [junwenleong.github.io/stateful-agent-security-eval](https://junwenleong.github.io/stateful-agent-security-eval/)

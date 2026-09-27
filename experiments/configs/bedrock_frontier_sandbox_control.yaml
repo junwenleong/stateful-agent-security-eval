@@ -48,8 +48,6 @@
 #
 # Estimated wall time: ~8-16 hours (Bedrock latency ~5-15s/run)
 #
-# Timing: Queue AFTER local sandbox inversion study lands (19 phases, ~10 days)
-# and after other priorities.
 # ─────────────────────────────────────────────────────────────────────────────
 
 runs_per_condition: 100

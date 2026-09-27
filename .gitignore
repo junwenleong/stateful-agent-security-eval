@@ -65,5 +65,17 @@ opencode.json
 AGENTS.md
 .token-savior-cache.json
 
-# Experiment run logs -- real script output but not meant to be version-controlled (scoped to avoid the paper/ndss build log)
+# Experiment run logs -- real script output but not meant to be version-controlled
 results/**/*.log
+
+# Venue/submission-plan material (arXiv-only project; no conference submission)
+paper/ndss/
+*ndss*
+claims_ledger_ndss.md
+ndss_conversion_plan.md
+SUBMISSION_CHECKLIST.md
+ARTIFACT.md
+nohup.out
+# Additional AI-assistant steering/config
+.kiro/
+.claude/

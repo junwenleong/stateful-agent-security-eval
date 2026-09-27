@@ -118,9 +118,8 @@ Results are saved as JSONL with one record per scenario run:
 
 Reports include Wilson score 95% confidence intervals for all ASR estimates.
 
-## Artifact Evaluation
+## Reproducibility
 
-This benchmark supports independent reproducibility:
 - **Available**: Source code and data publicly accessible
 - **Functional**: Smoke test validates harness without API keys
 - **Reproduced**: Core profile reproduces paper findings within CI bounds
@@ -134,10 +133,10 @@ This benchmark supports independent reproducibility:
 ## Citation
 
 ```bibtex
-@inproceedings{sleeperbench2027,
+@misc{sleeperbench,
   title={Persistent Memory Attacks on Stateful {LLM} Agents: A Cross-Vendor Defense Evaluation},
-  howpublished={arXiv preprint},
-  year={2027},
+  howpublished={arXiv:2605.08442},
+  year={2026},
 }
 ```
 
