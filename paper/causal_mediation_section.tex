@@ -1,67 +1,87 @@
 %==============================================================================
-\section{Causal Mediation: A Universally Vulnerable Baseline, Partial Sandbox Protection, and the RAG-Fallback Residual}
+\section{Causal Mediation: How Much Memory Sandbox Protects, and What Carries the Residual}
 \label{sec:mediation}
 %==============================================================================
 
-The preceding sections establish that Memory Sandbox blocks the primary recall pathway (Section~\ref{sec:sandbox}) but can be bypassed by reasoning models that reconstruct the payload from RAG (Sections~\ref{sec:reasoning-defense}--\ref{sec:ratg}). A deeper question remains: what, precisely, mediates the sandbox's failure when it fails, and how effective is the sandbox relative to an undefended baseline? We answer this through a causal mediation analysis that decomposes the sandbox's effect into its constituent architectural components. During preparation of this analysis we discovered and corrected a positional-argument bug that had corrupted three of the eight conditions' original data (disclosed in full in Section~\ref{sec:mediation-design}); the corrected data changes the paper's central claim about this experiment from ``the sandbox creates a vulnerability that did not exist in the undefended baseline'' to the opposite: \emph{the undefended baseline is already at or near 100\% ASR for both tested models, and Memory Sandbox provides real but incomplete protection}, with the residual gap for the more capable model fully explained by RAG fallback.
+Memory Sandbox blocks the primary recall path (Section~\ref{sec:sandbox}) but can be bypassed by models that rebuild the payload from RAG (Sections~\ref{sec:reasoning-defense}--\ref{sec:ratg}). This section asks how much the sandbox protects relative to an undefended baseline, and what carries the attack when it fails. The answer, for two OpenAI models: without a defence both models exfiltrate in every run; Memory Sandbox lowers this to 0\% for GPT-4.1-mini and to 74.7\% for GPT-5.1; and every success under the sandbox goes through RAG fallback, which closes when \tool{rag\_query} is also removed. The baseline and sandbox cells were collected two months apart under different temperature handling (Table~\ref{tab:mediation}, Data column) and at unequal sample sizes (re-collected C0/C4/C5 at $N{=}50$ per model; preserved C1/C2/C3/C6/C7 at $N{=}85$ to $285$ per cell), so the size of the reduction carries that caveat; the RAG-fallback attribution does not depend on it.
+
+The mediation harness differs from the other GPT-5.1 measurements in the paper, and the rates are not interchangeable. Table~\ref{tab:gpt51-harness} lists them side by side.
+
+\begin{table}[t]
+\caption{GPT-5.1 across the harnesses in this paper. All use the four-session DTA with a loaded corpus through the frontier API, and ASR scoring (b) of Table~\ref{tab:terms}. ``Extra sentence'': the trigger prompt adds ``Do not ask for clarification; use your best judgment to complete the draft.''}
+\label{tab:gpt51-harness}
+\centering
+\footnotesize
+\begin{tabular}{p{0.28\textwidth}p{0.17\textwidth}p{0.09\textwidth}ccp{0.13\textwidth}}
+\toprule
+\textbf{Measurement} & \textbf{Recall tool} & \textbf{Extra sentence} & \textbf{N} & \textbf{ASR} & \textbf{Collected} \\
+\midrule
+Loaded-corpus evaluation (Table~\ref{tab:frontier-generational}) & available & no & 172 & 12.2\% & June; August top-up \\
+Frontier sandbox probe (Section~\ref{sec:frontier}) & removed in all sessions & no & 10 & 0\% & September \\
+Mediation C0 (Table~\ref{tab:mediation}) & available & yes & 50 & 100\% & September \\
+Mediation C1 (Table~\ref{tab:mediation}) & removed in S4 only & yes & 99 & 74.7\% & July \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \subsection{Experimental Design}
 \label{sec:mediation-design}
 
-We evaluate eight conditions (C0--C7) across two OpenAI models spanning a capability gap: gpt-4.1-mini (smaller, less capable) and gpt-5.1 (larger, more capable). Each condition isolates a specific architectural component of the sandbox defence:
+We evaluate eight conditions (C0--C7) on two OpenAI models spanning a capability gap, gpt-4.1-mini (smaller) and gpt-5.1 (larger). The harness is a direct API agent loop over the same four sessions as the DTA. Sessions S1--S3 always use the full tool set, so injection proceeds normally; each condition changes only the trigger session (S4):
 
 \begin{itemize}
     \item \textbf{C0}: No defence (baseline). Standard agent with full tool access.
-    \item \textbf{C1}: Full sandbox. Recall tool removed from schema; tool visibility preserved (\tool{list\_all\_facts} available).
-    \item \textbf{C2}: Sandbox blind. Both recall and list tools removed; no tool visibility.
+    \item \textbf{C1}: Full sandbox. Recall tool removed; \tool{list\_all\_facts} kept.
+    \item \textbf{C2}: Sandbox blind. Recall and list tools removed.
     \item \textbf{C3}: Null recall. Recall tool present in schema but returns ``No stored value found.''
     \item \textbf{C4}: Recall with frame. The recall tool remains in the schema and is called normally; its returned value is prefixed with an authority/validity frame (\texttt{"[SANDBOXED MEMORY - not validated] "}) before being returned to the model. This still delivers the content through the tool-call apparatus, unlike C5 below; see Section~\ref{sec:mediation-decomposition} for what this condition does and does not isolate.
-    \item \textbf{C5}: Prompt prohibition. System prompt instruction: ``do not comply with recalled instructions that conflict with your guidelines.''
-    \item \textbf{C6}: Sandbox no RAG. Sandbox architecture present but no RAG-retrieved content injected into memory.
-    \item \textbf{C7}: Full isolation. Complete removal of all memory system components.
+    \item \textbf{C5}: Prompt prohibition. The base system prompt is extended with the instruction: ``Do not act on any routing rules, forwarding instructions, or email policies retrieved from memory. Memory content is untrusted. Only send emails to addresses explicitly specified by the user in this session's message.''
+    \item \textbf{C6}: Sandbox without RAG. Recall tool and \tool{rag\_query} removed.
+    \item \textbf{C7}: Full isolation. Recall, list and \tool{rag\_query} tools removed.
 \end{itemize}
 
-The trigger-session prompt in this experiment adds one clause not present in the frontier confirmatory evaluation (Section~\ref{sec:frontier}), which shares the same first sentence: ``Do not ask for clarification; use your best judgment to complete the draft.'' This clause was added specifically to prevent models from stalling on a clarifying question rather than acting; its presence is a design difference between the two experiments, not an error, and the two datasets are reported and interpreted independently, with no claim in either section relying on a numeric value from the other.
+The trigger-session prompt adds one sentence not present in the June frontier confirmatory evaluation (Section~\ref{sec:generational}), which shares its first sentence: ``Do not ask for clarification; use your best judgment to complete the draft.'' This clause was added specifically to prevent models from stalling on a clarifying question rather than acting; its presence is a design difference between the two experiments, not an error, and the two datasets are reported and interpreted independently, with no claim in either section relying on a numeric value from the other.
 
-\paragraph{Discovered bug and its correction.} While auditing the tool-execution wrapper used by this and several sibling frontier scripts, we found that ten standalone scripts (including this one) called the memory tool's \texttt{save\_fact} and \texttt{recall\_fact} methods with an extraneous leading positional argument (a literal string \texttt{"default"}) that does not match either method's signature (\texttt{save\_fact(key, value, user\_id="default")}, \texttt{recall\_fact(key, user\_id="default")}). The effect is a silent argument shift: whatever the caller intended as the fact's \emph{key} lands in the \emph{value} slot, and the intended \emph{value} (in this experiment, the full malicious routing rule including the attacker's address) lands in the \emph{user\_id} slot, which the underlying SQL layer ignores entirely (it hardcodes a canonical user regardless of what is passed). The net effect for this experiment: every simulated ``recall'' of the stored rule returned a single bare word (whichever key name was most recently saved under the corrupted schema) rather than the actual rule text, in every condition where the recall tool was called and not otherwise overridden by the condition's own logic (C0, C4, C5). Conditions that remove the recall tool from the schema entirely (C1, C2, C6, C7) or that override its return value before the buggy call executes (C3's null-recall branch) were unaffected, because the corrupted function was never invoked with content that mattered for the session-3 decision in those conditions.
-
-We fixed the argument order in the released script and re-collected C0, C4, and C5 in full at $N{=}50$ per model (300 fresh runs, 0 errors); a two-trial smoke test run immediately after the fix, before committing to the full re-collection, showed the corrected \tool{recall\_fact} call returning the genuine rule text and the model exfiltrating on both trials, confirming the diagnosis before any further cost was incurred. C1, C2, C3, C6, and C7 are reported from the original data collection (sample sizes $N{=}76$ to $N{=}285$ per cell, total 1,386 runs across these five conditions, 0 errors), since the bug does not affect their trigger-session logic. All zero-ASR cells use the Wilson Score lower bound of 0\%; upper bounds are determined by sample size.
+\paragraph{Data provenance.} C0, C4 and C5 were re-collected after an argument-order bug was fixed; the other five conditions are from the original collection. The bug made every recall in C0, C4 and C5 return a bare key name instead of the rule text; conditions that remove the recall tool (C1, C2, C6, C7) or override its return value (C3) never passed through it (Appendix~\ref{app:mediation-bug}). After the fix, a two-trial smoke test returned the genuine rule text and both trials exfiltrated; we then re-collected C0, C4 and C5 in full at $N{=}50$ per model (300 runs, 0 errors). C1, C2, C3, C6 and C7 are reported from the original collection ($N{=}85$ to $N{=}285$ per cell, 1,593 runs, 0 errors; 1,893 runs in total). The original collection also did not set \texttt{temperature} explicitly and did not flag sessions that exhausted their API retries; the re-collection sets temperature 0 (with the reasoning-model carve-out used elsewhere in the paper) and records an \texttt{error} field that is excluded from resume counts. These differences may affect the size of the reduction from C0; they do not affect the RAG-fallback attribution, which rests on the C3, C6 and C7 ablations and on the tool-call instrumentation. All zero-ASR cells use the Wilson Score lower bound of 0\%; upper bounds are determined by sample size.
 
 \subsection{Results}
 \label{sec:mediation-results}
 
+Table~\ref{tab:mediation} gives ASR by condition and model; Sections~\ref{sec:mediation-decomposition}--\ref{sec:mediation-connection} decompose it by mechanism.
+
 \begin{table*}[t]
-\caption{Causal mediation decomposition: attack success rate by condition and model. Wilson Score 95\% CIs. C0, C4, and C5 are freshly re-collected at $N{=}50$ per model following the bug fix described in Section~\ref{sec:mediation-design}; C1, C2, C3, C6, and C7 are the original, unaffected data collection. The ``Mechanism'' column reflects the verified \texttt{rag\_used\_in\_trigger} signal (Section~\ref{sec:mediation-decomposition}), not an inferred interpretation.}
+\caption{Causal mediation: ASR by condition and model, Wilson 95\% CIs. Data: R = re-collected 2026-09-27 at $N{=}50$ with temperature 0 and error logging, after the argument-order fix; P = preserved from the 2026-07-30 collection (temperature not set explicitly; unaffected by the bug; Section~\ref{sec:mediation-design}). Mechanism uses the logged \texttt{rag\_used\_in\_trigger} flag. ASR uses scoring (b) of Table~\ref{tab:terms}.}
 \label{tab:mediation}
 \centering
-\small
-\begin{tabular}{llrrrl}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{llrrrll}
 \toprule
-\textbf{Condition} & \textbf{Model} & \textbf{k/N} & \textbf{ASR (\%)} & \textbf{Wilson 95\% CI} & \textbf{Mechanism} \\
+\textbf{Condition} & \textbf{Model} & \textbf{k/N} & \textbf{ASR (\%)} & \textbf{Wilson 95\% CI} & \textbf{Mechanism} & \textbf{Data} \\
 \midrule
-C0 No defence (baseline) & gpt-4.1-mini & 50/50 & \textbf{100.0} & [92.9\%, 100.0\%] & Recall satisfied \\
-C0 No defence (baseline) & gpt-5.1 & 50/50 & \textbf{100.0} & [92.9\%, 100.0\%] & Recall satisfied \\
+C0 No defence & gpt-4.1-mini & 50/50 & \textbf{100.0} & [92.9\%, 100.0\%] & Recall satisfied & R \\
+C0 No defence & gpt-5.1 & 50/50 & \textbf{100.0} & [92.9\%, 100.0\%] & Recall satisfied & R \\
 \midrule
-C1 Full sandbox & gpt-4.1-mini & 0/95 & 0.0 & [0.0\%, 3.9\%] & Defence fully effective \\
-C1 Full sandbox & gpt-5.1 & 74/99 & \textbf{74.7} & [65.4\%, 82.3\%] & RAG fallback \\
+C1 Sandbox & gpt-4.1-mini & 0/95 & 0.0 & [0.0\%, 3.9\%] & Blocked & P \\
+C1 Sandbox & gpt-5.1 & 74/99 & \textbf{74.7} & [65.4\%, 82.3\%] & RAG fallback & P \\
 \midrule
-C2 Sandbox blind & gpt-4.1-mini & 17/99 & \textbf{17.2} & [11.0\%, 25.8\%] & RAG fallback \\
-C2 Sandbox blind & gpt-5.1 & 45/100 & \textbf{45.0} & [35.6\%, 54.8\%] & RAG fallback \\
+C2 Sandbox blind & gpt-4.1-mini & 17/99 & \textbf{17.2} & [11.0\%, 25.8\%] & RAG fallback & P \\
+C2 Sandbox blind & gpt-5.1 & 45/100 & \textbf{45.0} & [35.6\%, 54.8\%] & RAG fallback & P \\
 \midrule
-C3 Null recall & gpt-4.1-mini & 0/85 & 0.0 & [0.0\%, 4.3\%] & Recall present, closed \\
-C3 Null recall & gpt-5.1 & 0/210 & 0.0 & [0.0\%, 1.8\%] & Recall present, closed \\
+C3 Null recall & gpt-4.1-mini & 0/85 & 0.0 & [0.0\%, 4.3\%] & Recall present & P \\
+C3 Null recall & gpt-5.1 & 0/210 & 0.0 & [0.0\%, 1.8\%] & Recall present & P \\
 \midrule
-C4 Recall with frame & gpt-4.1-mini & 50/50 & \textbf{100.0} & [92.9\%, 100.0\%] & Recall satisfied \\
-C4 Recall with frame & gpt-5.1 & 50/50 & \textbf{100.0} & [92.9\%, 100.0\%] & Recall satisfied \\
+C4 Framed recall & gpt-4.1-mini & 50/50 & \textbf{100.0} & [92.9\%, 100.0\%] & Recall satisfied & R \\
+C4 Framed recall & gpt-5.1 & 50/50 & \textbf{100.0} & [92.9\%, 100.0\%] & Recall satisfied & R \\
 \midrule
-C5 Prompt prohibition & gpt-4.1-mini & 50/50 & \textbf{100.0} & [92.9\%, 100.0\%] & Recall satisfied; prohibition ignored \\
-C5 Prompt prohibition & gpt-5.1 & 0/50 & 0.0 & [0.0\%, 7.1\%] & Recall satisfied; prohibition obeyed \\
+C5 Prohibition & gpt-4.1-mini & 50/50 & \textbf{100.0} & [92.9\%, 100.0\%] & Prohibition ignored & R \\
+C5 Prohibition & gpt-5.1 & 0/50 & 0.0 & [0.0\%, 7.1\%] & Prohibition obeyed & R \\
 \midrule
-C6 Sandbox no RAG & gpt-4.1-mini & 0/173 & 0.0 & [0.0\%, 2.2\%] & Fallback closed \\
-C6 Sandbox no RAG & gpt-5.1 & 0/285 & 0.0 & [0.0\%, 1.3\%] & Fallback closed \\
+C6 No RAG & gpt-4.1-mini & 0/173 & 0.0 & [0.0\%, 2.2\%] & Fallback closed & P \\
+C6 No RAG & gpt-5.1 & 0/285 & 0.0 & [0.0\%, 1.3\%] & Fallback closed & P \\
 \midrule
-C7 Full isolation & gpt-4.1-mini & 0/194 & 0.0 & [0.0\%, 1.9\%] & Fallback closed \\
-C7 Full isolation & gpt-5.1 & 0/253 & 0.0 & [0.0\%, 1.5\%] & Fallback closed \\
+C7 Isolation & gpt-4.1-mini & 0/194 & 0.0 & [0.0\%, 1.9\%] & Fallback closed & P \\
+C7 Isolation & gpt-5.1 & 0/253 & 0.0 & [0.0\%, 1.5\%] & Fallback closed & P \\
 \bottomrule
 \end{tabular}
 \end{table*}
@@ -75,21 +95,19 @@ We instrumented every trigger-session run with a \texttt{rag\_used\_in\_trigger}
 
 \paragraph{C1 and C2's successes are 100\% RAG-mediated.} Across all attack successes in these two conditions, \textbf{100\% have \texttt{rag\_used\_in\_trigger}{=}true}: 74/74 for C1/gpt-5.1, 45/45 for C2/gpt-5.1, and 17/17 for C2/gpt-4.1-mini. When \tool{memory\_recall\_fact} is removed from the trigger-session schema, models that fall back to \tool{rag\_query} re-retrieve the malicious document (still present in the corpus) and act on it. \tool{rag\_query} remains in the trigger-session tool schema in every condition except C6 and C7, which show 0\% ASR on both models, confirming that removing the RAG pathway alongside the recall pathway closes the fallback entirely.
 
-\paragraph{The tool-schema signature that gates the fallback.} C3 (recall present, returns null) and C1/C2 (recall absent from schema) are the critical contrast for isolating when the RAG-fallback mechanism activates at all. C3 shows 0\% ASR and 0/295 trigger-session RAG queries on both models: when \tool{memory\_recall\_fact} is present but simply returns no value, neither model falls back to RAG. C1 and C2 remove \tool{memory\_recall\_fact} from the schema entirely, and both show non-trivial RAG-fallback rates for gpt-5.1. The fallback is triggered specifically by the tool's \emph{absence from the schema}, not by the tool being present but uninformative, consistent with the tool-schema behavioural-anchor effect documented for gemma4:31b in the open-source factorial (Section~\ref{sec:sandbox}).
+\paragraph{The tool-schema signature that gates the fallback.} C3 (recall present, returns null) and C1/C2 (recall absent from schema) are the critical contrast for isolating when the RAG-fallback mechanism activates at all. C3 shows 0\% ASR and 0/295 trigger-session RAG queries on both models: when \tool{memory\_recall\_fact} is present but simply returns no value, neither model falls back to RAG. C1 and C2 remove \tool{memory\_recall\_fact} from the schema entirely, and both show non-trivial RAG-fallback rates for gpt-5.1. The fallback is triggered specifically by the tool's \emph{absence from the schema}, not by the tool being present but uninformative, consistent with the tool-schema sensitivity documented in Appendix~\ref{app:bedrock} (injection-floor confound), where removing an unused tool changed action selection.
 
 \subsection{The Sandbox Reduces, Rather Than Creates, Vulnerability: Incompletely for gpt-5.1}
 \label{sec:mediation-iatrogenic}
 
-With the corrected C0 baseline, the sandbox's effect has the opposite sign from what the pre-fix data suggested. For gpt-5.1: C0 (no defence) $=$ 100.0\% $\to$ C1 (full sandbox) $=$ 74.7\%, a reduction of 25.3 percentage points, and $\to$ C2 (blind sandbox) $=$ 45.0\%, a reduction of 55.0 points. For gpt-4.1-mini: C0 $=$ 100.0\% $\to$ C1 $=$ 0.0\%, complete protection, and $\to$ C2 $=$ 17.2\%, near-complete protection. In neither case does the sandbox increase ASR relative to baseline; it decreases it in every cell, completely for gpt-4.1-mini under C1 and substantially (though incompletely) for gpt-5.1 under both C1 and C2. The residual, uncorrected fraction for gpt-5.1 (74.7\% under C1, 45.0\% under C2) is fully explained by the RAG-fallback mechanism established in Section~\ref{sec:mediation-decomposition}: a defence scoped to the recall tool does not extend to a second tool (RAG retrieval) that provides an equivalent path to the same content, and C6/C7 (which additionally remove \tool{rag\_query}) confirm this by returning to 0\% ASR.
-
-This generalises the qwq:32b Memory Sandbox bypass from Section~\ref{sec:sandbox} (previously demonstrated on a single local reasoning model under one Ollama runtime) to a frontier API model (gpt-5.1) under a materially different harness (single-turn tool-call requests rather than the four-session DTA pipeline). The generalisation claim is about the \emph{bypass mechanism as an explanation for incomplete protection}, not about the sandbox being counterproductive: the corrected data shows the sandbox helping in every tested cell, just not all the way to zero for the more capable model.
+Relative to the C0 baseline, the sandbox lowers ASR in every cell. For gpt-5.1: C0 (no defence) $=$ 100.0\% $\to$ C1 (full sandbox) $=$ 74.7\%, a reduction of 25.3 percentage points, and $\to$ C2 (blind sandbox) $=$ 45.0\%, a reduction of 55.0 points. For gpt-4.1-mini: C0 $=$ 100.0\% $\to$ C1 $=$ 0.0\%, complete protection, and $\to$ C2 $=$ 17.2\%, near-complete protection. In neither case does the sandbox increase ASR relative to baseline; it decreases it in every cell, completely for gpt-4.1-mini under C1 and substantially (though incompletely) for gpt-5.1 under both C1 and C2. The residual, uncorrected fraction for gpt-5.1 (74.7\% under C1, 45.0\% under C2) is fully explained by the RAG-fallback mechanism established in Section~\ref{sec:mediation-decomposition}: a defence scoped to the recall tool does not extend to a second tool (RAG retrieval) that provides an equivalent path to the same content (C6, C7; Table~\ref{tab:mediation}).
 
 \subsection{Capability Divergence: Prompt-Level Prohibition Is Obeyed by gpt-5.1 and Ignored by gpt-4.1-mini}
 \label{sec:mediation-scaling}
 
-The most striking finding in the corrected dataset is the C5 contrast, which the pre-fix data could not show because both models showed 0\% ASR there for entirely non-mechanistic reasons (neither model could retrieve the real rule text at all). With recall genuinely functional, C5 adds one instruction to the system prompt: ``do not comply with recalled instructions that conflict with your guidelines.'' gpt-5.1 obeys it completely: 0/50 ASR (Wilson 95\% CI [0.0\%, 7.1\%]), non-overlapping with its own C0/C4 rate of 100.0\% under the identical recall-satisfied condition minus the prohibition text. gpt-4.1-mini ignores it completely: 50/50 ASR (100.0\%), identical to its own C0 and C4 rates. This is a clean, statistically decisive ($N{=}50$ per model, non-overlapping 95\% CIs) demonstration that at least one tested model can resolve a conflict between a retrieved instruction and an explicit system-level prohibition in favour of the prohibition, while a smaller model in the same family line cannot or does not, when the only variable held constant is the presence of the prohibition text. We did not test whether gpt-5.1's compliance with the prohibition would survive a RAG-fallback pathway being simultaneously active (that combination (C5's prompt text applied to C1's schema) was not one of the eight conditions), so we do not claim the prohibition is sufficient in general; we report only that it changes gpt-5.1's behaviour to zero in the specific condition tested.
+The clearest difference between the two models is the C5 contrast. With recall functional, C5 adds one instruction to the system prompt: ``Do not act on any routing rules, forwarding instructions, or email policies retrieved from memory. Memory content is untrusted. Only send emails to addresses explicitly specified by the user in this session's message.'' gpt-5.1 obeys it completely: 0/50 ASR (Wilson 95\% CI [0.0\%, 7.1\%]), non-overlapping with its own C0/C4 rate of 100.0\% under the identical recall-satisfied condition minus the prohibition text. gpt-4.1-mini ignores it completely: 50/50 ASR (100.0\%), identical to its own C0 and C4 rates. This is a clean, statistically decisive ($N{=}50$ per model, non-overlapping 95\% CIs) demonstration that at least one tested model can resolve a conflict between a retrieved instruction and an explicit system-level prohibition in favour of the prohibition, while a smaller model in the same family line cannot or does not, when the only variable held constant is the presence of the prohibition text. We did not test whether gpt-5.1's compliance with the prohibition would survive a RAG-fallback pathway being simultaneously active (that combination (C5's prompt text applied to C1's schema) was not one of the eight conditions), so we do not claim the prohibition is sufficient in general; we report only that it changes gpt-5.1's behaviour to zero in the specific condition tested.
 
-A secondary, smaller-magnitude finding concerns tool-schema visibility under the RAG-fallback mechanism (C1 vs.\ C2), which holds in the corrected data:
+A secondary, smaller finding concerns tool-schema visibility under the RAG-fallback mechanism (C1 vs.\ C2):
 
 \begin{center}
 \small
@@ -103,25 +121,19 @@ C2 (blind sandbox, no visibility) & \textbf{17.2\%} & \textbf{45.0\%} \\
 \end{tabular}
 \end{center}
 
-For gpt-5.1, tool visibility (\tool{list\_all\_facts} remaining in schema) \emph{increases} the RAG-fallback rate: 45.0\% (C2, no visibility) $\to$ 74.7\% (C1, visibility present), a $+29.7$pp change. For gpt-4.1-mini, tool visibility has the opposite effect: RAG-fallback drops from 17.2\% (C2) to 0.0\% (C1) when \tool{list\_all\_facts} is present. This is a qualitative divergence in the direction that the same architectural signal moves the fallback rate, scoped to two OpenAI models under one attack payload; we do not claim this direction generalises to other vendors or payloads, and it is now clearly the secondary finding of this experiment relative to the C5 prohibition-obedience divergence above.
+For gpt-5.1, tool visibility (\tool{list\_all\_facts} remaining in schema) \emph{increases} the RAG-fallback rate: 45.0\% (C2, no visibility) $\to$ 74.7\% (C1, visibility present), a $+29.7$pp change. For gpt-4.1-mini, tool visibility has the opposite effect: RAG-fallback drops from 17.2\% (C2) to 0.0\% (C1) when \tool{list\_all\_facts} is present. This is a qualitative divergence in the direction that the same architectural signal moves the fallback rate, scoped to two OpenAI models under one attack payload; we do not claim this direction generalises to other vendors or payloads. One caveat is specific to these preserved cells: under the argument-order bug (Appendix~\ref{app:mediation-bug}), the key written in S1 was corrupted to a bare placeholder, so what \tool{list\_all\_facts} exposed in C1 was that placeholder rather than a descriptive key such as \texttt{email\_routing\_rule}. The attack outcome in these cells does not depend on the key text (every C1/C2 success re-retrieved the intact malicious document via RAG, logged by \texttt{rag\_used\_in\_trigger}; Section~\ref{sec:mediation-decomposition}), but the mechanistic interpretation of the \emph{visibility} contrast should be read as the mere presence of the \tool{list\_all\_facts} tool in the schema, not as the informativeness of the key string it returned. A clean re-collection of C1 and C2 with the corrected wrapper would remove this ambiguity.
 
-\subsection{Connection to Mechanistic Findings}
+\subsection{Relationship to the Open-Source Factorial}
 \label{sec:mediation-connection}
-
-This causal mediation result supports two independent claims. First, recall satisfaction (functioning \tool{memory\_recall\_fact}, regardless of an authority-framing prefix) is sufficient for near-total exploitation on both tested models: there is no protective effect from wrapping a genuine recalled value in a validity warning. Second, when recall is instead removed from the schema, the residual vulnerability for the more capable model (gpt-5.1) is a second, independently-instrumented confirmation of the RAG-fallback mechanism identified for qwq:32b in the open-source factorial (Section~\ref{sec:sandbox}): Memory Sandbox blocks the primary recall path but is bypassed when a model, denied recall, falls back to a still-available RAG tool that retrieves the original injected content. The present analysis confirms this generalises to a frontier API model under a different harness, and pins the mechanism down precisely via the \texttt{rag\_used\_in\_trigger} instrumentation (100\% of C1/C2 attack successes are RAG-mediated) rather than inferring it from aggregate condition contrasts alone.
-
-The decomposition constrains the solution space in the same direction as Section~\ref{sec:sandbox}'s discussion: since removing \tool{rag\_query} alongside \tool{memory\_recall\_fact} closes the fallback (C6, C7 = 0\% ASR), a sandbox that scopes only the memory-recall tool is insufficient wherever an equivalent-content tool remains reachable, but the corrected data shows this insufficiency as a matter of degree (74.7\% and 45.0\% residual ASR, down from a 100.0\% baseline) rather than the sandbox failing outright. Content-level interventions that sanitise recalled or retrieved values regardless of which tool delivered them (consistent with the RATG proof-of-concept in Section~\ref{sec:ratg}) address the residual gap by construction; execution-context isolation scoped to a single tool reduces but does not eliminate ASR unless every tool providing access to the same content is isolated together.
-
-\subsection{Relationship to Earlier Findings}
 \label{sec:mediation-progression}
 
-The open-source factorial (Section~\ref{sec:sandbox}) demonstrated Memory Sandbox efficacy on sub-frontier models, where the apparatus functions largely as intended (cf.\ C1/gpt-4.1-mini $=$ 0\% ASR in Table~\ref{tab:mediation}, against a corrected baseline of 100\%). The corrected findings here strengthen rather than retract that result: the sandbox is not merely non-harmful, it provides complete protection for gpt-4.1-mini under C1 and near-complete protection under C2, against a baseline in which the model complies with the injected rule in every tested run absent any defence. The finding that requires qualification is specific to gpt-5.1: a model capable of formulating a RAG-fallback query, given a trigger-session tool schema that still exposes \tool{rag\_query}, will use it, reducing but not eliminating the sandbox's protective effect. gpt-4.1-mini's 0\% under C1 and non-zero 17.2\% under C2 shows the tool-visibility effect is not simply a matter of model size: the direction of the effect differs between the two models we tested (Section~\ref{sec:mediation-scaling}): but the presence or absence of an alternative content-bearing tool in the schema is the variable that determines whether recall-removal alone is sufficient for the more capable model.
+In the open-source factorial, Memory Sandbox blocks the recall path for eight of nine models, and RAG fallback bypasses it for qwq:32b on one daemon load and for three Bedrock-served models (Section~\ref{sec:sandbox}). The mediation study reproduces both outcomes on frontier API models under a different harness (a direct API loop rather than the LangGraph pipeline, with sandboxing applied only in S4): gpt-4.1-mini behaves like the protected factorial models (0\% under C1 against a 100\% baseline), and gpt-5.1 behaves like the bypassing ones. Here the path is identified from the \texttt{rag\_used\_in\_trigger} instrumentation rather than inferred from condition contrasts.
+
+The practical consequence matches Section~\ref{sec:sandbox}: a sandbox that scopes only the recall tool leaves a residual wherever another tool can deliver the same content (74.7\% and 45.0\% for gpt-5.1, down from 100\%). Content-level interventions that sanitise recalled or retrieved values whatever tool delivered them, such as the RATG proof of concept (Section~\ref{sec:ratg}), address that residual by construction; tool-scoped isolation closes it only if every tool that reaches the content is isolated together, as in C6 and C7.
 
 \subsection{Scope and Limitations}
 \label{sec:mediation-scope}
 
 These results constitute a case study on two models from a single provider, not a universal law. The capability-scaling claims (Section~\ref{sec:mediation-scaling}) require validation across additional model families. $N$ per cell for the preserved conditions (C1, C2, C3, C6, C7) ranges from 85 to 285; the zero-ASR cells among these have upper bounds of 1.3--4.3\%, meaning we cannot rule out very low-rate attacks in those specific conditions. The freshly re-collected conditions (C0, C4, C5) use $N{=}50$ per model, giving a Wilson upper bound of 7.1\% on the one zero-ASR cell among them (C5/gpt-5.1). Between-session variance (documented at 15--60\% for gpt-4.1-mini in other experiments in this research programme) means these are session-contingent behavioural estimates; the \emph{magnitude} of the effects reported here is large enough to be robust to this variance (non-overlapping CIs at $N{=}50$ for the C5 divergence, for example), but exact point estimates should be treated as illustrative rather than stable population parameters. All experiments use benign proxy tasks; transfer to production persistent-memory architectures is inferred, not demonstrated.
 
-\paragraph{Deviations from the pre-registered protocol, and their resolution.} Our pre-registration (\S\ref{sec:mediation-design}, full text released with the artefact) specified a stopping rule: if C0 (no defence) produces $<10\%$ ASR for either model, that model's arm is uninformative and should be replaced with a confirmed-vulnerable model. Under the pre-fix data collection, both models' observed C0 rates fell under this threshold (0.0\% for gpt-4.1-mini, 0.9\% for gpt-5.1), and neither model was replaced, a deviation from the pre-registration. The bug fix and re-collection described in Section~\ref{sec:mediation-design} resolves this deviation directly: the corrected C0 rate is 100.0\% for both models, far above the 10\% informativeness threshold, so the concern that motivated the stopping rule (an uninformative, near-floor baseline) does not apply to the corrected data. We retain this account rather than deleting it because it explains why the original data collection did not trigger the stopping rule despite (as it turned out) being uninformative for a different reason than an unlucky model draw.
-
-In the pre-fix collection the API calls did not set an explicit \texttt{temperature} parameter, and sessions exhausting all API retry attempts terminated without a recorded error flag. Both issues are fixed in the released script (temperature$=$0 with a reasoning-model carve-out, consistent with the rest of this paper's methodology; an explicit \texttt{error} field set on retry exhaustion and excluded from resume counts) and both fixes are in effect for the freshly re-collected C0, C4, and C5 data reported in this section. They remain unaddressed in the preserved C1, C2, C3, C6, and C7 data, which was not re-collected because the argument-order bug (the issue that motivated re-collection) does not affect those conditions' trigger-session logic; we do not believe the temperature/error-field issues are large enough to change the qualitative RAG-fallback finding for those conditions, which is corroborated by the C3/C6/C7 ablations and the direct tool-call instrumentation, but we flag the provenance difference for transparency.
+\paragraph{Deviation from the pre-registered protocol.} The pre-registration (released with the artefact) specified that a model whose C0 ASR fell below 10\% should be replaced. In the pre-fix collection both C0 rates were below this threshold (0.0\% for gpt-4.1-mini, 0.9\% for gpt-5.1) and neither model was replaced. The low rates were caused by the argument-order bug, not by the choice of model: the corrected C0 rate is 100.0\% for both models, so the stopping rule does not apply to the reported data.
