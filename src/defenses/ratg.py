@@ -21,7 +21,7 @@ class RATG(Defense):
     inside MemoryTool.recall_fact() via the ratg_filter hook set by the runner."""
 
     def apply(self, user_input: str, context: dict | None = None) -> tuple[str, DefenseLog]:
-        log = DefenseLog(defense_name="ratg", original_input=user_input,
+        log = DefenseLog(defense_type="ratg", original_input=user_input,
                          modified_input=user_input, modifications=[])
         return user_input, log
 

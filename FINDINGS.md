@@ -2,40 +2,37 @@
 
 ## Causal Mediation: A Universally Vulnerable Baseline, Partial Sandbox Protection (July-September 2026)
 
-A positional-argument bug in the standalone frontier scripts (fixed 2026-09-27) had corrupted three of eight causal-mediation conditions (C0, C4, C5): every simulated memory recall returned a bare key name instead of the actual routing rule, silently discarding the attacker's address before it ever reached the model. Re-collected at N=50 per model per condition (300 fresh runs, 0 errors): **C0 (no defense) is 100% ASR for both gpt-5.1 and gpt-4.1-mini** (was reported as 0.9%/0.0%), **C4 (recall with authority-framing prefix) is also 100% for both** (was 0%), and **C5 (prompt prohibition) splits by model: gpt-5.1 obeys it completely (0/50), gpt-4.1-mini ignores it completely (50/50)** (was 0% for both, for entirely non-mechanistic reasons). The corrected finding reverses the paper's original claim: Memory Sandbox does not create vulnerability relative to the baseline -- it reduces an already-universal 100% baseline, completely for gpt-4.1-mini (C1: 100%->0%) and substantially but incompletely for gpt-5.1 (C1: 100%->74.7%), with the residual explained by RAG fallback (100% of C1/C2 successes co-occur with a trigger-session `rag_query`, verified per-run). See canonical_numbers.md for the full condition table.
+A positional-argument bug in the standalone frontier scripts (fixed 2026-09-27) had corrupted three of eight causal-mediation conditions (C0, C4, C5): every simulated memory recall returned a bare key name instead of the actual routing rule, silently discarding the attacker's address before it ever reached the model. Re-collected at N=50 per model per condition (300 fresh runs, 0 errors): **C0 (no defense) is 100% ASR for both gpt-5.1 and gpt-4.1-mini** (was reported as 0.9%/0.0%), **C4 (recall with authority-framing prefix) is also 100% for both** (was 0%), and **C5 (prompt prohibition) splits by model: gpt-5.1 obeys it completely (0/50), gpt-4.1-mini ignores it completely (50/50)** (was 0% for both, for entirely non-mechanistic reasons). The corrected finding reverses the paper's original claim: Memory Sandbox does not create vulnerability relative to the baseline -- it reduces an already-universal 100% baseline, completely for gpt-4.1-mini (C1: 100%->0%) and substantially but incompletely for gpt-5.1 (C1: 100%->74.7%), with the residual explained by RAG fallback (100% of C1/C2 successes co-occur with a trigger-session `rag_query`, verified per-run). The *magnitude* of the C0->C1 reduction carries a caveat: C0 was re-collected in September (N=50) while C1 is preserved from July (N=85-285) under different temperature handling, so the reduction is a cross-collection, unequal-N contrast; the RAG-fallback *attribution* does not depend on it (it rests on within-collection instrumentation and the C3/C6/C7 ablations). See canonical_numbers.md and paper/causal_mediation_section.tex for the full condition table and provenance.
 
 ### Condition Results
 
+C0, C4 and C5 were re-collected at N=50 per model after the argument-order bug was fixed (2026-09-27); C1, C2, C3, C6 and C7 are from the original collection (recall was removed or overridden in those conditions, so the bug never reached the trigger-session decision).
+
 | Condition | Description | gpt-5.1 ASR | gpt-4.1-mini ASR |
 |-----------|-------------|-------------|-----------------|
-| C0 | No defense baseline | 0.9% (1/108) | 0.0% (0/76) |
+| C0 | No defense baseline | 100.0% (50/50) | 100.0% (50/50) |
 | C1 | Full sandbox | 74.7% (74/99) [65.4%, 82.3%] | 0.0% (0/95) |
 | C2 | Blind sandbox | 45.0% (45/100) | 17.2% (17/99) |
 | C3 | Null recall | 0.0% (0/210) | 0.0% (0/85) |
-| C4 | Recall with frame, no sandbox | 0.0% (0/190) | 0.0% (0/100) |
-| C5 | Prompt prohibition only | 0.0% (0/164) | 0.0% (0/100) |
+| C4 | Recall with frame, no sandbox | 100.0% (50/50) | 100.0% (50/50) |
+| C5 | Prompt prohibition only | 0.0% (0/50) | 100.0% (50/50) |
 | C6 | Sandbox no RAG | 0.0% (0/285) | 0.0% (0/173) |
 | C7 | Full isolation | 0.0% (0/253) | 0.0% (0/194) |
 
 ### Causal Conclusions
 
-- **Recalled content**: NECESSARY (C3 = 0% for both models, N=210/85; without recalled content, no attack)
-- **Sandbox execution context**: NECESSARY (C4 = 0% for both, N=190/100; recall with frame but no sandbox = no attack)
-- **RAG availability**: NECESSARY (C6 = 0% for both, N=285/173; sandbox architecture without RAG-injected content = no attack)
-- **Full isolation**: SAFE (C7 = 0% for both, N=253/194; removing all memory components eliminates attack surface)
-- **Conjunction**: SUFFICIENT for attack (C1 = 74.7% for gpt-5.1 when recalled content + sandbox context + RAG all present)
-- **Tool visibility**: amplifier (+30pp), not gate (C2 vs C1 difference)
-- **Prompt prohibition alone**: baseline = 0% (C5; instruction-level defense is inert)
+- **Recalled content delivered through the tool channel is sufficient for exploitation.** C0 and C4 are 100% for both models: when `memory_recall_fact` returns the genuine rule text (with or without the C4 `[SANDBOXED MEMORY - not validated]` authority frame), the model acts on it. The C4 frame provides zero measurable protection (100% ASR, identical to C0).
+- **Removing the recall tool is what lowers ASR, and the residual runs through RAG.** C1 (Full sandbox) drops gpt-4.1-mini to 0% and gpt-5.1 to 74.7%; the gpt-5.1 residual is RAG fallback: 100% of C1/C2 successes co-occur with a trigger-session `rag_query` (136/136, verified per-run). Remove RAG as well (C6, C7) and ASR is 0% for both models.
+- **Null recall is sufficient to block.** C3 = 0% for both: a recall tool that returns an empty template blocks the attack without removing the tool from the schema.
+- **Prompt prohibition is a capability divergence, not a general defense.** C5 adds one system-prompt instruction; gpt-5.1 obeys it (0/50) while gpt-4.1-mini ignores it (50/50). We did not test the prohibition against a simultaneously-active RAG-fallback pathway, so we do not claim it is sufficient in general.
 
 ### Interpretation
 
-The sandbox routes recalled instructions through a tool-authority channel that more capable models treat as authoritative. This reframes the entire paper from "defense evaluation" to **architectural attack surface discovery**: the defense mechanism itself creates the instruction channel that overrides developer intent.
-
-The framing shifts from "here is our defense" to "how agentic architecture creates instruction channels that override developer intent." The sandbox does not merely fail to protect -- it actively elevates the authority of recalled content by presenting it through a tool-execution pathway.
+The corrected mediation reverses the earlier (bug-affected) reading. Memory Sandbox does not create vulnerability relative to the baseline: it reduces an already-universal 100% baseline, completely for gpt-4.1-mini and partially for gpt-5.1, with the residual fully explained by the RAG fallback route (the reduction *magnitude* is a cross-collection, unequal-N contrast -- C0 re-collected Sept at N=50 vs C1 preserved July at N=85-285 -- but the RAG-fallback *attribution* does not depend on that). Blocking one route (recall) does not block another route (RAG) to the same content; the general lesson is that the attack is content-delivery-path agnostic, so a defense that closes a single path leaves the others open.
 
 ### Connection to Arbitration Paper 2
 
-This connects to Paper 2's finding of a linear compliance direction in activation space. The sandbox may be activating that same compliance state through the tool-authority channel -- the model's internal representation of "this is an instruction I should follow" is triggered by the tool-execution framing, not by the content itself.
+This connects to Paper 2's finding of a linear compliance direction in activation space. The recall-satisfied conditions (C0, C4) may be activating that same compliance state through the tool-authority channel: the model's internal representation of "this is an instruction I should follow" appears to be triggered by content arriving through a trusted retrieval path, whether that path is memory recall or RAG.
 
 ---
 
@@ -261,7 +258,7 @@ All tools are simulated, not production deployments. Models are quantized open s
 
 ## Verification
 
-All numbers in this document were programmatically verified against raw experimental data (5,660 JSONL records across 4 core result files, plus 933 RATG and 7B-judge records across 3 additional result files, plus 1,180 Bedrock validation records across 3 result files) using `scripts/verify_canonical.py`. The verification checks every per-cell ASR, every defense mean, every archetype classification, every headline claim, the full analysis.json output including N/A annotations and Holm-Bonferroni significance counts, and the RATG mechanical-model efficacy evidence and 7B-judge capability-bound finding. Paper: [arXiv:2605.08442](https://arxiv.org/abs/2605.08442). Code and results: [github.com/junwenleong/stateful-agent-security-eval](https://github.com/junwenleong/stateful-agent-security-eval). Experiment configurations in `experiments/configs/` were registered before the first factorial run. The Unified Agentic Environment design (identical SQLite, identical RAG corpus, identical tool definitions across all models) ensures that observed differences in attack success are attributable to model reasoning, not infrastructure variation.
+The headline numbers in this document were programmatically verified against raw experimental data (5,660 JSONL records across 4 core result files, plus 933 RATG and 7B-judge records across 3 additional result files, plus 1,180 Bedrock validation records across 3 result files) using `scripts/verify_canonical.py`. The verification checks the load-bearing aggregates (DTA injection and ASR, per-defence means, memory-sandbox per-model ASR, false-positive and BTCR rates), the archetype classifications, the headline claims, the full analysis.json output including N/A annotations and Holm-Bonferroni significance counts, the causal-mediation C0/C4/C5 cells with their RAG-fallback attribution, and the RATG mechanical-model efficacy evidence and 7B-judge capability-bound finding. It spot-checks selected per-model cells rather than recomputing every one of the 63 model-by-defence cells or every frontier endpoint. Paper: [arXiv:2605.08442](https://arxiv.org/abs/2605.08442). Code and results: [github.com/junwenleong/stateful-agent-security-eval](https://github.com/junwenleong/stateful-agent-security-eval). Experiment configurations in `experiments/configs/` were registered before the first factorial run. The Unified Agentic Environment design (identical SQLite, identical RAG corpus, identical tool definitions across all models) ensures that observed differences in attack success are attributable to model reasoning, not infrastructure variation.
 
 ## Frontier Generational Findings (June 2026)
 

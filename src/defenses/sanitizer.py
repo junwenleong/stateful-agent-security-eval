@@ -85,6 +85,12 @@ class Sanitizer(Defense):
                 f"Sanitizer classifier not found at '{path}'. "
                 "Run scripts/train_sanitizer.py to generate it."
             )
+        # The classifier artifact is a pickled dict written by
+        # scripts/train_sanitizer.py via pickle.dump (sklearn LogisticRegression +
+        # TfidfVectorizer are not JSON-serialisable), so it must be read with
+        # pickle.load. This matches the format used when the factorial results were
+        # collected; the TF-IDF scores reported in the paper (0.33-0.44 on the
+        # compliance payload) depend on the classifier actually loading here.
         with open(path, "rb") as f:
             bundle = pickle.load(f)
         self.classifier = bundle["classifier"]
@@ -102,7 +108,9 @@ class Sanitizer(Defense):
             match = pattern.search(text)
             if match:
                 matched_text = match.group(0)
-                text = pattern.sub("[REDACTED]", text)
+                # Use unique redaction tokens to prevent nested [REDACTED] patterns
+                redaction_token = f"[REDACTED_{id(pattern)}_{hash(matched_text)}]"
+                text = pattern.sub(redaction_token, text)
                 modifications.append(f"Regex redacted '{matched_text}' (pattern: {pattern.pattern})")
                 impact_tags.append("injection_pattern_detected")
                 redacted_patterns.append({

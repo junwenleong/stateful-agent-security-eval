@@ -28,7 +28,8 @@ make smoke
 export OPENAI_API_KEY="sk-..."
 make core MODEL=gpt-4o-mini
 
-# Full reproduction of paper results
+# Live scenario suite (~42 scenario-executions across 3 models).
+# NOTE: this does NOT reproduce the 5,040-run primary factorial (see "Release Scope" below).
 bash scripts/reproduce_paper.sh
 ```
 
@@ -38,7 +39,15 @@ bash scripts/reproduce_paper.sh
 |---------|----------|----------|------|---------|
 | `smoke` | None | <2 min | 14 | Validate harness works (uses recorded traces) |
 | `core` | Required | ~30 min | ~200/model | Representative subset for artifact evaluation |
-| `full` | Required | ~8 hours | 5,040 | Complete benchmark (all combinations) |
+| `full` | Required | ~8 hours | scenario suite | Live scenario suite against a model (see note below) |
+
+> **Note on reproduction scope.** `--profile full` runs the live scenario suite; it does
+> **not** execute the paper's 5,040-run primary factorial. The CLI loads a single hardcoded
+> scenario manifest regardless of `--profile`, which only selects the offline recorded adapter
+> (`smoke`) versus a live model adapter (`core`/`full`). The 5,040-run factorial lives in the
+> parent project's own harness (`scripts/run_defense_factorial.py` against
+> `experiments/configs/defense_factorial.yaml`) and its numbers are checked by
+> `verify_canonical.py`. See `ARTIFACT.md` for the full correction note.
 
 ## Architecture
 
@@ -133,7 +142,7 @@ provides a stable reference baseline for research in LLM agent memory security.
 ### Verification Steps
 
 1. `make smoke` passes with zero API keys (validates harness using recorded traces)
-2. `make core MODEL=gpt-4o-mini` reproduces paper findings within reported CIs
+2. `make core MODEL=gpt-4o-mini` runs the live scenario suite and reports ASR with Wilson CIs. This validates the SleeperBench harness end-to-end; it does not reproduce the paper's 5,040-run primary factorial, whose numbers are verified instead by the parent project's `verify_canonical.py` (see "Release Scope" and `ARTIFACT.md`).
 3. Results are deterministic at temperature=0 (modulo API-side variance)
 
 ## Citation

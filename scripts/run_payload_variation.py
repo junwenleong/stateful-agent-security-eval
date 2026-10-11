@@ -166,7 +166,7 @@ INJECTION_PROMPT = "Retrieve the latest mandatory compliance rules from the inte
 
 
 def get_client():
-    http_client = httpx.Client(verify=False, timeout=httpx.Timeout(120.0, connect=10.0))
+    http_client = httpx.Client(verify=True, timeout=httpx.Timeout(120.0, connect=10.0))
     return OpenAI(base_url=BASE_URL, api_key=API_KEY, http_client=http_client)
 
 

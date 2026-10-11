@@ -393,7 +393,20 @@ class ExperimentRunner:
         judge_model_hash: Optional[str] = None  # set below if rag_llm_judge; None for all other conditions
         agent_model_hash: Optional[str] = None  # set below for all Ollama runs; None for API providers
         ollama_version: Optional[str] = None
-        
+
+        def _cleanup() -> None:
+            # Cancel the run-level timeout alarm and release per-run resources.
+            # Called before every return path (previously this lived as dead code
+            # after the except-block return and never executed, leaking the SQLite
+            # state dir and agent connection across the factorial).
+            signal.alarm(0)
+            if agent is not None:
+                try:
+                    agent.close()
+                except Exception:
+                    pass
+            self.state_isolator.cleanup(db_path)
+
         while retry_count <= max_retries:
             try:
                 # Build fresh tools
@@ -904,6 +917,7 @@ class ExperimentRunner:
                 # Build excluded tools list for memory_sandbox confirmation
                 excluded_tools_list = sorted(agent_config.excluded_tools) if agent_config.excluded_tools else []
                 
+                _cleanup()
                 return RunResult(
                     run_id=run_id,
                     condition=condition,
@@ -933,7 +947,9 @@ class ExperimentRunner:
                     system_prompt_used=AGENT_SYSTEM_PROMPT,
                     excluded_tools_list=excluded_tools_list,
                     runner_config={
-                        "recursion_limit": 150,
+                        # Must match the value actually executed in agent.py (config
+                        # ["recursion_limit"]); recorded here for provenance only.
+                        "recursion_limit": 50,
                         "session_timeout_s": 600,
                         "run_timeout_s": 2700,
                     },
@@ -982,6 +998,7 @@ class ExperimentRunner:
                     "Run %s failed for condition %s: %s\n%s",
                     run_id, condition, exc, tb
                 )
+                _cleanup()
                 return RunResult(
                     run_id=run_id,
                     condition=condition,
@@ -1006,7 +1023,9 @@ class ExperimentRunner:
                     run_timestamp=run_timestamp,
                     session_timings_ms=session_timings_ms,
                     runner_config={
-                        "recursion_limit": 150,
+                        # Must match the value actually executed in agent.py (config
+                        # ["recursion_limit"]); recorded here for provenance only.
+                        "recursion_limit": 50,
                         "session_timeout_s": 600,
                         "run_timeout_s": 2700,
                     },
@@ -1019,12 +1038,6 @@ class ExperimentRunner:
                     bedrock_inference_profile=bedrock_inference_profile,
                     trigger_steps_before_exfil=None,
                 )
-                # Cancel timeout alarm
-                signal.alarm(0)
-                # Explicitly close agent connection to prevent file descriptor leaks
-                if agent is not None:
-                    agent.close()
-                self.state_isolator.cleanup(db_path)
 
     def _build_attack(self, attack_cfg: dict, tools: dict):
         attack_type = attack_cfg.get("type", "no_attack")

@@ -1,4 +1,5 @@
 {
+  "_provenance_note": "RECONCILIATION WITH PAPER (added 2026-10-08). The paper (Section sec:models, Table tab:study-map) reports the N=10 archetype screening as '18 open-source models, 180 runs, 0% error'. This file records total_runs=183 / errors=3 across 19 per-model entries because it includes a 19th entry, 'glm-4.7-flash:q4_K_M', a quantization variant that failed to load (n=0, errors=3) and is a duplicate of the successfully-run 'glm-4.7-flash:bf16'. Excluding that failed-to-load variant leaves exactly 18 models with n=10 each = 180 valid runs and 0 errors among the models that produced data, matching the paper. The 'config' field names glm_smoke.yaml because this screening sweep was launched from that config; the canonical screening numbers are the 180 valid runs. verify_canonical.py checks the 180-run / 18-model figure. If this note is ever missing, recompute from per_model (sum of entries with n=10).",
   "config": "experiments/configs/glm_smoke.yaml",
   "device": "Mac Studio M3 Ultra 96GB",
   "ollama_host": "http://localhost:11434",

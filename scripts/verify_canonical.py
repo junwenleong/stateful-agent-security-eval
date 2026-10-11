@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
-"""Full verification of all canonical numbers against raw data.
-Verifications 1-6: factorial, n10, bedrock, haiku sandbox, headlines, analysis.json.
-Verifications 7-8: RATG mechanical models, 7B judge.
-Verifications 9-10: causal mediation (post swap-bug-fix), double-dissociation multi-turn harness.
-Exit 0 = all pass, exit 1 = discrepancies found.
+"""Verification of the headline canonical numbers against raw data.
+Checks the load-bearing aggregates and a set of spot-checked per-model cells
+(not every one of the 63 model x defense cells, the 29-endpoint frontier table,
+or every mediation cell). Verifications 1-6: factorial, n10, bedrock, haiku
+sandbox, headlines, analysis.json. Verifications 7-8: RATG mechanical models,
+7B judge. Verifications 9-10: causal mediation (post swap-bug-fix),
+double-dissociation multi-turn harness.
+Exit 0 = all checked numbers pass, exit 1 = discrepancies found.
 
 Paper: https://arxiv.org/abs/2605.08442
 Code and results: https://github.com/junwenleong/stateful-agent-security-eval
@@ -35,6 +38,12 @@ def verify_factorial():
     print("=" * 70)
     recs = load_jsonl("results/defense_factorial/results.jsonl")
     record("Total runs", 5040, len(recs), len(recs) == 5040)
+    # Integrity: run_ids must be unique (a duplicated line would inflate N and
+    # could still pass the count check if the file were over-written).
+    _rids = [r.get("run_id") for r in recs if r.get("run_id")]
+    _n_unique = len(set(_rids))
+    record("Unique run_ids (no duplicate runs)", len(recs), _n_unique,
+           len(_rids) == len(recs) and _n_unique == len(recs))
     errs = sum(1 for r in recs if r.get("error"))
     record("Errors", 0, errs, errs == 0)
     dta = [r for r in recs if r["condition"]["attack"]["type"] == "delayed_trigger"]
@@ -401,5 +410,5 @@ if failures:
         print(f"  - {f}")
     sys.exit(1)
 else:
-    print("ALL CHECKS PASSED - every number traces back to raw data.")
+    print("ALL CHECKS PASSED - headline cells, aggregates, and spot-checked per-model cells trace back to raw data.")
     sys.exit(0)

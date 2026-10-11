@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-15 09:03:13",
+  "timestamp": "2026-10-08 11:51:44",
   "n_records": 5040,
   "n_features_full": 23,
   "n_features_content": 7,
@@ -10,7 +10,7 @@
   },
   "results": [
     {
-      "model_name": "logistic_regression_pathway+content",
+      "model_name": "logistic_regression_pathway+trajectory",
       "split_type": "model_family",
       "n_folds": 4,
       "mean_auroc": 0.9978070175438597,
@@ -19,16 +19,16 @@
       "mean_brier": 0.024453981773228307
     },
     {
-      "model_name": "gradient_boosting_pathway+content",
+      "model_name": "gradient_boosting_pathway+trajectory",
       "split_type": "model_family",
       "n_folds": 4,
       "mean_auroc": 1.0,
       "std_auroc": 0.0,
       "mean_ap": 1.0,
-      "mean_brier": 0.0007906114524753939
+      "mean_brier": 0.011639865870370846
     },
     {
-      "model_name": "logistic_regression_content_only",
+      "model_name": "logistic_regression_trajectory_only",
       "split_type": "model_family",
       "n_folds": 4,
       "mean_auroc": 1.0,
@@ -37,13 +37,13 @@
       "mean_brier": 0.00836184549974346
     },
     {
-      "model_name": "gradient_boosting_content_only",
+      "model_name": "gradient_boosting_trajectory_only",
       "split_type": "model_family",
       "n_folds": 4,
       "mean_auroc": 1.0,
       "std_auroc": 0.0,
       "mean_ap": 1.0,
-      "mean_brier": 0.008156092764680918
+      "mean_brier": 0.014397747254475811
     },
     {
       "model_name": "logistic_regression_pathway_only",

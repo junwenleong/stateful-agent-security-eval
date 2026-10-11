@@ -98,7 +98,46 @@ def load_results(path: str) -> list[dict]:
         )
     if skipped_errors:
         logger.info("Filtered out %d error records (kept %d successes)", skipped_errors, len(records))
+
+    # Integrity guard: reject duplicate runs. A duplicated JSONL line (e.g. from an
+    # interrupted-and-resumed append) would silently inflate N and could pass a bare
+    # len()==expected count check. Each run is written with a UUIDv4 run_id; a repeated
+    # run_id (or, if run_id is absent, a repeated (model, defense, attack, timestamp)
+    # tuple) indicates a double-write. Fail closed so analysis never runs on inflated data.
+    _check_no_duplicate_runs(records)
+
     return records
+
+
+def _run_identity(r: dict):
+    """Stable per-run identity for duplicate detection."""
+    rid = r.get("run_id")
+    if rid:
+        return ("run_id", rid)
+    cond = r.get("condition", {})
+    return (
+        "composite",
+        cond.get("model", {}).get("model_name"),
+        cond.get("defense", {}).get("name"),
+        cond.get("attack", {}).get("type"),
+        r.get("run_timestamp"),
+    )
+
+
+def _check_no_duplicate_runs(records: list[dict]) -> None:
+    """Raise if any run identity appears more than once (Q: denominator integrity)."""
+    from collections import Counter
+
+    counts = Counter(_run_identity(r) for r in records)
+    dups = {k: n for k, n in counts.items() if n > 1}
+    if dups:
+        sample = list(dups.items())[:5]
+        raise ValueError(
+            f"DUPLICATE RUNS DETECTED: {len(dups)} run identities appear more than once "
+            f"({sum(dups.values()) - len(dups)} excess records would inflate N). "
+            f"Sample: {sample}. Refusing to analyze inflated data. Deduplicate the JSONL "
+            f"(keep one record per run_id) before re-running."
+        )
 
 
 def check_completion(records: list[dict], config_path: str, threshold: float = 0.95) -> None:

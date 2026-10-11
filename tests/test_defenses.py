@@ -116,12 +116,14 @@ BENIGN_PHRASES = [
 )
 @settings(max_examples=100)
 def test_property_12_sanitizer_injection_neutralized(injection_phrase: str, suffix: str) -> None:
-    """Property 12a: Inputs matching INJECTION_PATTERNS are neutralized (contain [REDACTED])."""
+    """Property 12a: Inputs matching INJECTION_PATTERNS are neutralized (contain [REDACTED_*])."""
     sanitizer = Sanitizer()
     text = injection_phrase + " " + suffix
     result, log = sanitizer.apply(text)
 
-    assert "[REDACTED]" in result, (
+    # Check for redaction token pattern (unique tokens prevent nested [REDACTED])
+    # Hash can be negative, so use \d+ for digits (not necessarily positive)
+    assert re.search(r"\[REDACTED_\d+_-?\d+\]", result), (
         f"Expected injection phrase '{injection_phrase}' to be redacted, got: {result!r}"
     )
     assert len(log.modifications) > 0, "DefenseLog must record modifications for injections"
@@ -254,18 +256,18 @@ def test_defense_composition_order_matters() -> None:
     
     # Sanitizer alone should redact
     sanitizer_result, sanitizer_log = sanitizer.apply(injection_input)
-    assert "[REDACTED]" in sanitizer_result, "Sanitizer should detect injection"
+    assert re.search(r"\[REDACTED_\d+_-?\d+\]", sanitizer_result), "Sanitizer should detect injection"
     
     # Composed (Minimizer → Sanitizer) should also handle it
     composed = ComposedDefense([minimizer, sanitizer])
     composed_result, composed_log = composed.apply(injection_input)
     # Single chunk input: Minimizer passes through, Sanitizer redacts
-    assert "[REDACTED]" in composed_result, "Composed defense should detect injection"
+    assert re.search(r"\[REDACTED_\d+_-?\d+\]", composed_result), "Composed defense should detect injection"
     
     # Composed (Sanitizer → Minimizer) should also handle it
     composed_reverse = ComposedDefense([sanitizer, minimizer])
     reverse_result, reverse_log = composed_reverse.apply(injection_input)
-    assert "[REDACTED]" in reverse_result, "Reverse composed defense should detect injection"
+    assert re.search(r"\[REDACTED_\d+_-?\d+\]", reverse_result), "Reverse composed defense should detect injection"
 
 
 # ---------------------------------------------------------------------------

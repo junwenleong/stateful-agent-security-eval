@@ -174,7 +174,7 @@ Based on the existing factorial and sandbox inversion study findings:
 - Resume support: script counts existing valid results and skips completed cells
 - Each run uses a fresh UUID-keyed SQLite database (no cross-run contamination)
 - Results stored as JSONL with full provenance (run_id, model, timestamp, tool_logs)
-- API endpoint: FRONTIER_API_BASE (OpenAI-compatible, Singapore government platform)
+- API endpoint: FRONTIER_API_BASE (OpenAI-compatible institutional gateway)
 
 ## 11. Relation to Paper
 

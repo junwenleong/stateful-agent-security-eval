@@ -214,7 +214,19 @@ class BenchmarkRunner:
         return defense_cls(**params)
 
     def _format_memory_for_context(self, memory: PersistentMemoryStore) -> str:
-        """Format memory entries for injection into conversation context."""
+        """Format memory entries for injection into conversation context.
+
+        NOTE (behaviour clarification, 2026-10-08): this reads ONLY the
+        ``default`` namespace. The MemorySandbox defense (defenses/memory_sandbox.py)
+        moves untrusted entries to the ``untrusted`` namespace; because this formatter
+        never reads that namespace, untrusted content is simply absent from the context
+        under MemorySandbox. Part of the sandbox's blocking effect in this harness is
+        therefore this context-formatter omission, not solely the "recall tool returns a
+        sanitized version / wrapped in markers" semantics described in the defense's
+        docstring. This is a property of the SleeperBench harness only; the paper's
+        primary 5,040-run factorial uses a different harness (parent project
+        ``src/runner``) whose Memory Sandbox removes the recall tool from the schema.
+        """
         entries = memory.get_all_entries(namespace="default")
         if not entries:
             return ""

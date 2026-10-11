@@ -217,7 +217,7 @@ class Agent:
     def __init__(self, config: AgentConfig) -> None:
         self.config = config
         # Use direct sqlite3 connection (from_conn_string is a context manager)
-        self._conn = sqlite3.connect(config.db_path, check_same_thread=False)
+        self._conn = sqlite3.connect(config.db_path, check_same_thread=False, timeout=30.0)
         
         # BEDROCK PROTOCOL FIX: For Bedrock, disable checkpointer to avoid
         # message history accumulation issues. Bedrock's strict toolUse/toolResult
@@ -296,10 +296,11 @@ class Agent:
                                     # 50 accommodates legitimate workflows (nemotron needs ~26 steps)
                                     # while still killing pathological loopers.
                                     #
-                                    # NOTE: runner_config["recursion_limit"] in RunResult is
-                                    # COSMETIC — it is never read here. This hardcoded 50 is the
-                                    # only value that matters. Do not change runner_config and
-                                    # expect it to take effect; change this line instead.
+                                    # SOURCE OF TRUTH: this hardcoded 50 is the value actually
+                                    # executed. runner_config["recursion_limit"] in RunResult is
+                                    # recorded for provenance only and is kept in sync with this
+                                    # value (both are 50); it is never read here. If you change
+                                    # this line, update runner_config to match.
         }
         
         messages = [HumanMessage(content=user_message)]

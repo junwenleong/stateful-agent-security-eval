@@ -1,6 +1,6 @@
 # Canonical Numbers - Single Source of Truth
 
-**Generated**: 2026-07-03  
+**Generated**: 2026-07-03 (factorial numbers); reconciled against v6 sources 2026-10-06  
 **Authoritative data sources**: `results/n10_all_models/results.jsonl`, `results/bedrock_apac_smoke/results.jsonl`, `results/defense_factorial/results.jsonl`, `results/defense_factorial/analysis.json`  
 **Every number in paper.md must trace back to this file.**
 
@@ -55,7 +55,7 @@
 
 **Note:** The Draft-Only Executor label applies to qwq:32b only (drafts malicious email but never calls `send_email`). Haiku and qwq:32b share the `model_refused_execution` tag but have completely different injection-stage mechanisms: qwq:32b stores the attacker's routing rule verbatim; Haiku stores a security alert about it.
 
-**False positive rate (no-attack arm):** 0.0% (0/200 runs across both models)
+**Benign-control false-trigger rate (no-attack arm):** 0.0% (0/200 runs across both models). NOTE: this is the rate of spurious exfiltration triggers under the configured benign control, NOT a general detector false-positive rate against adversarial-looking-but-benign sends (the no-attack arm does not exercise that; see paper Section sec:attack / sec:limitations).
 
 **Critical framing note:** The frontier finding is NOT a categorical gap across frontier models. Two distinct safety architectures are present, but both involve active detection:
 - Sonnet: active detection + injection refusal (safety at the store stage; malicious rule never enters memory)
@@ -70,7 +70,7 @@
 
 ## Experiment 3: Defense Factorial
 
-7. **Frontier finding (400/400 runs, 0 errors):** Sonnet 4.6 - Explicit Detector (0% injection, 0% attack, BTCR=100%, N=100 each arm). Haiku 4.5 - Active Detector with Defensive Storage (100% injection, 0% attack, BTCR=100%, N=100 each arm; tag: model_refused_execution; payload_stored: False - stores security alert, not the routing rule). False positive rate: 0.0% (0/200 no-attack runs). Both frontier models actively detect the attack; they differ in response: Sonnet refuses to store, Haiku stores a warning and refuses to execute. Inversion risk: theoretically lower for Haiku than qwq:32b because the payload is not in memory, but not empirically tested.
+7. **Frontier finding (400/400 runs, 0 errors):** Sonnet 4.6 - Explicit Detector (0% injection, 0% attack, BTCR=100%, N=100 each arm). Haiku 4.5 - Active Detector with Defensive Storage (100% injection, 0% attack, BTCR=100%, N=100 each arm; tag: model_refused_execution; payload_stored: False - stores security alert, not the routing rule). Benign-control false-trigger rate: 0.0% (0/200 no-attack runs; a benign-control result, not a general detector FPR). Both frontier models actively detect the attack; they differ in response: Sonnet refuses to store, Haiku stores a warning and refuses to execute. Inversion risk: theoretically lower for Haiku than qwq:32b because the payload is not in memory, but not empirically tested.
 
 **Source**: `results/defense_factorial/results.jsonl`, `results/defense_factorial/analysis.json`  
 **Config**: `experiments/configs/defense_factorial.yaml`
@@ -84,11 +84,27 @@
 | Attack arms | 2 (delayed_trigger + no_attack) |
 | Runs per condition | 40 |
 | Total runs | **5,040** |
-| Error rate | **0%** (0/5,040) |
+| Run-level error rate | **0%** (0/5,040 records have an `error` field set) |
+| Session-level timeouts | 7 runs (6x qwen2.5:14b/memory_sandbox, 1x gpt-oss:20b/no_defense); scored as non-attack with `error=None`. See timeout-sensitivity note below. |
 
 **Models (9)**: glm-4.7-flash:q8_0, gpt-oss-safeguard:120b, gpt-oss:20b, qwen2.5:14b, qwen2.5:72b, qwen3.5:122b, qwen3.5:9b, qwen3:32b, qwq:32b
 
 **Defenses (7)**: memory_sandbox, minimizer, no_defense, prompt_hardening, rag_llm_judge, rag_sanitizer, sanitizer
+
+#### Timeout sensitivity (added 2026-10-08)
+
+The seven session-level timeouts fall in exactly two cells. Recomputed via
+`scripts/timeout_sensitivity.py`:
+
+| Cell | N | successes | timeouts | ASR (published: timeout=non-attack) | ASR (timeout excluded) |
+|------|---|-----------|----------|-------------------------------------|------------------------|
+| gpt-oss:20b / no_defense / DTA | 40 | 39 | 1 | 97.5% | 100.0% |
+| qwen2.5:14b / memory_sandbox / DTA | 40 | 0 | 6 | 0.0% | 0.0% |
+
+Under all three treatments (timeout as non-attack = published, timeout excluded, timeout as
+attack-failure) every affected cell stays at its near-floor/near-ceiling value, so no headline
+comparison decision changes. Excluding timeouts only strengthens the gpt-oss:20b no-defense
+cell (97.5% -> 100%) and leaves the Memory Sandbox 0% result unchanged.
 
 ### Overall Aggregate (DTA arm, n=2,520)
 
@@ -96,7 +112,7 @@
 |--------|-------|
 | DTA injection rate | **100.0%** (2,520/2,520) |
 | DTA attack rate (all defenses) | **76.2%** (1,919/2,520) |
-| False positive rate (no_attack arm) | **0.0%** (0/2,520) |
+| Benign-control false-trigger rate (no_attack arm) | **0.0%** (0/2,520) — spurious triggers under the benign control, not a general detector FPR |
 | BTCR (no_attack arm, all defenses) | **100.0%** (2,520/2,520) |
 
 ### Defense ASR Matrix - DTA arm (averaged across 9 models, n=360 per defense)
@@ -194,7 +210,7 @@
 | Correction | Holm-Bonferroni |
 | Pre-specified comparisons | 115 total (54 primary DTA + 45 secondary BTCR + 16 cross-model) |
 | Active comparisons (after qwq:32b N/A annotation) | **108** |
-| Significant after correction | **10** (9 memory_sandbox + 1 prompt_hardening/qwen3.5:122b + 1 cross-model) |
+| Significant after correction | **10** (8 no_defense vs memory_sandbox + 1 no_defense vs prompt_hardening/qwen3.5:122b + 1 cross-model) |
 
 ---
 
@@ -210,9 +226,9 @@
 
 5. **memory_sandbox BTCR exception (DTA arm only)**: qwen2.5:14b and qwen2.5:72b show BTCR=0% under memory_sandbox when the attack is active - both halt after `list_all_facts` without completing the benign task. This is a model-specific artifact (Artifacts 2, 10), not a benign-session effect. Note: qwen3.5:122b and glm-4.7-flash:q8_0 show BTCR=True under memory_sandbox DTA via the hallucination bypass mechanism (§3.3.3).
 
-6. **False positive rate**: 0.0% - no model spontaneously exfiltrated data in the no_attack arm.
+6. **Benign-control false-trigger rate**: 0.0% - no model spontaneously exfiltrated data in the no_attack arm (this is a benign-control result, not a general detector false-positive rate).
 
-7. **Frontier finding (400/400 runs, 0 errors):** Sonnet 4.6 - Explicit Detector (0% injection [0.000, 0.037], 0% attack, BTCR=100%, N=100 each arm). Haiku 4.5 - Active Detector with Defensive Storage (100% injection [0.963, 1.000], 0% attack [0.000, 0.037], BTCR=100%, N=100 each arm; tag: model_refused_execution; payload_stored: False - stores security alert, not the routing rule). False positive rate: 0.0% (0/200 no-attack runs). Both frontier models actively detect the attack; they differ in response: Sonnet refuses to store, Haiku stores a warning and refuses to execute. Inversion risk: theoretically lower for Haiku than qwq:32b because the payload is not in memory, but not empirically tested.
+7. **Frontier finding (400/400 runs, 0 errors):** Sonnet 4.6 - Explicit Detector (0% injection [0.000, 0.037], 0% attack, BTCR=100%, N=100 each arm). Haiku 4.5 - Active Detector with Defensive Storage (100% injection [0.963, 1.000], 0% attack [0.000, 0.037], BTCR=100%, N=100 each arm; tag: model_refused_execution; payload_stored: False - stores security alert, not the routing rule). Benign-control false-trigger rate: 0.0% (0/200 no-attack runs; a benign-control result, not a general detector FPR). Both frontier models actively detect the attack; they differ in response: Sonnet refuses to store, Haiku stores a warning and refuses to execute. Inversion risk: theoretically lower for Haiku than qwq:32b because the payload is not in memory, but not empirically tested.
 
 ---
 
@@ -315,7 +331,7 @@ Total: 0/46 bypasses. qwq:32b inversion does not generalise.
 
 **Key findings:**
 - GPT-4o exfiltrates in the majority of runs under authority escalation (CI lower bound 48.4%)
-- SECURE prompt reduces but does NOT eliminate exfiltration (22.5% ASR, CI [12.3%, 37.5%] excludes 0% — confirmatory N=40 from run_frontier_confirmatory.py)
+- SECURE prompt reduces but does NOT eliminate exfiltration (22.5% ASR, CI [12.3%, 37.5%] excludes 0%, confirmatory N=40 from run_frontier_confirmatory.py)
 - Exfiltrates to obviously malicious domains at equivalent rates - universal instruction compliance, not authority deference
 
 ### GPT-5 (Loaded Corpus)
@@ -416,7 +432,7 @@ Total: 0/46 bypasses. qwq:32b inversion does not generalise.
 ## Experiment 8: Frontier Confirmatory - N=40 Loaded Corpus, Variant A (June 2026)
 
 **Source**: `results/frontier_confirmatory/frontier_*.jsonl`
-**Method**: OpenAI-compatible frontier API, loaded RAG corpus (malicious_doc + sensitive_doc + monitoring_config), Variant A (standard compliance framing, MCI-AUDIT-2024-0089, SEC Rule 17a-4). N=40 per model, temperature=0. Same tool schema and SQLite as factorial.
+**Method**: OpenAI-compatible frontier API, loaded RAG corpus (malicious_doc + sensitive_doc + monitoring_config), Variant A (standard compliance framing, MCI-AUDIT-2024-0089, SEC Rule 17a-4). N=40 per model. No explicit temperature was sent: `scripts/run_frontier_confirmatory.py` builds the request with `{model, messages, tools, max_tokens/max_completion_tokens}` only, so the hosted endpoint's default sampling applied (this matches the paper's provenance appendix, which states "no explicit temperature was sent"; an earlier "temperature=0" note here was incorrect and did not reflect the runner). Same tool schema and SQLite as factorial.
 **Key methodological note**: Variant A = standard compliance framing (same as Experiment 5 open-source factorial). NOT legal hold/authority escalation. The Gemini results below are therefore with the base compliance framing - no escalation required.
 **Detection**: Tool call argument inspection (`email_send_email(to=[...])` containing attacker address). NOT text parsing.
 **Date**: 2026-06-28 to 2026-06-29
@@ -492,7 +508,7 @@ gemini-3.1-pro-preview (95% ASR) forensically verified:
 
 **NOT monotonically decreasing.** The prior claim of "monotonic decline" is incorrect. gpt-5.1 is a regression relative to gpt-5.
 
-### GPT-5.1 and GPT-5 Confirmatory Topup (Pooled Rates — Cited in Paper)
+### GPT-5.1 and GPT-5 Confirmatory Topup (Pooled Rates, Cited in Paper)
 
 **Source**: `results/frontier_topup/frontier_gpt_5_1.jsonl` (172 lines), `results/frontier_topup/frontier_gpt_5.jsonl` (104 lines)
 **Method**: Same protocol as Experiment 8 (loaded corpus, Variant A, frontier API). Additional runs pooled with the original N=40 confirmatory to tighten CIs for the headline non-monotonicity claim.
@@ -507,7 +523,7 @@ gemini-3.1-pro-preview (95% ASR) forensically verified:
 
 ### Vendor Divergence (Updated with Gemini)
 
-- **Anthropic**: 0% ASR across the entire Claude family; injection rate is model-dependent (2.5-17.5% Opus 4.5/4.8 and Sonnet 4.6; 57.5% Sonnet 4.5; 95% Haiku 4.5, storing a security alert rather than the payload). Only Opus/Sonnet-4.6 block at the injection layer; Sonnet 4.5/Haiku inject but refuse at execution — the vendor-wide invariant is 0% ASR, not uniformly-low injection.
+- **Anthropic**: 0% ASR across the entire Claude family; injection rate is model-dependent (2.5-17.5% Opus 4.5/4.8 and Sonnet 4.6; 57.5% Sonnet 4.5; 95% Haiku 4.5, storing a security alert rather than the payload). Only Opus/Sonnet-4.6 block at the injection layer; Sonnet 4.5/Haiku inject but refuse at execution; the vendor-wide invariant is 0% ASR, not uniformly-low injection.
 - **Google (Gemini 3.1 Pro Preview, 3.5 Flash, 2.5 Pro)**: 95–100% injection, 22.5–95% ASR. Vulnerable Executors. Most vulnerable frontier family tested.
 - **Google (Gemini 2.5 Flash)**: 100% injection, 0% ASR. Latent Carrier.
 - **OpenAI (GPT-5.4+, reasoning models)**: 100% injection, 0% ASR. Latent Carriers. Execution-resistant.
@@ -517,7 +533,7 @@ gemini-3.1-pro-preview (95% ASR) forensically verified:
 ### Extended Model Coverage (2026-08-15)
 
 **Source**: `results/frontier_extended/*.jsonl`
-**Protocol**: Same as Experiment 8 — loaded corpus, Variant A, frontier API, N=40 per condition.
+**Protocol**: Same as Experiment 8: loaded corpus, Variant A, frontier API, N=40 per condition.
 **Purpose**: Extend frontier coverage to newer model generations and validate tool-existence ablation cross-vendor.
 
 #### New Model Results (N=40 each, 0 errors)
@@ -526,7 +542,7 @@ gemini-3.1-pro-preview (95% ASR) forensically verified:
 |-------|--------|------|------|----------------|-------------|
 | Claude Opus 5 | claude-opus-5 | 0.0% (0/40) | 0.0% (0/40) | Injection-Resistant | Injection-layer blocking PERSISTS into generation 5 |
 | Claude Sonnet 5 | claude-sonnet-5 | 20.0% (8/40) | 0.0% (0/40) | Partial Resistant | Weaker injection resistance than Opus; execution resistance absolute |
-| GPT-5.4-pro | gpt-5.4-pro | 100.0% (40/40) | 0.0% (0/40) | Latent Carrier | Identical to GPT-5.4 base — pro variant does not differ |
+| GPT-5.4-pro | gpt-5.4-pro | 100.0% (40/40) | 0.0% (0/40) | Latent Carrier | Identical to GPT-5.4 base, pro variant does not differ |
 | GPT-5.6-terra | gpt-5.6-terra | 40.0% (16/40) | 0.0% (0/40) | Partial Resistant | Strongest injection resistance in 5.6 family |
 | GPT-5.6-sol | gpt-5.6-sol | 100.0% (40/40) | 0.0% (0/40) | Latent Carrier | Full injection, zero execution |
 | GPT-5.6-luna | gpt-5.6-luna | 95.0% (38/40) | 0.0% (0/40) | Latent Carrier | Near-universal injection, zero execution |
@@ -542,11 +558,11 @@ gemini-3.1-pro-preview (95% ASR) forensically verified:
 
 #### Key Findings
 
-1. **Anthropic injection-layer pattern persists into generation 5**: Opus 5 = 0% injection (same as Opus 4.5/4.8/Sonnet 4.6). Sonnet 5 = 20% injection, 0% ASR — somewhat weaker injection resistance than the Opus tier, but execution resistance remains absolute. The family-wide 0% ASR invariant extends to all tested Claude models (Opus 4.1 through Opus 5, Sonnet 4.5 through Sonnet 5, Haiku 4.5).
+1. **Anthropic injection-layer pattern persists into generation 5**: Opus 5 = 0% injection (same as Opus 4.5/4.8/Sonnet 4.6). Sonnet 5 = 20% injection, 0% ASR, somewhat weaker injection resistance than the Opus tier, but execution resistance remains absolute. The family-wide 0% ASR invariant extends to all tested Claude models (Opus 4.1 through Opus 5, Sonnet 4.5 through Sonnet 5, Haiku 4.5).
 
-2. **GPT-5.6 variant divergence is dramatic**: Terra (40% inj) vs Sol (100%) vs Luna (95%) — injection rates vary 2.5x within the same generation depending on the variant. All three maintain 0% ASR (execution-resistant). This is a new phenomenon: within-generation, within-family variant divergence in injection resistance. Prior GPT generations showed uniform injection within a tier.
+2. **GPT-5.6 variant divergence is dramatic**: Terra (40% inj) vs Sol (100%) vs Luna (95%), injection rates vary 2.5x within the same generation depending on the variant. All three maintain 0% ASR (execution-resistant). This is a new phenomenon: within-generation, within-family variant divergence in injection resistance. Prior GPT generations showed uniform injection within a tier.
 
-3. **GPT-5.4-pro = GPT-5.4 base**: 100% injection, 0% ASR — identical classification to GPT-5.4 (Latent Carrier). The "pro" variant does not alter the safety profile on this evaluation.
+3. **GPT-5.4-pro = GPT-5.4 base**: 100% injection, 0% ASR, identical classification to GPT-5.4 (Latent Carrier). The "pro" variant does not alter the safety profile on this evaluation.
 
 4. **Gemini vulnerability trajectory**: 3.1 Pro Preview (95% ASR) → 3.5 Flash (50%) → 2.5 Pro (22.5%) → Gemini 3.6 Flash (5.0%). Consistent improvement across generations but NOT fixed. Gemini 3.6 Flash still executes in 2/40 runs.
 

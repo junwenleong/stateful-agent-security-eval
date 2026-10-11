@@ -108,6 +108,12 @@ class OpenAIInterface(ModelInterface):
             kwargs["tools"] = tools
 
         response = self.client.chat.completions.create(**kwargs)
+        if not response.choices:
+            # Defensive guard (LOGIC_AUDIT Issue 1): the API can return an empty
+            # choices list under error/rate-limit conditions. Treat as an empty
+            # response rather than raising IndexError mid-session.
+            logger.warning("OpenAI API returned empty choices list; returning empty response")
+            return ChatResponse(content="", tool_calls=None, temperature_used=0.0)
         choice = response.choices[0]
         content = choice.message.content or ""
         raw_tool_calls = choice.message.tool_calls
@@ -325,7 +331,15 @@ class OllamaInterface(ModelInterface):
         if self.config.num_predict is not None:
             payload["options"]["num_predict"] = self.config.num_predict
 
-        resp = requests.post(f"{self.base_url}/api/chat", json=payload, timeout=1200)
+        try:
+            resp = requests.post(f"{self.base_url}/api/chat", json=payload, timeout=120)
+            resp.raise_for_status()
+        except requests.exceptions.Timeout:
+            logger.error("Ollama request timed out after 120s")
+            raise RuntimeError("Model inference timeout (120s). The model server may be overloaded.")
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Ollama request failed: {e}")
+            raise
         resp.raise_for_status()
         data = resp.json()
         message = data.get("message", {})

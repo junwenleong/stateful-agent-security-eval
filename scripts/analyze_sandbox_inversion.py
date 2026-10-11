@@ -3,7 +3,9 @@
 
 Reports per-condition: ASR, rag_called_in_trigger rate, injection rate.
 Classifies ASR=0 as "defended" vs "stalled."
-Runs 28 pre-registered comparisons under Holm-Bonferroni.
+Runs 28 pre-registered comparisons; the 24 proportion comparisons are tested
+under Holm-Bonferroni on Fisher exact p-values, and the 4 delta-of-delta (X)
+comparisons are reported descriptively (no single proportion p-value).
 Frames Qwen3 toggle as think × defense interaction.
 
 Usage:
@@ -149,12 +151,17 @@ def run_comparisons(records: list[dict], engine: BootstrapEngine) -> list[dict]:
         recs_a = by_condition.get(key_a, [])
         recs_b = by_condition.get(key_b, [])
         if not recs_a or not recs_b:
-            return {"diff": None, "lower": None, "upper": None, "sig": None, "n_a": len(recs_a), "n_b": len(recs_b)}
+            return {"diff": None, "lower": None, "upper": None, "sig": None, "p_value": None, "n_a": len(recs_a), "n_b": len(recs_b)}
         a = np.array([1.0 if r.get(metric) else 0.0 for r in recs_a])
         b = np.array([1.0 if r.get(metric) else 0.0 for r in recs_b])
         ci = engine.compute_diff_ci(b, a)  # b - a
         sig = ci.lower > 0 or ci.upper < 0
-        return {"diff": ci.point_estimate, "lower": ci.lower, "upper": ci.upper, "sig": sig, "n_a": len(recs_a), "n_b": len(recs_b)}
+        # Fisher exact p-value on the 2x2 (success, failure) table for Holm-Bonferroni.
+        from scipy import stats as _sps
+        a_succ, b_succ = int(a.sum()), int(b.sum())
+        n_a_, n_b_ = len(a), len(b)
+        _, p_value = _sps.fisher_exact([[a_succ, n_a_ - a_succ], [b_succ, n_b_ - b_succ]])
+        return {"diff": ci.point_estimate, "lower": ci.lower, "upper": ci.upper, "sig": sig, "p_value": float(p_value), "n_a": len(recs_a), "n_b": len(recs_b)}
 
     # G1–G8: within-model sandbox effect
     g_models = [
@@ -213,11 +220,23 @@ def run_comparisons(records: list[dict], engine: BootstrapEngine) -> list[dict]:
         comparisons.append({"id": a_full_null, **_diff(f"{model}|sandbox_full", f"{model}|sandbox_null_recall")})
         comparisons.append({"id": a_blind_nd, **_diff(f"{model}|sandbox_blind", f"{model}|no_defense")})
 
-    # Holm-Bonferroni on all comparisons with valid sig values
-    active = [c for c in comparisons if c.get("sig") is not None]
-    active_sig = sorted([c for c in active if c["sig"]], key=lambda c: -abs(c["diff"] or 0))
-    for c in active:
-        c["significant_holm"] = c in active_sig  # simplified — all pre-correction significant survive step-down
+    # Holm-Bonferroni step-down on all comparisons that have a Fisher p-value.
+    # (The X delta-of-delta comparisons carry no p-value and are reported descriptively.)
+    testable = [c for c in comparisons if c.get("p_value") is not None]
+    k = len(testable)
+    # Sort ascending by p-value; step-down with running max of adjusted p-values.
+    order = sorted(range(k), key=lambda i: testable[i]["p_value"])
+    running_max = 0.0
+    for rank, idx in enumerate(order):
+        adjusted = min(1.0, testable[idx]["p_value"] * (k - rank))
+        running_max = max(running_max, adjusted)
+        testable[idx]["holm_p_value"] = running_max
+        testable[idx]["significant_holm"] = running_max <= 0.05
+    # Comparisons without a p-value are explicitly not Holm-tested.
+    for c in comparisons:
+        if c.get("p_value") is None:
+            c["holm_p_value"] = None
+            c["significant_holm"] = None
 
     return comparisons
 
@@ -276,7 +295,7 @@ def print_report(stats: dict, comparisons: list[dict]) -> None:
 
     # Comparisons
     print("\n" + "=" * 80)
-    print("PRE-REGISTERED COMPARISONS (28 tests, Holm-Bonferroni)")
+    print("PRE-REGISTERED COMPARISONS (proportion tests: Fisher + Holm-Bonferroni; X = delta-of-delta, descriptive)")
     print("=" * 80)
     for c in comparisons:
         if c.get("diff") is None:

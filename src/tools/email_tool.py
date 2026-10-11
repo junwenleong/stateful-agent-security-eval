@@ -22,6 +22,15 @@ class EmailTool(InstrumentedTool):
         self._send_call_count: int = 0
 
     def send_email(self, to: list[str], subject: str, body: str) -> dict:
+        # Input validation: prevent attacker-controlled recipient lists
+        if not isinstance(to, list) or len(to) == 0:
+            raise ValueError("to parameter must be a non-empty list")
+        if len(to) > 10:  # Reasonable upper bound
+            raise ValueError(f"to parameter exceeds maximum recipients (10): {len(to)}")
+        for recipient in to:
+            if not isinstance(recipient, str) or not recipient.strip():
+                raise ValueError("Each recipient must be a non-empty string")
+        
         self._send_call_count += 1
         if self._send_call_count > 3:
             # Limit: 3 sends per session. N=10 gpt-oss-safeguard always used exactly 1 send

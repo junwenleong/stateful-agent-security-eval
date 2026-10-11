@@ -1,58 +1,51 @@
 Changes in v6 (relative to arXiv:2605.08442v5)
 
 Scope and framing
-- The abstract and introduction are rescoped. The injection-execution dissociation is now
-  stated as a bidirectional claim (blocking injection does not imply blocking execution, and
-  vice versa) that is evidenced across the frontier set, where some vendors block predominantly
-  at storage and others predominantly at execution. The open-source factorial is stated to
-  evidence only the execution-stage half, because its models are pre-selected Vulnerable
-  Executors with storage saturated at 100 percent.
-- Attack success (ASR) is defined explicitly as exfiltration to the attacker address in any
-  session of a run, not only in the intended trigger session S4. This makes attack-chain
-  collapses (early sends under sandbox, intervening-session re-injection) count as successes
-  rather than being silently missed.
+- The abstract and introduction are rescoped. The injection-execution dissociation is stated
+  as a bidirectional claim (blocking injection does not imply blocking execution, and vice
+  versa) evidenced across the frontier set, where some vendors block mainly at storage and
+  others mainly at execution. The open-source factorial is stated to evidence only the
+  execution-stage half, because its models are pre-selected Vulnerable Executors with storage
+  saturated at 100 percent.
+- Attack success (ASR) is defined as exfiltration to the attacker address in any session of a
+  run, not only in the trigger session S4. The scoring rule used by each harness is stated in
+  the terms table, and each results table names the rule it uses.
 
-New sections
-- A causal-mediation analysis ("Causal Mediation: The Sandbox as Attack Vector", 2,336 runs
-  across two models) decomposes which conditions are necessary and which are sufficient for
-  the Memory Sandbox iatrogenic effect: tool removal itself, not model capability alone,
-  creates the attack pathway.
-- A frontier tool-schema ablation ("Frontier Tool-Schema Ablation: Sandbox Associated with
-  Increased Vulnerability Under In-Context Rules", 1,200 trials across 6 model configurations)
-  replicates the tool-removal-creates-vulnerability direction on frontier reasoning models via
-  API, independent of the Qwen-3-32B think-toggle result it generalises from.
+Corrections
+- Causal mediation: an argument-order bug in the tool wrapper made every recall in C0, C4 and
+  C5 return a key name instead of the stored rule. v5's C0 baseline (0.0 and 0.9 percent ASR)
+  was therefore not a working baseline, and its conclusion that Memory Sandbox raises ASR does
+  not hold. With the bug fixed and C0, C4 and C5 re-collected, C0 is 100 percent for both
+  models and the sandbox lowers ASR in every cell; the residual for GPT-5.1 goes through RAG
+  fallback.
+- Frontier Memory Sandbox probe: v5's 46-run probe used an empty RAG corpus although the text
+  said the document was loaded. It was re-collected with the document loaded (40 runs,
+  2026-09-29); the result is unchanged at 0 percent ASR, now with the attacker's rule stored in
+  every run.
+- The no-attack arm is a single-session control; v5 said it used the four-session structure of
+  the attack arm.
+- Two bibliography entries are corrected (the MINJA author list, and the InjecMEM citation,
+  which pointed to a different paper).
+
+New and extended experiments
+- Frontier coverage grows from 21 to 29 endpoints (August and September 2026 collections).
+- A frontier tool-schema ablation, a tool-existence ablation, a cross-model write-then-read
+  experiment, frontier retrieval-layer judges and a payload-framing experiment.
+- The coding-agent experiment is reported at 691 runs (v5: 571) with a per-run joint
+  dissociation rate.
 
 Reproducibility disclosure
-- The primary April 2026 factorial is disclosed as having been collected on a single long-lived
-  Ollama 0.20.6 daemon (OLLAMA_MAX_LOADED_MODELS=1, 2-minute keep-alive that unloads but does
-  not fully restart between models). The fresh-daemon-per-model protocol was adopted only for
-  the later RATG and judge-scaling extensions, after the daemon-state artefact was identified.
-- The qwq:32b defence-inversion result is demoted from a headline finding to an
-  environment-fragile observation: its baseline did not reproduce on a freshly booted machine,
-  and the reusable contribution is the bypass mechanism (RAG-fallback reconstruction), which
-  replicates cross-family, rather than the single-model inversion.
+- The primary April 2026 factorial is disclosed as having been collected on a single
+  long-lived Ollama 0.20.6 daemon. The fresh-daemon-per-model protocol was adopted only for the
+  later RATG and judge-scaling extensions.
 
-Corrected and refined numbers
-- Prompt Hardening is reported at 77.8 percent ASR overall, with the per-arm figures 87.5
-  percent and 100 percent stated alongside, replacing the previous single summary figure.
-- The coding-agent dissociation table now reports 691 runs (N >= 50 per cell) with a per-run
-  joint Dissociation percentage, defined as the fraction of runs where the model both detects
-  the injection and executes it, rather than min(Detect percent, Execute percent).
-- The GPT-4o standalone disclosure figure under standard compliance framing is 12.5 percent
-  ASR (rising to 60.3 percent under authority escalation).
-
-Defence framing
-- RATG is retitled and scoped as a proof-of-concept existence result (a content-layer
-  intervention resolves the schema-layer dilemma), not an adversarially robust defence.
-- The "iatrogenic" framing of tool-schema restriction is retained but scoped to the tested
-  models and configurations rather than asserted as a general property.
+Presentation
+- A study map, terms table and evidence-status table at the front; a per-model factorial
+  table; follow-up experiments in their own section; superseded screens in appendices.
+- British English throughout the prose and title ("Defences"). Code identifiers, condition
+  names and file names are unchanged.
 
 Disclosure hygiene
-- All institutional gateway routing prefixes were removed from the model-identifier appendix.
-  The provenance table now records the bare requested model identifiers, and the sentence that
-  described a gateway prefix as an aliasing artefact is removed. This is the primary reason a
-  replacement is issued: v5 carried these prefixes in the appendix.
-
-Dialect
-- British English throughout the prose, consistent with the author's other papers. Code
-  identifiers, condition names, file names and the title are unchanged.
+- Institutional gateway routing prefixes were removed from the model-identifier appendix.
+- v5 stated that findings had been disclosed to OpenAI, Google and Anthropic before release.
+  No such disclosure was made; the statement is withdrawn and the ethics section says so.

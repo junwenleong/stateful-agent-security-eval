@@ -2,22 +2,34 @@
 """
 Paper 2 — Pathway-Aware Risk Estimator
 ========================================
-+10pt improvement: Train a risk estimator on the existing 5040-run factorial
-that outperforms content-only baselines using grouped leave-one-out validation.
+Train a risk estimator on the existing 5040-run factorial and compare a
+pathway-feature model against a trajectory-feature baseline using grouped
+leave-one-model-family-out validation.
 
 DESIGN:
   1. Load existing SleeperBench factorial results (5040 runs)
   2. Extract pathway features (delivery channel, model, defense, tool type)
-  3. Extract content features (payload embedding, length, keyword presence)
+  3. Extract trajectory features (tool-call counts, trigger steps, influence method)
   4. Train pathway-aware estimator (logistic regression + gradient boosting)
-  5. Compare against content-only baseline (same estimator, content features only)
-  6. Grouped leave-one-out: hold out by model family OR by attack template
+  5. Compare against trajectory-only baseline (same estimator, trajectory features only)
+  6. Grouped leave-one-out: hold out by model family
   7. Report calibration, AUROC, precision-recall, decision curves
 
 VALIDATION:
-  - Leave-one-model-out: train on 8 models, test on held-out model
-  - Leave-one-template-out: train on N-1 attack templates, test on held-out
-  - Content-only baseline uses SAME architecture, just fewer features
+  - Leave-one-model-family-out: train on N-1 families, test on held-out family
+  - Trajectory-only baseline uses SAME architecture, just fewer features
+
+!!! TARGET-LEAKAGE WARNING (do not cite the baseline AUROC as a "content" result) !!!
+  The "trajectory" feature set below is NOT a pre-execution text/content feature set.
+  It is built from POST-execution trajectory signals (tool-call counts in the trigger
+  session, has_email_send, trigger_steps_before_exfil, influence_recipient_match).
+  Several of these are downstream of, or nearly identical to, the attack_success label
+  (e.g. influence_recipient_match is essentially the label). The resulting near-perfect
+  AUROC is therefore outcome reconstruction, NOT a deployable risk predictor, and it is
+  NOT the "content-layer defense" that the paper reports as failing. This script is kept
+  for provenance; it is intentionally NOT cited as a headline result in paper/paper.tex.
+  A genuine content-only baseline would use only features available BEFORE execution
+  (payload text statistics) and exclude every target-derived variable.
 
 Output: results/risk_estimator/ (relative to the repo root)
 """
@@ -65,27 +77,35 @@ PATHWAY_FEATURES = [
     "n_tools_available",  # number of tools in schema
 ]
 
-# Content features (baseline)
-CONTENT_FEATURES = [
-    "payload_length",       # character count
-    "has_authority_claim",  # keyword: system, admin, override, etc.
-    "has_urgency",          # keyword: immediately, urgent, critical
-    "has_policy_language",  # keyword: policy, directive, rule, requirement
-    "n_uppercase_words",    # shouting indicator
-    "has_brackets",         # [SYSTEM], [OVERRIDE], etc.
-    "sentence_count",       # complexity
+# Trajectory features (post-execution baseline).
+# WARNING (see module docstring): these are NOT pre-execution content/text features.
+# They are post-execution trajectory signals, several of which are downstream of the
+# attack_success label (influence_recipient_match is essentially the label). The baseline
+# built from these is outcome reconstruction, not a content-layer predictor.
+# This list documents the intended feature family; the live features are assembled in
+# extract_features() below.
+TRAJECTORY_FEATURES = [
+    "n_tool_calls_trigger",      # tool calls in the trigger session (post-execution)
+    "has_email_send",            # whether email_send fired (post-execution)
+    "has_memory_save",           # whether a memory save fired (post-execution)
+    "trigger_steps",             # steps before exfiltration (post-execution)
+    "injection_memory_calls",    # memory calls in the injection session
+    "influence_recipient_match", # recipient-match influence flag (~= the label)
+    "influence_content_match",   # content-match influence flag
 ]
 
 
 def extract_features(record: dict) -> tuple[dict, dict]:
-    """Extract pathway and content features from a factorial record.
+    """Extract pathway and trajectory features from a factorial record.
 
     The factorial has nested condition: {model: {...}, attack: {...}, defense: {...}}
     Plus top-level: attack_success, injection_success, memory_recalled_in_trigger,
     rag_called_in_trigger, trigger_steps_before_exfil, tool_logs, etc.
 
     Returns:
-        (pathway_features, content_features)
+        (pathway_features, trajectory_features)
+        NOTE: the second dict holds POST-execution trajectory signals, not pre-execution
+        text/content features. See module docstring for the target-leakage warning.
     """
     pathway = {}
     content = {}
@@ -118,7 +138,7 @@ def extract_features(record: dict) -> tuple[dict, dict]:
     else:
         pathway["model_family"] = "other"
 
-    # Content features (from tool logs and trigger behavior)
+    # Trajectory features (post-execution; see leakage warning in module docstring)
     tool_logs = record.get("tool_logs", [])
     trigger_logs = [t for t in tool_logs if t.get("session_type") == "trigger"] if tool_logs else []
 
@@ -320,7 +340,7 @@ def run_risk_estimator():
     # Evaluate all combinations
     results = []
 
-    for X, feat_name in [(X_full, "pathway+content"), (X_content, "content_only"), (X_pathway, "pathway_only")]:
+    for X, feat_name in [(X_full, "pathway+trajectory"), (X_content, "trajectory_only"), (X_pathway, "pathway_only")]:
         for ModelClass, model_name in [
             (lambda: LogisticRegression(max_iter=1000, C=1.0), "logistic_regression"),
             (lambda: GradientBoostingClassifier(n_estimators=100, max_depth=4, random_state=42), "gradient_boosting"),
@@ -347,7 +367,8 @@ def run_risk_estimator():
 
     # Print comparison table
     print(f"\n{'='*70}")
-    print(f"COMPARISON: Pathway-Aware vs Content-Only (grouped leave-one-model-out)")
+    print(f"COMPARISON: Pathway-Aware vs Trajectory-Only (grouped leave-one-model-out)")
+    print(f"NOTE: trajectory_only is a POST-execution baseline (target leakage); NOT a content-layer result.")
     print(f"{'='*70}")
     print(f"{'Model':<40} {'AUROC':>8} {'AP':>8} {'Brier':>8}")
     print(f"{'-'*40} {'-'*8} {'-'*8} {'-'*8}")

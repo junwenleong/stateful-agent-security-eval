@@ -1,8 +1,11 @@
+import logging
 import sqlite3
 import threading
 import time
 
 from src.tools.base import InstrumentedTool
+
+logger = logging.getLogger(__name__)
 
 
 class MemoryTool(InstrumentedTool):
@@ -182,11 +185,26 @@ class MemoryTool(InstrumentedTool):
             self._list_call_count = 0
 
     def reset(self) -> None:
-        conn = self._get_conn()
-        conn.execute("DROP TABLE IF EXISTS memory_facts")
+        # Close all thread-local connections first to avoid DROP TABLE while active
         if hasattr(self._local, 'conn') and self._local.conn:
-            self._local.conn.close()
-        self._local.conn = None
+            try:
+                self._local.conn.close()
+            except Exception:
+                pass
+            self._local.conn = None
+        
+        # Now safe to drop table (no active connections)
+        conn = self._get_conn()
+        try:
+            conn.execute("DROP TABLE IF EXISTS memory_facts")
+        except sqlite3.OperationalError as e:
+            if "database is locked" in str(e):
+                logger.warning("Database locked during reset, retrying...")
+                time.sleep(0.1)
+                conn.execute("DROP TABLE IF EXISTS memory_facts")
+            else:
+                raise
+        
         self._save_call_count = 0
         self._list_call_count = 0
         self._init_table()

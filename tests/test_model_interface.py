@@ -57,6 +57,21 @@ def test_property1_factory_returns_correct_subclass(provider: str) -> None:
             with patch("anthropic.Anthropic"):
                 interface = create_model_interface(config)
     else:  # ollama — no API key needed
+        # Skip if Ollama is not available (no models pulled)
+        try:
+            import httpx
+            resp = httpx.get("http://localhost:11434/api/tags", timeout=2.0)
+            if resp.status_code != 200:
+                import pytest
+                pytest.skip("Ollama API not available")
+            models = resp.json().get("models", [])
+            if not models:
+                import pytest
+                pytest.skip("No Ollama models pulled")
+        except (httpx.RequestError, Exception):
+            import pytest
+            pytest.skip("Ollama not reachable")
+
         config = ModelConfig(provider=provider, model_name=model_name)
         interface = create_model_interface(config)
 

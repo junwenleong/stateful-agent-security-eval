@@ -265,7 +265,7 @@ VERDICT:"""
 
 
 def get_client():
-    http_client = httpx.Client(verify=False, timeout=httpx.Timeout(60.0, connect=10.0))
+    http_client = httpx.Client(verify=True, timeout=httpx.Timeout(60.0, connect=10.0))
     return OpenAI(base_url=BASE_URL, api_key=API_KEY, http_client=http_client)
 
 
@@ -288,16 +288,27 @@ def judge_document(client, model, document):
 
 
 def run_judge_experiment(model, n=N_PER_JUDGE):
-    """Run N trials for one judge model."""
+    """Run N trials for one judge model. Each trial = one malicious + one benign presentation (a pair)."""
     outfile = RESULTS_DIR / f"judge_{model.replace('.', '_').replace('/', '_')}.jsonl"
-    existing = sum(1 for l in outfile.read_text().splitlines() if l.strip()) if outfile.exists() else 0
+    # Each trial writes TWO records (doc_type malicious + benign). Count completed
+    # PAIRS by the malicious record so that n is the per-class N, not line count.
+    existing = 0
+    if outfile.exists():
+        for l in outfile.read_text().splitlines():
+            if not l.strip():
+                continue
+            try:
+                if json.loads(l).get("doc_type") == "malicious":
+                    existing += 1
+            except json.JSONDecodeError:
+                continue
     remaining = n - existing
 
     if remaining <= 0:
-        logger.info(f"  [{model}] Already complete ({existing}/{n})")
+        logger.info(f"  [{model}] Already complete ({existing}/{n} pairs)")
         return
 
-    logger.info(f"  [{model}] Running {remaining} trials")
+    logger.info(f"  [{model}] Running {remaining} trials ({existing}/{n} pairs done)")
     client = get_client()
 
     malicious_content = MALICIOUS_DOC.read_text()

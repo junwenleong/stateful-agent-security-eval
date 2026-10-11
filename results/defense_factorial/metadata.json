@@ -6,7 +6,7 @@
   "phase": "complete (9/9 phases; see 'phases' below for the per-model breakdown used during collection)",
   "model_filter": null,
   "dry_run": false,
-  "note": "This file's 'phase'/'dry_run' fields were stale headers left over from an early intermediate invocation (phase 6 = qwq:32b, dry_run=true) and never regenerated after the full 5,040-run factorial completed, despite per_model already reflecting final N=40 data. Corrected 2026-09-27; per_model values were not stale and are unchanged. Do not treat this file as a run-provenance record -- use results/run_manifest.jsonl and the individual result records' own timestamps/model hashes for that. UPDATE (2026-09-27, second pass): per_model's BTCR field IS stale for exactly 3 (model, defense) cells, confirmed by direct comparison against results/defense_factorial/analysis.json (regenerated via scripts/analyze_results.py, which is authoritative): gpt-oss:20b/no_defense (this file says btcr=100.0, correct value is 97.5 -- the same single stochastic non-exfiltration run documented in the paper's Table tab:main-results footnote also happened to fail the benign-task-completion check); qwen2.5:14b/memory_sandbox and qwen2.5:72b/memory_sandbox (this file says btcr=100.0 for both, correct value is 0.0 for both -- this is the well-documented Artefact 2/10 tool-contract-dependency finding discussed at length in the paper's Memory Sandbox section, where both models halt after receiving the list_all_facts instruction to call the now-unavailable recall_fact; the paper's own prose already states BTCR=0% for these two cells). All other per_model ASR/BTCR entries were checked against analysis.json and match. Trust analysis.json over this file's per_model block wherever they disagree.",
+  "note": "This file's 'phase'/'dry_run' fields were stale headers left over from an early intermediate invocation (phase 6 = qwq:32b, dry_run=true) and never regenerated after the full 5,040-run factorial completed, despite per_model already reflecting final N=40 data. Corrected 2026-09-27; per_model values were not stale and are unchanged. Do not treat this file as a run-provenance record -- use results/run_manifest.jsonl and the individual result records' own timestamps/model hashes for that. UPDATE (2026-09-27, second pass): per_model's BTCR field WAS stale for exactly 3 (model, defense) cells, confirmed by direct comparison against results/defense_factorial/analysis.json (regenerated via scripts/analyze_results.py, which is authoritative): gpt-oss:20b/no_defense (was btcr=100.0, correct value 97.5 -- the same single stochastic non-exfiltration run documented in the paper's Table tab:main-results footnote also failed the benign-task-completion check); qwen2.5:14b/memory_sandbox and qwen2.5:72b/memory_sandbox (was btcr=100.0 for both, correct value 0.0 for both -- the well-documented Artefact 2/10 tool-contract-dependency finding discussed at length in the paper's Memory Sandbox section, where both models halt after receiving the list_all_facts instruction to call the now-unavailable recall_fact; the paper's own prose already states BTCR=0% for these two cells). THESE THREE CELLS WERE CORRECTED IN-PLACE 2026-10-06; this block now matches analysis.json. All other per_model ASR/BTCR entries were checked against analysis.json and match. analysis.json remains authoritative wherever any future disagreement arises. GLM DIGEST-KEY CLARIFICATION (2026-10-08): the factorial model is glm-4.7-flash:q8_0 everywhere in the config, per_model keys, and paper prose (paper.tex Sections sec:models, sec:sandbox, sec:ratg, which explicitly distinguish the q8_0 factorial model from the bf16 RATG cautionary case). However, the ollama_models digest map below files the digest 4475827791a2 under the mutable key 'glm-4.7-flash:latest' rather than 'glm-4.7-flash:q8_0'; at collection time ':latest' resolved to the q8_0 build. The digest, not the tag, is the stable identity (4475827791a2); the ':latest' label is a mutable-tag naming slip in this sidecar and should be read as the q8_0 digest.",
   "total_runs": 5040,
   "errors": 0,
   "per_model": {
@@ -102,7 +102,7 @@
       "no_defense": {
         "injection": 100.0,
         "asr": 97.5,
-        "btcr": 100.0,
+        "btcr": 97.5,
         "n_dta": 40
       },
       "minimizer": {
@@ -176,7 +176,7 @@
       "memory_sandbox": {
         "injection": 100.0,
         "asr": 0.0,
-        "btcr": 100.0,
+        "btcr": 0.0,
         "n_dta": 40
       },
       "rag_llm_judge": {
@@ -220,7 +220,7 @@
       "memory_sandbox": {
         "injection": 100.0,
         "asr": 0.0,
-        "btcr": 100.0,
+        "btcr": 0.0,
         "n_dta": 40
       },
       "rag_llm_judge": {

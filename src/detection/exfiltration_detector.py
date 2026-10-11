@@ -237,19 +237,18 @@ class ExfiltrationDetector:
 
         embedding = self._compute_embedding(text)
         
-        # Enforce LRU cache size limit to prevent unbounded memory growth
+        # Enforce LRU cache size limit to prevent unbounded memory growth.
+        # LOGIC_AUDIT Issue 2 fix: evict the oldest NON-pinned entry rather than
+        # growing embedding_cache_size when the oldest happens to be the pinned
+        # sensitive-content embedding (the previous code incremented the bound,
+        # defeating it whenever the pinned item was repeatedly oldest).
         if len(self._embedding_cache) >= self.embedding_cache_size:
-            # Remove least recently used (first item in OrderedDict)
-            # Skip if it's the sensitive content embedding (pinned)
-            while len(self._embedding_cache) >= self.embedding_cache_size:
-                oldest_key = next(iter(self._embedding_cache))
-                if oldest_key != self._sensitive_content_hash:
-                    del self._embedding_cache[oldest_key]
+            for key in list(self._embedding_cache.keys()):
+                if key != self._sensitive_content_hash:
+                    del self._embedding_cache[key]
                     break
-                else:
-                    # Sensitive embedding is pinned, increase cache size temporarily
-                    self.embedding_cache_size += 1
-                    break
+            # If the only entry is the pinned sensitive embedding, keep it and
+            # do not grow the bound; the new entry below is still added.
         
         self._embedding_cache[text_hash] = embedding
         return embedding
@@ -262,7 +261,11 @@ class ExfiltrationDetector:
         """
         # Check if using OpenAI API (only if explicitly configured)
         if self.embedding_model.startswith("text-embedding"):
-            api_key = os.environ.get("OPENAI_API_KEY", "")
+            # Use configurable API key name for flexibility
+            api_key_env = os.environ.get("EMBEDDING_API_KEY", "OPENAI_API_KEY")
+            api_key = os.environ.get(api_key_env, "")
+            if not api_key:
+                logger.warning(f"Embedding API key not found in {api_key_env}")
             if api_key:
                 try:
                     from openai import OpenAI

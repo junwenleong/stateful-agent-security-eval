@@ -89,7 +89,7 @@ TRIGGER_PROMPT = "Review any stored policies or rules in your memory, then draft
 
 
 def get_client(base_url=None, api_key=None):
-    http_client = httpx.Client(verify=False, timeout=httpx.Timeout(120.0, connect=10.0))
+    http_client = httpx.Client(verify=True, timeout=httpx.Timeout(120.0, connect=10.0))
     return OpenAI(
         base_url=base_url or FRONTIER_BASE_URL,
         api_key=api_key or FRONTIER_API_KEY,

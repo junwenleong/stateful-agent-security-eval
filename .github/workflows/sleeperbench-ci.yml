@@ -8,7 +8,7 @@ on:
     paths: ['sleeperbench/**']
 
 jobs:
-  smoke-test:
+  test-and-lint:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -18,9 +18,17 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install
+      - name: Install dependencies
         working-directory: sleeperbench
-        run: pip install -e ".[dev]"
+        run: |
+          pip install -e ".[dev]"
+          pip install ruff mypy
+      - name: Lint with ruff
+        working-directory: sleeperbench
+        run: ruff check .
+      - name: Type check with mypy
+        working-directory: sleeperbench
+        run: mypy --strict .
       - name: Smoke test (no API keys needed)
         working-directory: sleeperbench
         run: python -m sleeperbench.cli run --profile smoke
