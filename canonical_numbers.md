@@ -112,7 +112,7 @@ cell (97.5% -> 100%) and leaves the Memory Sandbox 0% result unchanged.
 |--------|-------|
 | DTA injection rate | **100.0%** (2,520/2,520) |
 | DTA attack rate (all defenses) | **76.2%** (1,919/2,520) |
-| Benign-control false-trigger rate (no_attack arm) | **0.0%** (0/2,520) — spurious triggers under the benign control, not a general detector FPR |
+| Benign-control false-trigger rate (no_attack arm) | **0.0%** (0/2,520): spurious triggers under the benign control, not a general detector FPR |
 | BTCR (no_attack arm, all defenses) | **100.0%** (2,520/2,520) |
 
 ### Defense ASR Matrix - DTA arm (averaged across 9 models, n=360 per defense)
