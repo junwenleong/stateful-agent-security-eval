@@ -129,6 +129,10 @@ results/            # Experiment outputs (JSONL + run logs)
 - Ollama (for open-source models)
 - AWS credentials with Bedrock access (for frontier model screening only)
 
+## Data Download (Git LFS)
+
+The 5,040-run factorial log (`results/defense_factorial/results.jsonl`, about 120 MB) is stored with Git LFS. A plain `git clone` fetches LFS files automatically when `git-lfs` is installed (`brew install git-lfs && git lfs install`); otherwise the file is a three-line pointer. To clone without it, use `GIT_LFS_SKIP_SMUDGE=1 git clone ...`, and fetch it later with `git lfs pull`. GitHub applies a free bandwidth quota to LFS downloads, so a fetch can fail when the quota is exhausted; retry later or contact the author.
+
 ## Factorial Design
 
 **9 models × 7 conditions (6 defenses + baseline) × 2 attacks × N=40 = 5,040 runs**
