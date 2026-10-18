@@ -64,7 +64,7 @@ Disclosure hygiene
 - v5 stated that findings had been disclosed to OpenAI, Google and Anthropic before release.
   No such disclosure was made; the statement is withdrawn and the ethics section says so.
 
-Further corrections after a review against the released code and data
+Further corrections and disclosures (checked against the released code and data)
 - Related work: InjecAgent, AgentDojo and ASB are no longer described as user-message
   benchmarks (they cover tool-output injection, and ASB includes memory poisoning).
 - "Stores" is defined once (value read back after the injection session names the attacker's
@@ -79,10 +79,8 @@ Further corrections after a review against the released code and data
 - Causal mediation: preserved cells went through the corrupted save call (not "unaffected");
   the direction of the sandbox effect is stated with its limits; the preregistration departures
   and its 12 registered tests (9 significant after Holm) are reported.
-- One GPT-5.6-sol stored record is reclassified from verification-qualified to directive
-  (pooled send-authorised split 11 of 17 against 0 of 23); the coding-agent table has 693 runs
-  (two GPT-4.1 rows added); the single gpt-oss:20b no-defence non-success is a trigger-session
-  timeout.
+- The single gpt-oss:20b no-defence non-success is a trigger-session timeout, not a stochastic
+  non-exfiltration.
 - Narrowed to what the data show: mechanism tags, the utility claim, the retrieval-judge
   capacity reading, the three-condition account of RAG fallback, the date-sensitivity null,
   detection wording in the coding-agent experiment, and "lower bound" wording.
