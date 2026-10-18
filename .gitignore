@@ -82,3 +82,11 @@ nohup.out
 
 # Local run manifests (hostname, local paths)
 results/run_manifest.jsonl
+
+# Internal audit log (not for the public repo)
+LOGIC_AUDIT_FINDINGS.md
+
+# Qwen-3-32B rerun: logs and launcher contain internal hostnames/addresses
+results/qwen32b_reconciliation_2026-10-18/live.log
+results/qwen32b_reconciliation_2026-10-18/live_wrapper.out
+results/qwen32b_reconciliation_2026-10-18/live_repro.sh

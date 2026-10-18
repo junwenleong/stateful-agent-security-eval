@@ -1,5 +1,5 @@
 title: "Jun Wen Leong"
-description: "5 of 6 defences fail completely against persistent memory attacks on LLM agents. The one that works depends on whether the model reasons."
+description: "5 of 6 defences fail against persistent memory attacks on LLM agents. The one that works, removing the recall tool, is bypassed through RAG fallback."
 theme: minima
 url: "https://junwenleong.github.io"
 baseurl: "/stateful-agent-security-eval"

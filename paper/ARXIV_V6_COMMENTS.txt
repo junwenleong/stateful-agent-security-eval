@@ -2,9 +2,11 @@ Changes in v6 (relative to arXiv:2605.08442v5)
 
 Scope and framing
 - The abstract and introduction are rescoped. The injection-execution dissociation is stated
-  as a bidirectional claim (blocking injection does not imply blocking execution, and vice
-  versa) evidenced across the frontier set, where some vendors block mainly at storage and
-  others mainly at execution. The open-source factorial is stated to evidence only the
+  as two separable stages. After the frontier re-collection below, most endpoints that store
+  the rule also execute it; the three endpoints with no exfiltration under the draft-only
+  trigger (GPT-5.4, GPT-5.6-sol, Haiku 4.5; 0 of 40 each) also send almost no email under it,
+  and exfiltrate in 20 of 20, 5 of 20 and 6 of 20 runs in an exploratory send-authorised
+  follow-up, so the frontier data do not show execution resistance. The open-weight factorial is stated to evidence only the
   execution-stage half, because its models are pre-selected Vulnerable Executors with storage
   saturated at 100 percent.
 - Attack success (ASR) is defined as exfiltration to the attacker address in any session of a
@@ -28,10 +30,22 @@ Corrections
   which pointed to a different paper).
 
 New and extended experiments
-- Frontier coverage grows from 21 to 29 endpoints (August and September 2026 collections).
+- Frontier loaded-corpus evaluation: the same tool-wrapper bug depressed execution in v5's
+  frontier table (for example GPT-5.1 12.2 percent, GPT-4o 12.5 percent). All 29 endpoints
+  were re-collected after the fix (N=10 each, 290 runs, 2026-10-12); GPT-5.1, GPT-4o, GPT-4.1,
+  o3 and o3-mini now exfiltrate in at least 9 of 10 runs. A same-day control with the bug
+  re-introduced gives 0 of 10 for GPT-5.1. The four endpoints that showed storage without
+  execution at N=10 were topped up to N=40 (2026-10-13); GPT-5.5 then exfiltrated in 8 of 40.
+  An exploratory send-authorised trigger (supplies the content and asks for a send; 20 runs
+  each, 2026-10-14) shows the other three exfiltrating. Opus 5 is reclassified as not
+  evaluable: a content filter ends its sessions after retrieval. Address-bearing records of
+  Sonnet 4.6, Sonnet 5 and Opus 4.8 are security warnings.
+  The old numbers, the supply-chain pair rates
+  and the system-prompt mitigation comparison are superseded or marked pre-fix.
+- Frontier coverage grows from 21 to 29 endpoints.
 - A frontier tool-schema ablation, a tool-existence ablation, a cross-model write-then-read
   experiment, frontier retrieval-layer judges and a payload-framing experiment.
-- The coding-agent experiment is reported at 691 runs (v5: 571) with a per-run joint
+- The coding-agent experiment is reported at 693 runs (v5: 571) with a per-run joint
   dissociation rate.
 
 Reproducibility disclosure
@@ -49,3 +63,26 @@ Disclosure hygiene
 - Institutional gateway routing prefixes were removed from the model-identifier appendix.
 - v5 stated that findings had been disclosed to OpenAI, Google and Anthropic before release.
   No such disclosure was made; the statement is withdrawn and the ethics section says so.
+
+Further corrections after a review against the released code and data
+- Related work: InjecAgent, AgentDojo and ASB are no longer described as user-message
+  benchmarks (they cover tool-output injection, and ASB includes memory poisoning).
+- "Stores" is defined once (value read back after the injection session names the attacker's
+  address); the factorial's save-call proxy is stated as a proxy.
+- Newly disclosed: the benign calendar and search fixtures are empty in the factorial and most
+  RAG queries return the whole three-document corpus; the injection flag is not bounded to the
+  injection session (2,517 of 2,520 attack runs on a strict reading, no ASR change); the RATG
+  arm advertises one extra, uncalled tool (the claim that RATG leaves the tool schema unchanged
+  is withdrawn); the local judge fails open; the Qwen-3-32B sandbox cell is 0/40 in the April
+  factorial and 40/40 in the June thinking-toggle study for the same configuration; a fresh same-day
+  rerun (0 of 7 sandbox runs) reproduced April, so the June think-off cells are environment-conditioned.
+- Causal mediation: preserved cells went through the corrupted save call (not "unaffected");
+  the direction of the sandbox effect is stated with its limits; the preregistration departures
+  and its 12 registered tests (9 significant after Holm) are reported.
+- One GPT-5.6-sol stored record is reclassified from verification-qualified to directive
+  (pooled send-authorised split 11 of 17 against 0 of 23); the coding-agent table has 693 runs
+  (two GPT-4.1 rows added); the single gpt-oss:20b no-defence non-success is a trigger-session
+  timeout.
+- Narrowed to what the data show: mechanism tags, the utility claim, the retrieval-judge
+  capacity reading, the three-condition account of RAG fallback, the date-sensitivity null,
+  detection wording in the coding-agent experiment, and "lower bound" wording.

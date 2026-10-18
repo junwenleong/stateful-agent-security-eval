@@ -19,4 +19,12 @@ COPY data/ data/
 COPY scripts/ scripts/
 COPY pytest.ini .
 
-CMD ["python", "-m", "src.runner.runner"]
+# What this image is for: it provides the pinned Python environment together with the source,
+# configurations and scripts, and its default command re-checks the paper's numbers against the
+# raw result files (scripts/verify_canonical.py). It does NOT run model inference: the experiments
+# were run against Ollama and hosted-model endpoints that are not part of this image, and the
+# per-trial result data are not copied in. Mount them to verify:
+#   docker build -t sleeperbench .
+#   docker run --rm -v "$PWD/results:/app/results:ro" sleeperbench
+# The verifier reads only /app/results and makes no network or model calls.
+CMD ["python", "scripts/verify_canonical.py"]
