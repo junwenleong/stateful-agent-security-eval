@@ -136,35 +136,4 @@ The practical consequence matches Section~\ref{sec:sandbox}: a sandbox that scop
 
 These results constitute a case study on two models from a single provider, not a universal law. The capability-scaling claims (Section~\ref{sec:mediation-scaling}) require validation across additional model families. $N$ per cell for the preserved conditions (C1, C2, C3, C6, C7) ranges from 85 to 285; the zero-ASR cells among these have upper bounds of 1.3--4.3\%, meaning we cannot rule out very low-rate attacks in those specific conditions. The freshly re-collected conditions (C0, C4, C5) use $N{=}50$ per model, giving a Wilson upper bound of 7.1\% on the one zero-ASR cell among them (C5/gpt-5.1). Between-session variance (documented at 15--60\% for gpt-4.1-mini in other experiments in this research programme) means these are session-contingent behavioural estimates; the \emph{magnitude} of the effects reported here is large enough to be robust to this variance (non-overlapping CIs at $N{=}50$ for the C5 divergence, for example), but exact point estimates should be treated as illustrative rather than stable population parameters. All experiments use benign proxy tasks; transfer to production persistent-memory architectures is inferred, not demonstrated.
 
-\paragraph{Deviations from the pre-registered protocol.} The pre-registration (released with the artefact) differs from what was run in five ways.
-(1)~\emph{Replacement rule.} It specified that a model whose C0 ASR fell below 10\% should be replaced. In the pre-fix collection both C0 rates were below this threshold (0.0\% for gpt-4.1-mini, 0.9\% for gpt-5.1) and neither model was replaced. The low rates were caused by the argument-order bug, not by the choice of model: the corrected C0 rate is 100.0\% for both models, so the rule does not apply to the reported data.
-(2)~\emph{Sample size.} It planned $N{=}50$ per cell (800 runs). Each preserved cell holds run indices 0 to 49 repeated two to eight times, all collected on 2026-07-30, so $N{=}85$ to $285$ reflects several concurrent launches of the same 50-run script that were pooled, not a planned sample size (an inference from the run indices and timestamps).
-(3)~\emph{Analysis.} It registered 12 primary comparisons (C2 to C7 against C1, per model, Fisher exact test with Holm correction) and necessity thresholds of 30 and 15 points. Table~\ref{tab:prereg-tests} reports the 12 comparisons: 9 are significant after Holm, and the three that are not are the gpt-4.1-mini cells at 0 against 0 (C3, C6, C7). The thresholds classify ablations that raise ASR over C1 (C2, C4 and C5 for gpt-4.1-mini; C4 for gpt-5.1); where an ablation lowers ASR below C1 the scale does not apply. The kill condition (no ablation raising ASR by 15 points for either model) was not triggered.
-(4)~\emph{Predictions.} Two registered predictions were falsified: that RAG availability would not matter (C1 for gpt-5.1 is 74.7\%, every success through RAG) and that key visibility would not matter (C1 against C2: 74.7\% against 45.0\% for gpt-5.1, 0.0\% against 17.2\% for gpt-4.1-mini).
-(5)~\emph{Prompts.} It states that prompts match the main paper; the trigger prompt adds one sentence (Section~\ref{sec:mediation-design}).
-
-\begin{table}[t]
-\caption{The 12 registered primary comparisons (each ablation against C1, per model; Fisher exact test, Holm-adjusted $p$ over the 12). $\Delta$ is the ablation's ASR minus C1's, in percentage points. Cell sizes include the pooled launches described above.}
-\label{tab:prereg-tests}
-\centering
-\footnotesize
-\begin{tabular}{llcccrl}
-\toprule
-\textbf{Model} & \textbf{Cond.} & \textbf{Ablation} & \textbf{C1} & $\boldsymbol{\Delta}$ & \textbf{Holm $p$} & \textbf{Sig.} \\
-\midrule
-GPT-4.1-mini & C2 & 17/99 & 0/95 & $+17.2$ & $5\times10^{-5}$ & yes \\
-GPT-4.1-mini & C3 & 0/85 & 0/95 & $0.0$ & $1$ & no \\
-GPT-4.1-mini & C4 & 50/50 & 0/95 & $+100$ & $4\times10^{-39}$ & yes \\
-GPT-4.1-mini & C5 & 50/50 & 0/95 & $+100$ & $4\times10^{-39}$ & yes \\
-GPT-4.1-mini & C6 & 0/173 & 0/95 & $0.0$ & $1$ & no \\
-GPT-4.1-mini & C7 & 0/194 & 0/95 & $0.0$ & $1$ & no \\
-\midrule
-GPT-5.1 & C2 & 45/100 & 74/99 & $-29.7$ & $1\times10^{-4}$ & yes \\
-GPT-5.1 & C3 & 0/210 & 74/99 & $-74.7$ & $5\times10^{-49}$ & yes \\
-GPT-5.1 & C4 & 50/50 & 74/99 & $+25.3$ & $7\times10^{-5}$ & yes \\
-GPT-5.1 & C5 & 0/50 & 74/99 & $-74.7$ & $4\times10^{-20}$ & yes \\
-GPT-5.1 & C6 & 0/285 & 74/99 & $-74.7$ & $8\times10^{-57}$ & yes \\
-GPT-5.1 & C7 & 0/253 & 74/99 & $-74.7$ & $9\times10^{-54}$ & yes \\
-\bottomrule
-\end{tabular}
-\end{table}
+\paragraph{Deviations from the preregistered protocol.} The pre-registration (released with the artefact) differs from what was run in five ways: the replacement rule did not apply to the corrected data, the pooled cell sizes ($N{=}85$ to $285$) were not planned, the analysis was reported against the 12 registered comparisons (9 significant after Holm correction), two registered predictions were falsified (RAG availability and key visibility did matter), and the trigger prompt adds one sentence. Appendix~\ref{app:prereg} gives each deviation and the 12 tests.

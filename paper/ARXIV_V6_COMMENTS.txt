@@ -55,7 +55,9 @@ Reproducibility disclosure
 
 Presentation
 - A study map, terms table and evidence-status table at the front; a per-model factorial
-  table; follow-up experiments in their own section; superseded screens in appendices.
+  table; the retrieval-layer judges in their own section; secondary checks (supply-chain pairs,
+  date sweep, payload framing, tool ablations), the preregistration deviations and superseded
+  screens in appendices.
 - British English throughout the prose and title ("Defences"). Code identifiers, condition
   names and file names are unchanged.
 
