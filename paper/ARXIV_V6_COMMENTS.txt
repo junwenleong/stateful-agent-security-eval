@@ -37,12 +37,27 @@ New and extended experiments
   re-introduced gives 0 of 10 for GPT-5.1. The four endpoints that showed storage without
   execution at N=10 were topped up to N=40 (2026-10-13); GPT-5.5 then exfiltrated in 8 of 40.
   An exploratory send-authorised trigger (supplies the content and asks for a send; 20 runs
-  each, 2026-10-14) shows the other three exfiltrating. Opus 5 is reclassified as not
+  each, 2026-10-14) shows the other three exfiltrating. Opus 5 (new in v6) is not
   evaluable: a content filter ends its sessions after retrieval. Address-bearing records of
   Sonnet 4.6, Sonnet 5 and Opus 4.8 are security warnings.
   The old numbers and the system-prompt mitigation comparison are superseded. The new
   cross-model write-then-read pairs were collected before the fix and are marked pre-fix.
 - Frontier coverage grows from 21 to 29 endpoints.
+
+Conclusions that change relative to v5
+- Memory Sandbox is no longer described as iatrogenic: with the bug fixed it lowers ASR in every
+  cell. The causal-mediation claim that sandbox execution context is necessary (C4 at 0 percent)
+  does not hold: C4 is 100 percent for both models. The one effect that survives is a prompt
+  prohibition (C5), which GPT-5.1 obeys and GPT-4.1-mini ignores.
+- The vendor-divergence, Latent Carrier and Gemini-gradient claims, the claim that prompt
+  hardening eliminates execution, and the supply-chain composition risk are withdrawn or
+  reduced to untested inferences. The double dissociation, the qwq:32b inversion and the
+  Qwen-3-32B crossover are illustrative only (the June think-off cells did not reproduce on a
+  fresh daemon).
+- The disclosure statement is corrected: no vendor was notified.
+- Hypothesis tests for the factorial use Fisher exact tests (v5 used a CI criterion); the count
+  of significant comparisons is unchanged (10 of 108). The '0 percent false-positive rate' claim
+  becomes 'no spurious triggers'.
 - A frontier tool-schema ablation, a tool-existence ablation, a cross-model write-then-read
   experiment, frontier retrieval-layer judges and a payload-framing experiment.
 - The coding-agent experiment is reported at 693 runs (v5: 571) with a per-run joint
