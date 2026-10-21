@@ -269,7 +269,7 @@ The no-attack arm produced zero spurious detector triggers (the detector is give
 \subsection{Five Defences That Do Not Protect}
 \label{sec:failures}
 
-All five prompt-layer defences tested here are architecturally constrained to operate within the same context window as the attack; their failure at the tested operating points reflects both layer placement and the limited reasoning capacity of small classifiers. We present them in summary form.
+All five input-, retrieval- and instruction-level defences tested here fail for layer-specific reasons: the input-level filters never see the retrieved payload, the retrieval-level defences see it but do not flag it, and the instruction-level defence is overridden. For the retrieval-level defences the failure at the tested operating points is consistent with limited classifier capacity. We present them in summary form.
 
 Five defences achieved ASR that failed to meaningfully reduce the no-defence baseline of 88.6\%. Four are statistically indistinguishable from baseline (Wilson Score CI $[0.852, 0.917]$ for each); Prompt Hardening is statistically distinguishable at 77.8\% but provides no protection for seven of nine models. For the seven models whose baselines reproduce, all five defences leave ASR at 100\% and Memory Sandbox reduces it to 0\% (Table~\ref{tab:main-results}, right-hand ASR column). We report the shared CI once and then characterise each failure mechanism. Table~\ref{tab:main-results} summarises the primary findings.
 
