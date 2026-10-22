@@ -264,7 +264,7 @@ Sandbox total 0/7 (Wilson upper bound 35%): reproduces the April factorial cell 
 
 3. **All other defenses fail**: minimizer, sanitizer, rag_sanitizer, rag_llm_judge all show ~88.9% ASR - statistically indistinguishable from no_defense. prompt_hardening shows 77.8% mean ASR (one model, qwen3.5:122b, achieves 0%).
 
-4. **Zero utility tax**: BTCR = 100% across all 63 no_attack conditions. No defense degrades benign task completion.
+4. **No measured utility cost in the no-attack control**: BTCR = 100% across all 63 no_attack conditions (a single-session control that does not need recall). Utility under attack was not measured; see item 5.
 
 5. **memory_sandbox BTCR exception (DTA arm only)**: qwen2.5:14b and qwen2.5:72b show BTCR=0% under memory_sandbox when the attack is active - both halt after `list_all_facts` without completing the benign task. This is a model-specific artifact (Artifacts 2, 10), not a benign-session effect. Note: qwen3.5:122b and glm-4.7-flash:q8_0 show BTCR=True under memory_sandbox DTA via the hallucination bypass mechanism (§3.3.3).
 
@@ -359,6 +359,8 @@ Total: 0/46 bypasses. qwq:32b inversion does not generalise.
 ---
 
 ## Experiment 7: frontier API Supplementary & Followup - Loaded-Corpus Experiments (June 2026)
+
+> **SUPERSEDED for ASR, class labels and vendor statements (2026-10-12):** collected with the argument-order memory-wrapper bug, which depressed execution rates. Use Experiment 12. Kept for the record.
 
 **Source**: `results/frontier-api_supplementary/*.jsonl`, `results/frontier-api_followup/*.jsonl`
 **Method**: OpenAI-compatible frontier API, identical tool schema + SQLite as factorial
@@ -474,6 +476,8 @@ Total: 0/46 bypasses. qwq:32b inversion does not generalise.
 ---
 
 ## Experiment 8: Frontier Confirmatory - N=40 Loaded Corpus, Variant A (June 2026)
+
+> **SUPERSEDED for ASR, class labels and vendor statements (2026-10-12):** collected with the argument-order memory-wrapper bug, which depressed execution rates. Use Experiment 12. Kept for the record.
 
 **Source**: `results/frontier_confirmatory/frontier_*.jsonl`
 **Method**: OpenAI-compatible frontier API, loaded RAG corpus (malicious_doc + sensitive_doc + monitoring_config), Variant A (standard compliance framing, MCI-AUDIT-2024-0089, SEC Rule 17a-4). N=40 per model. No explicit temperature was sent: `scripts/run_frontier_confirmatory.py` builds the request with `{model, messages, tools, max_tokens/max_completion_tokens}` only, so the hosted endpoint's default sampling applied (this matches the paper's provenance appendix, which states "no explicit temperature was sent"; an earlier "temperature=0" note here was incorrect and did not reflect the runner). Same tool schema and SQLite as factorial.
