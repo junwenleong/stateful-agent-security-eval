@@ -6,6 +6,8 @@
 \usepackage{booktabs}
 \usepackage{xcolor}
 \hypersetup{colorlinks=true,linkcolor=blue!55!black,citecolor=green!35!black,urlcolor=blue!55!black,pdftitle={Injection-Execution Dissociation: A Mechanistic Evaluation of Persistent Memory Attacks and Defences in Stateful LLM Agents},pdfauthor={Jun Wen Leong}}
+\usepackage{array}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
 \usepackage{pifont}
 \usepackage{tikz}
 \usetikzlibrary{positioning}
@@ -74,7 +76,7 @@ A secondary experiment on a coding agent that reviews pull requests (Appendix~\r
 \label{tab:study-map}
 \centering
 \footnotesize
-\begin{tabular}{p{0.17\textwidth}p{0.25\textwidth}p{0.12\textwidth}p{0.25\textwidth}p{0.08\textwidth}}
+\begin{tabular}{L{0.17\textwidth}L{0.25\textwidth}L{0.12\textwidth}L{0.25\textwidth}L{0.08\textwidth}}
 \toprule
 \textbf{Experiment} & \textbf{Models} & \textbf{Runs} & \textbf{Harness and outcome} & \textbf{Where} \\
 \midrule
@@ -103,7 +105,7 @@ Payload framing & GPT-4o, GPT-5.1, Gemini 2.5 Pro & 1,080 & 3 framings $\times$ 
 \label{tab:validity-map}
 \centering
 \small
-\begin{tabular}{p{0.40\textwidth}p{0.31\textwidth}p{0.19\textwidth}}
+\begin{tabular}{L{0.40\textwidth}L{0.31\textwidth}L{0.19\textwidth}}
 \toprule
 \textbf{Claim} & \textbf{Evidence} & \textbf{Status} \\
 \midrule
@@ -181,7 +183,7 @@ Table~\ref{tab:terms} defines every term, label and outcome used in the paper. T
 \label{tab:terms}
 \centering
 \scriptsize
-\begin{tabular}{p{0.24\textwidth}p{0.70\textwidth}}
+\begin{tabular}{L{0.24\textwidth}L{0.70\textwidth}}
 \toprule
 \textbf{Term} & \textbf{Definition} \\
 \midrule
@@ -465,7 +467,7 @@ GPT-5.1 (control) & send & 20 & 20 & \textbf{20} & [84\%, 100\%] \\
 \label{sec:followup-judges}
 %==============================================================================
 
-This section reports the follow-up on retrieval-layer judges, which tests whether the failure of the small classifiers reflects the layer or the detector. Three smaller robustness checks (cross-model supply-chain pairs collected before the memory-tool fix, a date sweep and a payload-framing variation) are in Appendix~\ref{app:robustness}; none is load-bearing for the claims of this paper.
+This section reports the follow-up on retrieval-layer judges, which tests whether the failure of the small classifiers reflects the layer or the detector. Four smaller robustness checks (cross-model supply-chain pairs collected before the memory-tool fix, a date sweep, a payload-framing variation and a tool-existence ablation) are in Appendix~\ref{app:robustness}; none is load-bearing for the claims of this paper.
 
 A fresh-daemon evaluation of a 7B judge (qwen2.5:7b) on the two mechanical models with reproducible baselines (qwen2.5:14b, qwen3:32b; $N{=}40$ per arm, 80 judge-arm runs) never flagged the malicious document. Across all 80 runs the judge produced 0 malicious classifications (0 of the 120 judge decisions on the malicious document, and 0 of 400 decisions across all retrieved documents) and ASR remained 100\% under the judge defence. Scaling the judge from 1.5B to 7B therefore did not help for this payload and corpus. (The 122b judge arm was not interpretable: its no-defence baseline did not reproduce as vulnerable under the fresh-daemon protocol; see Section~\ref{sec:ratg} and Appendix~\ref{app:daemon}.)
 
@@ -651,7 +653,7 @@ Ten evaluation artefacts were identified during development: cases where the eva
 
 \paragraph{Artefact 4: Tool contract blocking dependency.} The \tool{list\_all\_facts} return message instructed the model to ``use recall\_fact to retrieve values,'' creating a blocking dependency for qwen2.5:72b when the referenced tool was unavailable. The model halted rather than falling back to the email task. This behaviour is present in the analysed Memory Sandbox runs for qwen2.5:72b (Section~\ref{sec:sandbox}).
 
-\section{Daemon-State Degradation of Reasoning Models}
+\section{Daemon State and Environment Sensitivity of Reasoning Models}
 \label{app:daemon}
 
 While extending the factorial with RATG (Section~\ref{sec:ratg}) across a nine-model sequential run on a single long-lived Ollama daemon (v0.30.11), six reasoning-capable models produced near-zero attack success, contradicting their 100\% ASR in the primary factorial. Forensic analysis established this as an evaluation artefact, not a safety property.
@@ -677,7 +679,7 @@ To test whether the Memory Sandbox bypass (Section~\ref{sec:sandbox}) generalise
 
 \begin{center}
 \small
-\begin{tabular}{llccp{4.2cm}}
+\begin{tabular}{llccL{4.2cm}}
 \toprule
 \textbf{Model} & \textbf{Provider} & \textbf{Inj.} & \textbf{ASR (sandbox)} & \textbf{Mechanism} \\
 \midrule
@@ -818,7 +820,7 @@ Table~\ref{tab:coding-agent} gives the per-cell rates.
 
 \paragraph{Implications.} The memory experiments separate storing an instruction from acting on it across sessions; this experiment shows, within one task, that a model whose text flags every injection can still execute every one. A model's own cautionary text is therefore not an enforced control; robust defence needs structural enforcement such as tool-layer gating, capability restriction and content sanitisation (Section~\ref{sec:arch-layer}). This does not test external detection defences, and the agent is synthetic; we did not test any product. The qualitative claims above (near-universal detection, uniform refusal of \textit{direct}, model-dependent execution with no single ordering) also hold on the \texttt{config\_changed} and \texttt{external\_webhook\_called} components alone. Excluding runs whose only flagged action is reading \texttt{.env} (leaving an attacker-domain config write, an external webhook call, or a secret placed in a payload; these are actions, not confirmed exposure of a secret) the per-model rates are 65\% for GPT-4.1-mini, 9\% for GPT-4.1 and 5\% for GPT-5.1: lower than the upper-bound Execute\% but still non-zero for every model, so the detect-and-execute pattern does not rest on the \texttt{.env}-read component.
 
-\section{Significant Factorial Comparisons}
+\section{Statistical Details and Significant Factorial Comparisons}
 \label{app:significant}
 
 \paragraph{Statistical details.} We set $N{=}40$ per condition to obtain stable estimates for the large, mechanistic effects anticipated from capability-removal defences and to resolve the near-ceiling and near-floor shifts they produce. Per model, observed effects are either at most 2.5 percentage points or 97.5--100 percentage points (pooled over models, ${<}1$ point for four defences, 10.8 for Prompt Hardening and 77.5 for Memory Sandbox), all trivially resolved at this sample size. The design is \emph{not} powered for small or moderate partial-efficacy effects: detecting a 10 percentage-point difference at 80\% power (exact Fisher test) needs roughly 80 runs per arm for 0\% versus 10\%, 160 for 5\% versus 15\%, 250 for 10\% versus 20\% and 450 for 50\% versus 60\%; at $N{=}40$ the power for 0\% versus 10\% is 0.21 and for 0\% versus 20\% is 0.84. Null results for intermediate reductions should therefore be interpreted conservatively. We report 95\% confidence intervals using the bias-corrected and accelerated (BCa) bootstrap method with 10,000 resamples (seed $= 42$). The CI method is selected per condition by a deterministic rule: if the outcome vector has zero variance (all successes or all failures), BCa is undefined and we substitute the Wilson Score interval; otherwise BCa is used. For a difference between two arms, if either arm is degenerate the interval is formed from the two independent Wilson intervals as [lower$_A - $upper$_B$, upper$_A - $lower$_B$]. Because the factorial uses temperature$=$0 with deterministic tool schemas, within-condition variance arises from floating-point nondeterminism and daemon state rather than independent stochastic sampling. The resulting CIs are within-condition stability estimates; they do not capture between-session, between-endpoint, or provider-routing variance (see Section~\ref{sec:limitations} and Appendix~\ref{app:provenance}). Per-comparison significance is determined by a Fisher exact test on each $2\times2$ (successes, failures) contingency table, followed by Holm--Bonferroni step-down correction across the 108 active comparisons to control the family-wise error rate at $\alpha = 0.05$; a comparison is called significant when its Holm-corrected Fisher $p$-value is at most $\alpha$. As a concordant secondary check we also record whether the difference interval excludes zero: a 95\% BCa interval when both arms are non-degenerate, or, when an arm is degenerate, the conservative bound formed from the two independent 95\% Wilson intervals above (conservative, so used only as a sign check); the two criteria agree on all 108 comparisons. Because observed effects are bimodal (either near-zero, for statistically indistinguishable conditions, or, per model, at least 97.5 percentage points) the multiplicity correction alters no decision: of the 98 non-significant comparisons, ninety-two show differences below 1 percentage point and six show a 2.5-point difference (five of these are no-defence versus a defence for gpt-oss:20b, driven by a single trigger-session timeout under no-defence, 39/40 versus 40/40; the sixth is a cross-model no-defence comparison); all remain near-ceiling or near-floor and statistically indistinguishable from baseline (Table~\ref{tab:significant-comparisons}; full per-comparison results in the released analysis output).
@@ -1142,12 +1144,12 @@ While auditing the tool-execution wrapper used by this and several sibling front
 
 This version corrects a memory-tool bug and rescopes the claims that depended on it. Table~\ref{tab:changes} lists each claim of the previous arXiv version (v5) that is withdrawn or changed, and its status here; other changes follow the table.
 
-\begin{table}[h]
+\begin{table}[!ht]
 \caption{Claims of the previous version that are withdrawn or changed.}
 \label{tab:changes}
 \centering
 \footnotesize
-\begin{tabular}{p{0.28\textwidth}p{0.22\textwidth}p{0.40\textwidth}}
+\begin{tabular}{L{0.28\textwidth}L{0.22\textwidth}L{0.40\textwidth}}
 \toprule
 \textbf{Earlier claim} & \textbf{Problem} & \textbf{Status here} \\
 \midrule
