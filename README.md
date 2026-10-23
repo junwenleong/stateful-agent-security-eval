@@ -194,7 +194,7 @@ If you use this work in your research, please cite:
 
 ```bibtex
 @article{leong2026dissociation,
-  title={Injection-Execution Dissociation: A Mechanistic Evaluation of Persistent Memory Attacks and Defenses in Stateful LLM Agents},
+  title={Injection-Execution Dissociation: A Mechanistic Evaluation of Persistent Memory Attacks and Defences in Stateful LLM Agents},
   author={Leong, Jun Wen},
   journal={arXiv preprint arXiv:2605.08442},
   year={2026}
