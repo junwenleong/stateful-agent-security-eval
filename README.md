@@ -2,7 +2,6 @@
 
 **Paper:** [arXiv:2605.08442](https://arxiv.org/abs/2605.08442)
 **Companion:** [Retrieval Observability Bounds on Provenance Detection for Agent Memory Poisoning: Measured Coverage and a Falsified Standalone Detector, arXiv:2606.30566](https://arxiv.org/abs/2606.30566)
-**Benchmark:** [SleeperBench v1.0.0](https://github.com/junwenleong/sleeperbench) (DOI: [10.5281/zenodo.21859790](https://doi.org/10.5281/zenodo.21859790))
 **Live site:** [junwenleong.github.io/stateful-agent-security-eval](https://junwenleong.github.io/stateful-agent-security-eval/)
 
 > **Version note (v6).** This repository now describes paper version v6. v6 corrects an argument-order bug in the memory-tool wrapper of the standalone frontier and causal-mediation scripts, which had corrupted the stored value in the earlier frontier collection and in three causal-mediation conditions. The frontier results were re-collected after the fix (29 endpoints, 2026-10-12) and earlier frontier numbers anywhere in this repository's history are superseded. See the paper, [canonical_numbers.md](canonical_numbers.md) and [FINDINGS.md](FINDINGS.md). Known properties of the released harness are listed [below](#known-properties-of-the-released-harness).
